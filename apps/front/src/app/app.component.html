@@ -1,0 +1,15 @@
+<div class="shell">
+  <span class="badge">Fase 0</span>
+  <h1>{{ titulo() }}</h1>
+  <p>{{ mensaje() }}</p>
+
+  <div class="estado">
+    <p>
+      Frontend:
+      <span class="estado-ok">{{ estadoFront() }}</span>
+    </p>
+    <p>Próximo paso: autenticación y registro de negocio (Fase 1).</p>
+  </div>
+</div>
+
+<router-outlet />

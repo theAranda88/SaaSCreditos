@@ -31,7 +31,7 @@
     backend-crud, backend-feature, registrar-pago,
     frontend-crud, frontend-feature, backend-to-frontend,
     auth-flow, documentar-api, calidad-tests, control-versiones
-  docs/                       INDEX, QUICK_START, DOCUMENTACION, STRUCTURE
+  docs/                       INDEX, QUICK_START, PLAN_IMPLEMENTACION, DOCUMENTACION, STRUCTURE
   LECCIONES.md                append-only
 ```
 

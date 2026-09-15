@@ -5,7 +5,7 @@ Cambiar el modelo canónico **antes** de la migración. Nombres en **español**.
 ## Cargar SOLO
 
 - `docs/00-esquema-bd.md`
-- `packages/db`
+- `apps/backend/prisma`
 - `rules/15-nomenclatura.mdc`
 
 ## Buenas prácticas

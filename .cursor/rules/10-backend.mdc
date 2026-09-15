@@ -1,6 +1,6 @@
 ---
-description: Patrones backend — NestJS, PostgreSQL, negocio_id, transacciones, tests, nomenclatura en español
-globs: ["apps/api/**", "apps/workers/**", "packages/db/**"]
+description: Patrones backend — NestJS, PostgreSQL, capas en español, negocio_id, transacciones, tests
+globs: ["apps/backend/**"]
 alwaysApply: false
 ---
 
@@ -10,18 +10,27 @@ alwaysApply: false
 
 - Node.js 20+, TypeScript strict
 - NestJS (`@nestjs/swagger`)
-- PostgreSQL + Prisma (`@@map` a tablas en español)
-- Validación en el borde HTTP
+- PostgreSQL + Prisma en `apps/backend/prisma`
+- Validación en middleware/pipes (borde HTTP)
 - Tests: Vitest + spec junto al servicio; e2e con supertest
-- Workers en `apps/workers` (no bloquear el cobro)
 
-## Capas
+## Capas (estructura de carpetas)
 
 ```
-controlador → guards (JWT, negocio, rol) → DTO → servicio → repositorio/Prisma
+routes → middleware → controlador → servicio → entidades (repositorio) → bd (Prisma)
 ```
 
-- Controlador: HTTP. Servicio: reglas y transacciones. Repositorio: queries.
+| Carpeta | Rol |
+|---|---|
+| `src/routes/` | Módulos Nest por dominio (cableado HTTP) |
+| `src/middleware/` | Guards JWT, rol, `negocio_id`, pipes, filters |
+| `src/controladores/` | HTTP + Swagger |
+| `src/servicios/` | Reglas de negocio y transacciones |
+| `src/entidades/` | Repositorios delgados (queries Prisma) |
+| `src/bd/` | Cliente Prisma injectable |
+| `prisma/` | Schema, migraciones, seed |
+
+Referencia de patrón: proyecto académico `unilab` (Express), adaptado a NestJS.
 
 ## Multiempresa y dinero
 
@@ -32,7 +41,7 @@ controlador → guards (JWT, negocio, rol) → DTO → servicio → repositorio/
 
 ## Nombres
 
-`ClientesServicio`, `negocioId`, `MONEDA_POR_DEFECTO`. Tablas: `negocios`, `clientes`, `pagos`… Ver `15-nomenclatura.mdc`.
+`ClientesServicio`, `PlanRepositorio`, `negocioId`. Tablas: `negocios`, `clientes`, `pagos`… Ver `15-nomenclatura.mdc`.
 
 ## Errores HTTP
 

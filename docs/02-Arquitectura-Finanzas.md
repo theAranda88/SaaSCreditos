@@ -81,31 +81,33 @@ El proyecto se organiza como un monorepo dockerizado desde el inicio: backend y 
 ```
 creditos-saas/
   apps/
-    web/                     # Frontend responsive/PWA (Angular)
+    front/                   # Frontend responsive/PWA (Angular)
       src/
       Dockerfile
-    api/                     # Backend / API
+    backend/                 # Backend NestJS (capas: bd → entidades → servicios → controladores)
+      prisma/                # Esquema, migraciones y semilla Prisma
       src/
-      docs/swagger/          # OpenAPI servida como Swagger UI
+        bd/                  # Cliente Prisma
+        entidades/           # Repositorios (acceso a datos)
+        servicios/           # Reglas de negocio
+        controladores/       # HTTP + Swagger
+        middleware/          # Guards, pipes, interceptors
+        routes/              # Módulos de rutas por dominio
       Dockerfile
-    workers/                 # Jobs asincronos
-      src/
-      Dockerfile
+      Dockerfile.db-init
   packages/
-    db/                      # Esquema, migraciones y acceso a datos
-    shared-types/            # Tipos compartidos entre apps
-    ui/                      # Componentes reutilizables (Angular)
-    config/                  # Configuracion y validaciones compartidas
+    shared-types/            # Tipos compartidos entre front y backend
+    ui/                      # Componentes reutilizables (Angular) — futuro
+    config/                  # Configuración compartida — futuro
   tests/
     postman/                 # Colecciones Postman (por modulo y ambiente)
-  infra/
-    docker-compose.yml       # Orquestacion local: web + api + workers + db
+  docker-compose.yml         # Orquestacion local: front + backend + db
   package.json
 ```
 
 La estructura facilita compartir tipos y mantener coordinados frontend, backend y paquetes comunes, y permite que cualquier desarrollador levante el entorno completo con un solo comando de Docker Compose.
 
-Ubicación de la fuente de verdad del modelo: `docs/00-esquema-bd.md` (y su réplica en `packages/db` cuando exista el código).
+Ubicación de la fuente de verdad del modelo: `docs/00-esquema-bd.md` (réplica técnica en `apps/backend/prisma/`).
 
 ---
 
@@ -116,7 +118,7 @@ Ubicación de la fuente de verdad del modelo: `docs/00-esquema-bd.md` (y su rép
 | Frontend | **Angular + TypeScript** + Angular Material y/o Tailwind CSS | Framework robusto orientado a SPA responsive/PWA, con estructura modular (rutas, servicios, guards) afín a un dominio con varios roles (administrador/cobrador). |
 | Backend | Node.js + TypeScript + **NestJS** (alternativa: Fastify) | API modular, mismo lenguaje que el front, OpenAPI de primer nivel (`@nestjs/swagger`). |
 | DB | PostgreSQL administrado | Modelo relacional para créditos/cuotas/pagos y transacciones. |
-| Acceso a datos | Prisma (recomendado) en `packages/db` | Migraciones versionadas y tipos compartibles. |
+| Acceso a datos | Prisma en `apps/backend/prisma` + capa `entidades/` | Migraciones versionadas junto al backend. |
 | Auth | NestJS Auth + JWT, o Supabase Auth equivalente | Reducir superficie de autenticación sin perder control de tenant/rol. |
 | Contenerización | Docker + Docker Compose | Monorepo dockerizado (backend y frontend) desde el inicio; entorno reproducible y base de CI/CD. |
 | Documentación de API | Swagger UI / OpenAPI | Documentación viva y navegable de cada endpoint, generada junto con el backend. |
@@ -276,9 +278,9 @@ Para la primera etapa se recomienda infraestructura administrada y de bajo costo
 
 | Servicio | Función | Criterio |
 |---|---|---|
-| Docker + Docker Compose | Entorno de desarrollo local | Monorepo dockerizado (web + api + workers + db); sin costo, estándar desde el MVP-1 |
+| Docker + Docker Compose | Entorno de desarrollo local | Monorepo dockerizado (front + backend + db); sin costo, estándar desde el MVP-1 |
 | Vercel / equivalente | Frontend Angular | Free tier / plan inicial según tráfico |
-| Railway / Render / equivalente | API + workers | Escalar según uso |
+| Railway / Render / equivalente | API + backend | Escalar según uso |
 | PostgreSQL administrado | DB | Free tier / plan inicial y luego escalar |
 | Storage | Comprobantes | Pago por almacenamiento |
 | Sentry / equivalente | Errores | Free tier inicial |

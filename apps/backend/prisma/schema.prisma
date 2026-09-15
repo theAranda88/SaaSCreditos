@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum estado_negocio {
+  activo
+  suspendido
+  cancelado
+}
+
+enum estado_plan {
+  activo
+  inactivo
+}
+
+model Negocio {
+  id                 String         @id @default(uuid()) @db.Uuid
+  nombreComercial    String         @map("nombre_comercial") @db.VarChar(180)
+  razonSocial        String?        @map("razon_social") @db.VarChar(180)
+  documentoFiscal    String?        @map("documento_fiscal") @db.VarChar(40)
+  moneda             String         @default("COP") @db.Char(3)
+  estado             estado_negocio @default(activo)
+  configuracion      Json           @default("{}")
+  fechaCreacion      DateTime       @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+
+  @@index([estado])
+  @@map("negocios")
+}
+
+model Plan {
+  id                   String      @id @default(uuid()) @db.Uuid
+  codigo               String      @unique @db.VarChar(40)
+  nombre               String      @db.VarChar(80)
+  limiteCobradores     Int         @map("limite_cobradores")
+  precioImplementacion Decimal     @map("precio_implementacion") @db.Decimal(18, 2)
+  precioMensual        Decimal     @map("precio_mensual") @db.Decimal(18, 2)
+  caracteristicas      Json        @default("{}")
+  estado               estado_plan @default(activo)
+  fechaCreacion        DateTime    @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+
+  @@map("planes")
+}

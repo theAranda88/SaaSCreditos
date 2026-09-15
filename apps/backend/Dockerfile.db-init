@@ -1,0 +1,18 @@
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY apps/backend/package.json ./apps/backend/package.json
+
+ENV NODE_ENV=development
+RUN npm ci --workspace=@creditos/backend --ignore-scripts
+
+COPY apps/backend/prisma ./apps/backend/prisma
+COPY docker/db-init.sh /usr/local/bin/db-init.sh
+RUN sed -i 's/\r$//' /usr/local/bin/db-init.sh && chmod +x /usr/local/bin/db-init.sh
+
+WORKDIR /app/apps/backend
+RUN npm run db:generate
+WORKDIR /app
+
+ENTRYPOINT ["sh", "/usr/local/bin/db-init.sh"]

@@ -27,7 +27,7 @@ alwaysApply: true
 
 9. **Backend completo (y verde) antes que frontend.** No se inventa API desde el HTML.
 
-10. **Monorepo dockerizado.** Frontend Angular (`apps/web`) y API (`apps/api`) viven juntos y se levantan con Docker Compose. No se desarrolla "en local suelto" como estándar.
+10. **Monorepo dockerizado.** Frontend Angular (`apps/front`) y backend NestJS (`apps/backend`) viven juntos y se levantan con `docker-compose.yml` en la raíz. No se desarrolla "en local suelto" como estándar.
 
 11. **Español en dominio.** Tablas, columnas, clases, métodos, variables y constantes en español (`15-nomenclatura.mdc`). Inglés solo en framework y protocolo.
 
@@ -37,12 +37,11 @@ alwaysApply: true
 
 ## Dónde va cada cosa
 
-- Esquema BD → `docs/00-esquema-bd.md` + `packages/db`
-- API → `apps/api` (Swagger en `apps/api/docs/swagger` o equivalente Nest)
-- Front Angular → `apps/web`
-- Workers → `apps/workers`
+- Esquema BD → `docs/00-esquema-bd.md` + `apps/backend/prisma`
+- API → `apps/backend` (Swagger en `apps/backend/docs/swagger` o equivalente Nest)
+- Front Angular → `apps/front`
 - Postman → `tests/postman/`
-- Compose → `infra/docker-compose.yml`
+- Compose → `docker-compose.yml` (raíz)
 - Tipos compartidos → `packages/shared-types`
 
 ## Presupuesto de tokens

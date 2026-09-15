@@ -2,9 +2,13 @@
 
 Monorepo dockerizado: **Angular** (`apps/web`) + **NestJS** (`apps/api`) + PostgreSQL. Cobros diarios multiempresa.
 
+## Paso 0 — Plan de fases
+
+Si no sabés por dónde seguir → [PLAN_IMPLEMENTACION.md](./PLAN_IMPLEMENTACION.md) (MVP 0→7, RF, ramas, criterios de cierre).
+
 ## Paso 1 — ROUTER
 
-Abrí `.cursor/workflows/ROUTER.md` y elegí UNA fila. Al crear o modificar, **después** encadená `calidad-tests`. Sin verde no se entrega.
+Abrí `.cursor/workflows/ROUTER.md` y elegí UNA fila. Antes del SPEC: `control-versiones`. Al crear o modificar, **después** encadená `calidad-tests`. Sin verde no se entrega.
 
 | Skill | Para qué |
 |---|---|

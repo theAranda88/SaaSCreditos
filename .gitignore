@@ -25,12 +25,11 @@ temp/
 
 # Angular
 .angular/
-apps/web/dist/
-apps/web/.sass-cache/
+apps/front/dist/
+apps/front/.sass-cache/
 
-# NestJS / Node API
-apps/api/dist/
-apps/workers/dist/
+# NestJS / Node backend
+apps/backend/dist/
 
 # Paquetes compartidos
 packages/*/dist/
@@ -68,16 +67,16 @@ yarn-error.log*
 lerna-debug.log*
 
 # --- Docker / datos locales ---
-infra/volumes/
-infra/data/
+docker/volumes/
+docker/data/
 postgres-data/
 pgdata/
 *.pid
 docker-compose.override.yml
 docker-compose.*.local.yml
 
-# --- Prisma (generados; el schema sí va versionado) ---
-packages/db/node_modules/.prisma/
+# --- Prisma (generados; el schema vive en apps/backend/prisma) ---
+apps/backend/node_modules/.prisma/
 
 # --- IDE y editor ---
 .idea/
@@ -101,7 +100,6 @@ packages/db/node_modules/.prisma/
 
 # --- Cursor (local; no subir al remoto) ---
 .cursor/
-*.cursor-backup
 
 # --- Sistema operativo ---
 .DS_Store

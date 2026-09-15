@@ -1,0 +1,25 @@
+{
+  "name": "creditos-saas",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SaaS multiempresa de gestión de créditos y cobro diario",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspace=@creditos/backend && npm run test --workspace=@creditos/front",
+    "test:backend": "npm run test --workspace=@creditos/backend",
+    "test:front": "npm run test --workspace=@creditos/front",
+    "build": "npm run build --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace=@creditos/backend",
+    "db:migrate": "npm run db:migrate:dev --workspace=@creditos/backend",
+    "db:migrate:deploy": "npm run db:migrate:deploy --workspace=@creditos/backend",
+    "db:seed": "npm run db:seed --workspace=@creditos/backend",
+    "db:docker:init": "docker compose run --rm db-init",
+    "db:docker:psql": "docker compose exec postgres psql -U creditos -d creditos"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

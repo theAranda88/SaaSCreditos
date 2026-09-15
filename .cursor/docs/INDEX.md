@@ -3,11 +3,12 @@
 Punto de entrada del sistema de desarrollo conducido por especificaciones.
 
 1. Tenés prisa → [QUICK_START.md](./QUICK_START.md)
-2. Elegís flujo → [../workflows/ROUTER.md](../workflows/ROUTER.md) **(siempre)**
-3. Contrato HTTP → [DOCUMENTACION.md](./DOCUMENTACION.md)
-4. Mapa de carpetas SDD → [STRUCTURE.md](./STRUCTURE.md)
-5. Modelo de datos → [`docs/00-esquema-bd.md`](../../docs/00-esquema-bd.md)
-6. SRS / Arquitectura → [`docs/01-SRS.md`](../../docs/01-SRS.md) · [`docs/02-Arquitectura-Finanzas.md`](../../docs/02-Arquitectura-Finanzas.md)
+2. **Plan por fases (MVP)** → [PLAN_IMPLEMENTACION.md](./PLAN_IMPLEMENTACION.md)
+3. Elegís flujo → [../workflows/ROUTER.md](../workflows/ROUTER.md) **(siempre)**
+4. Contrato HTTP → [DOCUMENTACION.md](./DOCUMENTACION.md)
+5. Mapa de carpetas SDD → [STRUCTURE.md](./STRUCTURE.md)
+6. Modelo de datos → [`docs/00-esquema-bd.md`](../../docs/00-esquema-bd.md)
+7. SRS / Arquitectura → [`docs/01-SRS.md`](../../docs/01-SRS.md) · [`docs/02-Arquitectura-Finanzas.md`](../../docs/02-Arquitectura-Finanzas.md)
 
 ## Flujo típico de construcción (después de esta etapa 1)
 

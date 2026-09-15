@@ -12,9 +12,10 @@ Usar cuando **aún no existe** el esqueleto dockerizado. Es la etapa 2 de constr
 ## Buenas prácticas
 
 - Antes del SPEC: skill `control-versiones` (ej. `chore/creditos_bootstrap_monorepo` desde `creditos-prepro`).
-- Un `docker compose` levanta web + api + workers + postgres + (opcional) runner de test.
+- Un `docker compose` (raíz del repo) levanta front + backend + postgres. El servicio `db-init` aplica migraciones y semilla antes del backend.
+- Volumen nombrado `creditos_postgres_data` para persistir PostgreSQL entre reinicios.
 - Scripts raíz: `npm test` (falla si api o web fallan).
-- Prisma con `@@map` a tablas en español (`negocios`, `planes`).
+- Prisma con `@@map` a tablas en español (`negocios`, `planes`) en `apps/backend/prisma`.
 - Health en español de dominio: `GET /api/salud` (además del probe de orquestador si hace falta).
 - Seed solo `planes`. Sin créditos de mentira en producción.
 

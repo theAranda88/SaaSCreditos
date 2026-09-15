@@ -241,7 +241,7 @@ El modelo principal es implementación + suscripción; no se plantea vender el c
 | Calidad de entrega | Todo cambio de comportamiento incluye tests automatizados; **sin verde no se entrega**. |
 | Auditoría | Operaciones críticas registran usuario, fecha, acción y recurso. |
 | Usabilidad | Cobro diario con el menor número razonable de pasos. |
-| Mantenibilidad | Frontend Angular, API, persistencia y workers claramente separados dentro de un monorepo. |
+| Mantenibilidad | Frontend Angular, backend y persistencia claramente separados dentro de un monorepo. |
 | Observabilidad | Errores y eventos críticos monitoreables. |
 | Backups | Copias y procedimiento de restauración probado. |
 | Reproducibilidad | El entorno de desarrollo se levanta con Docker Compose; no se admite "funciona en mi máquina" como estándar. |
@@ -254,7 +254,7 @@ Estos requerimientos son **obligatorios desde el MVP-1**. Un módulo backend no 
 
 ### 9.1 Monorepo dockerizado
 
-El repositorio único `creditos-saas` contiene frontend Angular (`apps/web`), API (`apps/api`) y workers (`apps/workers`). Cada aplicación tiene su Dockerfile. Docker Compose orquesta web + api + workers + PostgreSQL en local.
+El repositorio único `creditos-saas` contiene frontend Angular (`apps/front`) y backend NestJS (`apps/backend`). Cada aplicación tiene su Dockerfile. `docker-compose.yml` en la raíz orquesta front + backend + PostgreSQL en local.
 
 Cualquier desarrollador debe poder levantar el entorno completo con un único comando de Compose.
 
@@ -365,7 +365,7 @@ El desarrollo terminado es código + Swagger/Postman **+ tests en verde**. Si la
 
 La separación es funcional; no obliga a crear microservicios en el MVP. El despliegue de desarrollo es un monorepo dockerizado.
 
-Frontend: aplicación Angular (administrador en escritorio, cobrador en móvil). Backend: API modular + workers para procesos asíncronos. Persistencia: PostgreSQL.
+Frontend: aplicación Angular (administrador en escritorio, cobrador en móvil). Backend: API modular NestJS. Persistencia: PostgreSQL.
 
 ---
 
@@ -446,7 +446,7 @@ El escenario de referencia no exige infraestructura masiva inicialmente. Se debe
 - Multiempresa desde el inicio.
 - Base relacional con índices adecuados (cartera del día, recaudo, asignación activa).
 - API stateless para escalar horizontalmente.
-- Procesos asíncronos para reportes, notificaciones y tareas programadas (`apps/workers`).
+- Procesos asíncronos para reportes, notificaciones y tareas programadas (módulos del backend; post-MVP).
 - Backups y observabilidad desde el MVP.
 - Capacidad de aumentar recursos sin cambiar el dominio.
 - Separación futura de procesos de alto consumo cuando el volumen lo justifique.
@@ -498,7 +498,7 @@ Los tiempos específicos se definirán en la planeación técnica.
 - Operaciones críticas quedan auditadas.
 - No existe acceso entre negocios (`negocio_id`).
 - El flujo principal funciona correctamente desde teléfono (Angular responsive).
-- `docker compose up` levanta web, api, workers y base de datos.
+- `docker compose up` levanta front, backend y base de datos.
 - Swagger UI documenta los endpoints del núcleo.
 - La colección Postman cubre autenticación y el flujo cliente → crédito → cobro.
 - Los tests automatizados del núcleo (auth, clientes, cobro) pasan en verde.

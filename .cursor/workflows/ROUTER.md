@@ -75,6 +75,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 
 ## Contexto vivo (no lo cargues entero)
 
+- Plan por fases (MVP): `.cursor/docs/PLAN_IMPLEMENTACION.md`
 - SRS: `docs/01-SRS.md`
 - Arquitectura: `docs/02-Arquitectura-Finanzas.md`
 - Esquema BD: `docs/00-esquema-bd.md`
