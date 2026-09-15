@@ -1,0 +1,35 @@
+---
+description: Cómo trabajar para gastar poco token. Idioma, simplicidad y ruteo. Siempre activo.
+alwaysApply: true
+---
+
+# Proceso — cómo pensar cada tarea
+
+## Idioma
+
+Todo en **español**: mensajes, specs, **identificadores de dominio** (tablas, clases, métodos, variables, constantes). Inglés solo en framework y protocolo (`15-nomenclatura.mdc`).
+
+## Simplicidad
+
+La solución más simple que cumpla SRS + esquema. Nada de microservicios, capas "por si acaso" ni abstracciones que el MVP no pide.
+
+## Flujo
+
+1. Ubicar la fila en `.cursor/workflows/ROUTER.md`.
+2. Leer SOLO ese workflow (y el skill que cite).
+3. Presentar SPEC de un párrafo. Esperar OK.
+4. Implementar el mínimo. Compilar. Swagger/Postman si tocó API.
+5. Encadenar `calidad-tests`. **Sin verde no se entrega.**
+6. Si toca dinero, los tests cubren transacción + estados + aislamiento de negocio.
+
+## Qué no hacer
+
+- No mezclar módulos en un mismo cambio (clientes + cobros a la vez).
+- No crear archivos `.md` de análisis.
+- No tocar el esquema "de pasada".
+- No asumir NestJS vs Fastify distinto a lo documentado: **NestJS recomendado** hasta que el usuario cambie la decisión.
+- No usar Next.js/React: el frontend es **Angular**.
+
+## Consistencia
+
+Buscar un módulo similar (clientes, créditos) y copiar su patrón antes de inventar uno nuevo.

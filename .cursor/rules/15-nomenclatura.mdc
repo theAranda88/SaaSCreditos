@@ -1,0 +1,49 @@
+---
+description: Nomenclatura en español para BD, código y tests. Siempre activo.
+alwaysApply: true
+---
+
+# Nomenclatura — todo en español
+
+El dominio se nombra en **español**. El inglés queda reservado al ecosistema (frameworks, protocolos, CLI).
+
+## Base de datos (obligatorio)
+
+- Tablas en **plural** y `snake_case`: `negocios`, `usuarios`, `clientes`, `creditos`, `cuotas`, `pagos`, `asignaciones`, `planes`, `suscripciones`, `auditorias`.
+- Columnas en `snake_case` español: `negocio_id`, `cliente_id`, `correo`, `hash_contrasena`, `cobrador_id`.
+- Enums en español: `estado_pago`, `rol_usuario`.
+- Fuente de verdad: `docs/00-esquema-bd.md`. Prohibido crear `tenants`, `users`, `customers`, `payments`, etc.
+
+## Código propio (obligatorio)
+
+| Qué | Forma | Ejemplo |
+|---|---|---|
+| Clase / componente | PascalCase español | `ClientesServicio`, `ListadoClientesComponent` |
+| Método / función | camelCase español | `crearCliente`, `registrarPago` |
+| Variable / propiedad | camelCase español | `saldoPendiente`, `negocioId` |
+| Constante | SCREAMING_SNAKE español | `MONEDA_POR_DEFECTO`, `MAXIMO_COBRADORES` |
+| Archivo de dominio | kebab español + sufijo de rol | `clientes.servicio.ts`, `crear-cliente.dto.ts` |
+| Carpeta de dominio | kebab español | `modulos/clientes`, `funcionalidades/cobros` |
+| Test | mismo nombre + `.spec` | `clientes.servicio.spec.ts` |
+| Descripción de test | español, comportamiento | `debe rechazar pago de cartera no asignada` |
+
+Prisma: `model Cliente { ... @@map("clientes") }` — el modelo sigue el español.
+
+## Qué SÍ puede quedar en inglés
+
+- APIs del framework: `Component`, `Injectable`, `Module`, `inject`, `signal`, `describe`, `it`, `expect`
+- Protocolo: `GET`, `POST`, JWT `sub` (estándar). Claims propios en español: `negocio_id`, `rol`
+- Ecosistema: `src`, `dist`, `Dockerfile`, `package.json`, `node_modules`, nombres npm
+- Rutas HTTP: plural español (`/api/clientes`, `/api/pagos`)
+
+## Anti-patrones
+
+```ts
+// MAL
+const tenantId = user.tenant_id;
+await paymentsService.registerPayment();
+
+// BIEN
+const negocioId = usuario.negocio_id;
+await pagosServicio.registrarPago();
+```

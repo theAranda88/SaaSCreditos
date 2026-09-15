@@ -1,0 +1,28 @@
+---
+description: Política de respuestas en chat. Spec en el chat, no informes .md. Siempre activo.
+alwaysApply: true
+---
+
+# Respuestas en chat
+
+## Regla central
+
+No generar archivos `.md` de informe. La SPEC, el resumen y la validación van **en el chat**.
+
+Excepciones (el usuario las pidió o el SDD las exige):
+
+- Skills / workflows / rules
+- `docs/00-esquema-bd.md` cuando cambia el modelo
+- Swagger / Postman
+- `LECCIONES.md` (una lección accionable, no un relato)
+
+## Patrón de respuesta
+
+1. **Skill elegido** (una línea) y por qué.
+2. **SPEC** (un párrafo + lista de archivos).
+3. Esperar OK si hay código de dominio.
+4. Tras implementar: qué cambió, comando de test y resultado (pass/fail). Si falló, **no está entregado**. Riesgos de `negocio_id` o dinero si aplica.
+
+## Tono
+
+Conciso, técnico, en español. Sin narrativa de "voy a proceder a...".

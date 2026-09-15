@@ -1,0 +1,135 @@
+# =============================================================================
+# Creditos SaaS — monorepo (Angular + NestJS + Docker + PostgreSQL)
+# Lo que no debe subirse al repositorio remoto.
+# =============================================================================
+
+# --- Dependencias ---
+node_modules/
+.pnp
+.pnp.js
+.pnpm-store/
+
+# --- Compilación / artefactos de build ---
+dist/
+build/
+out/
+tmp/
+temp/
+*.tmp
+*.tsbuildinfo
+.turbo/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Angular
+.angular/
+apps/web/dist/
+apps/web/.sass-cache/
+
+# NestJS / Node API
+apps/api/dist/
+apps/workers/dist/
+
+# Paquetes compartidos
+packages/*/dist/
+
+# --- Tests y cobertura ---
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+playwright-report/
+blob-report/
+junit.xml
+*.spec.ts.snap
+
+# --- Variables de entorno y secretos (nunca al remoto) ---
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+service-account*.json
+
+# --- Logs ---
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# --- Docker / datos locales ---
+infra/volumes/
+infra/data/
+postgres-data/
+pgdata/
+*.pid
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# --- Prisma (generados; el schema sí va versionado) ---
+packages/db/node_modules/.prisma/
+
+# --- IDE y editor ---
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+.project
+.classpath
+.settings/
+
+# VS Code — ignorar todo salvo configuración compartida del equipo
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# --- Cursor ---
+# El SDD del proyecto (.cursor/rules, workflows, skills, docs) SÍ se versiona.
+# Solo ignorar caché y estado local del IDE.
+.cursor/cache/
+.cursor/projects/
+.cursor/**/*.log
+.cursor/**/.DS_Store
+*.cursor-backup
+
+# --- Sistema operativo ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Herramientas / CI local ---
+.vercel/
+.netlify/
+.serverless/
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# --- Archivos sueltos sensibles o personales ---
+*.local
+*.bak
+*.orig
+*.rej
+*.patch

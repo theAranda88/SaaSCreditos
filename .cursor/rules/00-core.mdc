@@ -1,0 +1,52 @@
+---
+description: Leyes duras del SaaS de créditos. Siempre activo. Corto a propósito (no quemar contexto).
+alwaysApply: true
+---
+
+# Núcleo — Creditos SaaS
+
+## Las leyes (no negociables)
+
+0. **COMMITS MANUALES.** El agente NUNCA ejecuta `git commit`, `git push` ni operaciones de git salvo petición explícita del usuario.
+
+1. **SDD primero.** SPEC (input → proceso → output, entidades, reglas, endpoints, casos límite) → confirmación del usuario → implementación. Sin OK no se escribe código de dominio.
+
+2. **ROUTER primero.** Cualquier tarea de construcción o corrección empieza en `.cursor/workflows/ROUTER.md`. Se abre SOLO el workflow de la fila y se cargan SOLO los archivos de esa fila. No se lee todo `.cursor`.
+
+3. **Fuente de verdad de datos.** El esquema canónico es `docs/00-esquema-bd.md`. Preguntar antes de inventar tablas, campos, enums o cardinalidades. Si el cambio se aprueba, se actualiza ese archivo **antes** de la migración.
+
+4. **Multiempresa en cada consulta.** Toda operación de negocio filtra por `negocio_id` del usuario autenticado. El frontend no es fuente de confianza. Roles de plataforma (`soporte`, `admin_plataforma`) no tienen `negocio_id`.
+
+5. **Dinero es transacción.** Registrar pago, anular pago y reasignar cartera son transacciones atómicas con `auditorias`. Sin estado parcial. Un pago válido no se edita: se anula.
+
+6. **Condiciones históricas.** `creditos.condiciones_originales` es inmutable después del insert (RF-005).
+
+7. **Nada sensible en el código.** Cero secretos, tokens, passwords o datos reales de clientes. Variables de entorno. Ejemplos de Swagger/Postman = placeholders.
+
+8. **Módulo backend incompleto = no terminado.** Todo endpoint nuevo o cambiado sale con OpenAPI/Swagger UI + request en `tests/postman/` **y tests automatizados en verde**.
+
+9. **Backend completo (y verde) antes que frontend.** No se inventa API desde el HTML.
+
+10. **Monorepo dockerizado.** Frontend Angular (`apps/web`) y API (`apps/api`) viven juntos y se levantan con Docker Compose. No se desarrolla "en local suelto" como estándar.
+
+11. **Español en dominio.** Tablas, columnas, clases, métodos, variables y constantes en español (`15-nomenclatura.mdc`). Inglés solo en framework y protocolo.
+
+12. **Sin tests verdes no hay entrega.** Tras crear o modificar, workflow `calidad-tests`. Rojo = la actividad no está hecha (`50-calidad-tests.mdc`).
+
+13. **Output mínimo.** Respuestas en español, concisas y accionables. Sin `.md` de informe salvo que el usuario lo pida. Lecciones duras → `.cursor/LECCIONES.md` (append-only).
+
+## Dónde va cada cosa
+
+- Esquema BD → `docs/00-esquema-bd.md` + `packages/db`
+- API → `apps/api` (Swagger en `apps/api/docs/swagger` o equivalente Nest)
+- Front Angular → `apps/web`
+- Workers → `apps/workers`
+- Postman → `tests/postman/`
+- Compose → `infra/docker-compose.yml`
+- Tipos compartidos → `packages/shared-types`
+
+## Presupuesto de tokens
+
+- Antes de leer un archivo > 300 líneas, confirmar que hace falta. Casi nunca.
+- Preferir `grep` puntual sobre lectura completa.
+- No cargar frontend si el cambio es de API, ni API si el cambio es visual.

@@ -1,0 +1,28 @@
+---
+description: Puerta de calidad. Sin tests en verde la actividad no se entrega. Siempre activo.
+alwaysApply: true
+---
+
+# Calidad — sin verde no hay entrega
+
+Toda creación o modificación de comportamiento **termina** en el workflow `.cursor/workflows/calidad-tests.md`.
+
+## Ley
+
+Un desarrollo **no está hecho** si:
+
+- no hay tests del cambio, o
+- algún test de la suite afectada está en rojo, o
+- no se ejecutó el comando de prueba del área tocada.
+
+No se “entrega”, no se da por cerrado el chat de esa fila, no se pasa al frontend si el backend quedó rojo.
+
+## Mínimo por tipo de cambio
+
+- **API / servicio:** test unitario de la regla + al menos un caso HTTP (éxito y el 403/422 principal).
+- **Dinero / tenant:** tests de transacción, aislamiento entre negocios y cartera no asignada.
+- **Angular:** test del componente o servicio (formulario, guard, o flujo).
+- **Bugfix:** un test que **fallaba antes** y ahora pasa (regresión).
+- **Refactor:** la suite existente sigue verde; no bajar cobertura del área.
+
+Detalle y comandos: skill `calidad-tests`.

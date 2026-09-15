@@ -1,0 +1,43 @@
+---
+description: Patrones backend — NestJS, PostgreSQL, negocio_id, transacciones, tests, nomenclatura en español
+globs: ["apps/api/**", "apps/workers/**", "packages/db/**"]
+alwaysApply: false
+---
+
+# Backend — NestJS / TypeScript / PostgreSQL
+
+## Stack
+
+- Node.js 20+, TypeScript strict
+- NestJS (`@nestjs/swagger`)
+- PostgreSQL + Prisma (`@@map` a tablas en español)
+- Validación en el borde HTTP
+- Tests: Vitest + spec junto al servicio; e2e con supertest
+- Workers en `apps/workers` (no bloquear el cobro)
+
+## Capas
+
+```
+controlador → guards (JWT, negocio, rol) → DTO → servicio → repositorio/Prisma
+```
+
+- Controlador: HTTP. Servicio: reglas y transacciones. Repositorio: queries.
+
+## Multiempresa y dinero
+
+- `negocio_id` del usuario autenticado, nunca del body sin verificar.
+- `NUMERIC` en BD, no `float`.
+- Registrar/anular pago y reasignar: transacción + `auditorias`.
+- `creditos.condiciones_originales` no se actualiza.
+
+## Nombres
+
+`ClientesServicio`, `negocioId`, `MONEDA_POR_DEFECTO`. Tablas: `negocios`, `clientes`, `pagos`… Ver `15-nomenclatura.mdc`.
+
+## Errores HTTP
+
+200 / 201 / 204 / 400 / 401 / 403 / 404 / 409 / 422 / 500. Mensajes en español.
+
+## Entrega
+
+Swagger + Postman + **tests verdes**. Ver `calidad-tests`.

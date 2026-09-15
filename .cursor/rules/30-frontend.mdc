@@ -1,0 +1,34 @@
+---
+description: Patrones frontend — Angular standalone, Signals, nombres en español, tests de componente
+globs: ["apps/web/**", "packages/ui/**"]
+alwaysApply: false
+---
+
+# Frontend — Angular (standalone)
+
+## Stack
+
+- Standalone, Signals, `@if` / `@for` / `@switch`
+- Reactive Forms, HttpClient tipado
+- Tests: `*.spec.ts` del componente/servicio (`ng test` / Vitest)
+- Material y/o Tailwind; cobrador en teléfono
+
+## Carpetas
+
+```
+apps/web/src/app/
+  nucleo/             auth, interceptors, guards, modelos
+  funcionalidades/    clientes, creditos, cobros, cartera, admin
+  compartido/ui/
+```
+
+## Nombres
+
+`ClientesServicio`, `ListadoClientesComponent`, `saldoPendiente`. Sin `CustomerService`.
+
+## Reglas
+
+- Sin `any`. Front no es autorización real.
+- Confirmación visible al registrar pago (RC-006).
+- Interceptor Bearer + errores en español.
+- Cambio de comportamiento → spec + `calidad-tests`.
