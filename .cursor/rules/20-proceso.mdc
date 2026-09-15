@@ -16,11 +16,12 @@ La solución más simple que cumpla SRS + esquema. Nada de microservicios, capas
 ## Flujo
 
 1. Ubicar la fila en `.cursor/workflows/ROUTER.md`.
-2. Leer SOLO ese workflow (y el skill que cite).
-3. Presentar SPEC de un párrafo. Esperar OK.
-4. Implementar el mínimo. Compilar. Swagger/Postman si tocó API.
-5. Encadenar `calidad-tests`. **Sin verde no se entrega.**
-6. Si toca dinero, los tests cubren transacción + estados + aislamiento de negocio.
+2. **Sugerir rama Git** con skill `control-versiones` (base `creditos-prepro`, nombre `tipo/creditos_*`). No crear la rama salvo petición explícita.
+3. Leer SOLO el workflow de dominio (y el skill que cite).
+4. Presentar SPEC de un párrafo. Esperar OK.
+5. Implementar el mínimo. Compilar. Swagger/Postman si tocó API.
+6. Encadenar `calidad-tests`. **Sin verde no se entrega.**
+7. Si toca dinero, los tests cubren transacción + estados + aislamiento de negocio.
 
 ## Qué no hacer
 

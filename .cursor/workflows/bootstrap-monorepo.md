@@ -11,6 +11,7 @@ Usar cuando **aún no existe** el esqueleto dockerizado. Es la etapa 2 de constr
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `chore/creditos_bootstrap_monorepo` desde `creditos-prepro`).
 - Un `docker compose` levanta web + api + workers + postgres + (opcional) runner de test.
 - Scripts raíz: `npm test` (falla si api o web fallan).
 - Prisma con `@@map` a tablas en español (`negocios`, `planes`).

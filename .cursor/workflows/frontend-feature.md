@@ -9,6 +9,7 @@ UI Angular no trivial: jornada del cobrador, dashboard, alta de crédito.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `feature/creditos_<flujo_ui>` desde `creditos-prepro`).
 - Cada paso mapea a un endpoint real.
 - Confirmación RC-006 antes del POST de pago.
 - No recalcular cartera en el cliente como verdad.

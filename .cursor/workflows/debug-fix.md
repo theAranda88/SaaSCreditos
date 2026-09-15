@@ -8,6 +8,7 @@ Zona del error + el spec si existe.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `fix/creditos_<sintoma>` desde `creditos-prepro`).
 1. Reproducir (test que falla o pasos).
 2. Causa raíz en una frase.
 3. Fix mínimo.

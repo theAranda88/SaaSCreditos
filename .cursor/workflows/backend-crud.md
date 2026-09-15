@@ -12,6 +12,7 @@ CRUD de una entidad **ya** en `docs/00-esquema-bd.md`.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `feature/creditos_crud_clientes` desde `creditos-prepro`).
 - Capas: controlador → servicio → repositorio. Sin SQL en el controlador.
 - `negocio_id` del token, nunca del body.
 - Inactivar, no DELETE físico.

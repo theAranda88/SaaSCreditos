@@ -10,6 +10,7 @@ Login, JWT, roles, `negocio_id`, recuperación de acceso.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `feature/creditos_auth_<alcance>` desde `creditos-prepro`).
 - Claims: `sub` (estándar JWT), `negocio_id` (nullable), `rol`.
 - Panel plataforma ≠ panel negocio.
 - Rate limit en login. Contraseña nunca en logs.

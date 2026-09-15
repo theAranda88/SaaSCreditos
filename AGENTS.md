@@ -6,8 +6,9 @@ Sistema SDD (spec-driven) para el SaaS de gestión de créditos y cobro diario.
 
 1. Leé `.cursor/workflows/ROUTER.md`
 2. Elegí UNA fila
-3. Seguí ese workflow (carga solo esos archivos)
-4. SPEC en el chat → OK del usuario → código → **`calidad-tests` en verde**
+3. **Sugerí rama Git** (`control-versiones`: desde `creditos-prepro`, `tipo/creditos_*`) — no la crees salvo que te lo pidan
+4. Seguí ese workflow (carga solo esos archivos)
+5. SPEC en el chat → OK del usuario → código → **`calidad-tests` en verde**
 
 No leas todo `.cursor/`. **Sin tests verdes la actividad no se entrega.**
 
@@ -24,4 +25,4 @@ Monorepo dockerizado: Angular + NestJS + PostgreSQL. Swagger UI + Postman + test
 
 ## Leyes cortas
 
-Multiempresa (`negocio_id`), dinero en transacción, condiciones de crédito inmutables, nombres en español, nada de secretos, backend verde antes que front, commits solo si el usuario los pide.
+Multiempresa (`negocio_id`), dinero en transacción, condiciones de crédito inmutables, nombres en español, nada de secretos, backend verde antes que front, git manual (sugerir rama `tipo/creditos_*` desde `creditos-prepro`; commits solo si el usuario los pide).

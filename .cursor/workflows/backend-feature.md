@@ -10,6 +10,7 @@ Reglas de negocio sobre tablas **existentes**.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `feature/creditos_<regla>` desde `creditos-prepro`).
 - La regla vive en el **servicio**, no en el controlador ni en el front.
 - Más de un write → transacción.
 - 422 para regla de negocio; 409 para conflicto de unique.

@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## Las leyes (no negociables)
 
-0. **COMMITS MANUALES.** El agente NUNCA ejecuta `git commit`, `git push` ni operaciones de git salvo petición explícita del usuario.
+0. **GIT MANUAL.** El agente NUNCA ejecuta `git commit`, `git push`, `git merge`, `git checkout`, `git switch` ni `git branch` salvo petición explícita. **Sí** sugiere rama antes de implementar (skill `control-versiones`): base `creditos-prepro`, formato `<tipo>/creditos_<slug>`.
 
 1. **SDD primero.** SPEC (input → proceso → output, entidades, reglas, endpoints, casos límite) → confirmación del usuario → implementación. Sin OK no se escribe código de dominio.
 

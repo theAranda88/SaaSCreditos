@@ -99,13 +99,8 @@ packages/db/node_modules/.prisma/
 !.vscode/launch.json
 !.vscode/tasks.json
 
-# --- Cursor ---
-# El SDD del proyecto (.cursor/rules, workflows, skills, docs) SÍ se versiona.
-# Solo ignorar caché y estado local del IDE.
-.cursor/cache/
-.cursor/projects/
-.cursor/**/*.log
-.cursor/**/.DS_Store
+# --- Cursor (local; no subir al remoto) ---
+.cursor/
 *.cursor-backup
 
 # --- Sistema operativo ---

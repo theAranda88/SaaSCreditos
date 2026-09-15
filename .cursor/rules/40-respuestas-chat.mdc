@@ -19,9 +19,10 @@ Excepciones (el usuario las pidió o el SDD las exige):
 ## Patrón de respuesta
 
 1. **Skill elegido** (una línea) y por qué.
-2. **SPEC** (un párrafo + lista de archivos).
-3. Esperar OK si hay código de dominio.
-4. Tras implementar: qué cambió, comando de test y resultado (pass/fail). Si falló, **no está entregado**. Riesgos de `negocio_id` o dinero si aplica.
+2. **Git (sugerencia)** — rama base `creditos-prepro`, rama propuesta `tipo/creditos_*`, comandos para el usuario (no ejecutados). Omitir si es solo consulta o `calidad-tests` aislado.
+3. **SPEC** (un párrafo + lista de archivos).
+4. Esperar OK si hay código de dominio.
+5. Tras implementar: qué cambió, comando de test y resultado (pass/fail). Si falló, **no está entregado**. Riesgos de `negocio_id` o dinero si aplica.
 
 ## Tono
 

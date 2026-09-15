@@ -2,6 +2,8 @@
 
 **Puerta de salida.** Se encadena **siempre** después de crear o modificar código (CRUD, feature, pago, auth, front, bugfix, refactor, bootstrap). No es un flujo opcional de “si hay tiempo”.
 
+**No** requiere `control-versiones` si solo se ejecutan o arreglan tests de un cambio ya en curso (rama ya elegida).
+
 Si la suite está en rojo, la actividad **no se entrega**. Se corrige hasta verde o se rutea a `debug-fix`.
 
 ## Cargar SOLO

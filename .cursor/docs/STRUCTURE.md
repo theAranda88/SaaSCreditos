@@ -4,6 +4,7 @@
 .cursor/
   workflows/
     ROUTER.md                 <- empeza SIEMPRE aca
+    control-versiones.md      <- sugerencia de rama antes de codificar
     bootstrap-monorepo.md
     schema-bd.md
     backend-crud.md
@@ -29,7 +30,7 @@
   skills/                     recetas paso a paso
     backend-crud, backend-feature, registrar-pago,
     frontend-crud, frontend-feature, backend-to-frontend,
-    auth-flow, documentar-api, calidad-tests
+    auth-flow, documentar-api, calidad-tests, control-versiones
   docs/                       INDEX, QUICK_START, DOCUMENTACION, STRUCTURE
   LECCIONES.md                append-only
 ```

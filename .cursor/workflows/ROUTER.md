@@ -3,6 +3,16 @@
 > Vas a construir o corregir el SaaS de créditos. **No leas todo el `.cursor`.**
 > Buscá tu caso en la tabla, abrí SOLO ese workflow y cargá SOLO los archivos de esa fila.
 
+## Puerta de versiones (antes de implementar)
+
+Antes del SPEC y del código, **encadená** `control-versiones.md` + skill `control-versiones`.
+
+- Rama base: **`creditos-prepro`**
+- Rama de trabajo: `<tipo>/creditos_<descripcion_en_snake_case>` (ej. `feature/creditos_crud_clientes`, `fix/creditos_saldo_cuota`)
+- El agente **sugiere** la rama y los comandos; **no** crea ramas ni hace commit salvo petición explícita.
+
+Excepción: solo ejecutar `calidad-tests` sobre un cambio ya hecho, o consultas informativas.
+
 ## Puerta de calidad (todas las filas de creación/modificación)
 
 Después del workflow de la tabla, **encadená** `calidad-tests.md`.
@@ -43,7 +53,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 
 ## Reglas que valen para TODAS las filas (no las repitas)
 
-- Carril **SPEC → OK → código → tests verdes**: `rules/00-core.mdc`.
+- Carril **rama sugerida → SPEC → OK → código → tests verdes**: `rules/00-core.mdc` + `control-versiones`.
 - **Nada sensible** en el código: `00-core` ley 7.
 - Endpoint nuevo → **Swagger + Postman + tests**: `docs/DOCUMENTACION.md` + `calidad-tests`.
 - Consultas de negocio → **`negocio_id`**.
@@ -52,6 +62,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 
 ## Para qué sirve cada especialista
 
+- `control-versiones.md` — sugerencia de rama Git (`creditos-prepro` → `tipo/creditos_*`) antes de codificar.
 - `bootstrap-monorepo.md` — esqueleto dockerizado + runner de tests.
 - `schema-bd.md` — modelo canónico (tablas en español).
 - `backend-crud` / `frontend-crud` — alta, listado, edición, inactivación.

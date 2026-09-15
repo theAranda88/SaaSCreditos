@@ -9,6 +9,7 @@ Flujo crítico (RF-008, RC-005, RC-006, RF-014).
 
 ## Buenas prácticas / invariantes
 
+- Antes del SPEC: skill `control-versiones` (ej. `feature/creditos_registrar_pago` desde `creditos-prepro`).
 1. Una transacción: `pagos` + saldo/estado `cuotas` + estado `creditos` + `auditorias`.
 2. Cobrador solo si `asignaciones.estado = activa` y `cobrador_id` propio.
 3. Pago `valido` inmutable; anulación con motivo.

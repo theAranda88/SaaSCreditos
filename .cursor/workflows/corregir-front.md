@@ -9,6 +9,7 @@ La API está bien; la pantalla Angular no.
 
 ## Buenas prácticas
 
+- Antes del SPEC: skill `control-versiones` (ej. `fix/creditos_ui_<pantalla>` desde `creditos-prepro`).
 - Cambio mínimo. Si el dato viene mal → `debug-fix` backend.
 - Nombres de clase CSS de dominio en español si son propias (`tarjeta-cobro`), no inventar un design system paralelo.
 - Si cambia comportamiento (no solo color): spec del componente + `calidad-tests`.
