@@ -1,0 +1,7 @@
+$kind: http-request
+description: "Stateless: el cliente debe descartar el token localmente."
+url: "{{base_url}}/auth/logout"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+order: 6000

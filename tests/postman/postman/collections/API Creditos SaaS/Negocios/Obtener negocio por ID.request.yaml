@@ -1,0 +1,7 @@
+$kind: http-request
+description: Solo el propio `negocio_id` del token. Otro ID → 403.
+url: "{{base_url}}/negocios/{{negocio_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 3000

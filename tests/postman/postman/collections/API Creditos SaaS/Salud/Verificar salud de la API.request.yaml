@@ -1,0 +1,5 @@
+$kind: http-request
+description: "Endpoint público. Debe responder `estado: ok`."
+url: "{{base_url}}/salud"
+method: GET
+order: 1000

@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: ['reflect-metadata'],
-    include: ['src/**/*.spec.ts', 'test/**/*.e2e-spec.ts'],
+    setupFiles: ['reflect-metadata', 'test/setup.ts'],
+    include: ['src/**/*.spec.ts', 'prisma/**/*.spec.ts', 'test/**/*.e2e-spec.ts'],
   },
 });

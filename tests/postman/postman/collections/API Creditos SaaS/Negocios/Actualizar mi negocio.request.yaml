@@ -1,0 +1,17 @@
+$kind: http-request
+description: Solo propietario.
+url: "{{base_url}}/negocios/mi-negocio"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "nombreComercial": "Préstamos Alfa Actualizado",
+      "configuracion": {
+        "zona_horaria": "America/Bogota"
+      }
+    }
+order: 2000

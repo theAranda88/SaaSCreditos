@@ -1,0 +1,26 @@
+$kind: http-request
+description: "Negocio: Préstamos Alfa (prueba). El script guarda `token` y `negocio_id`."
+url: "{{base_url}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "correo": "ana@prueba-alfa.local",
+      "contrasena": "ClaveSegura123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 200) {
+        const json = pm.response.json();
+        pm.environment.set('token', json.token);
+        if (json.usuario && json.usuario.negocio_id) {
+          pm.environment.set('negocio_id', json.usuario.negocio_id);
+        }
+        console.log('Token y negocio_id guardados en el entorno.');
+      }
+    language: text/javascript
+order: 1000

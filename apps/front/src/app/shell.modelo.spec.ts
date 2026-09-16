@@ -7,7 +7,7 @@ describe('Shell (Fase 0)', () => {
 
     expect(shell.titulo).toBe('Creditos SaaS');
     expect(shell.estadoFront).toBe('ok');
-    expect(shell.mensaje).toContain('Fase 0');
+    expect(shell.mensaje).toContain('infraestructura');
   });
 
   it('debe exponer estado operativo del frontend', () => {

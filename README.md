@@ -8,7 +8,7 @@ Plataforma web multiempresa para gestión de créditos y cobro diario.
 - Docker y Docker Compose
 - npm 10+
 
-## Arranque rápido (Fase 0)
+## Arranque rápido
 
 ```bash
 # 1. Dependencias (tests y Prisma en el host)
@@ -21,11 +21,39 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Al iniciar, el servicio `db-init` aplica las migraciones Prisma y ejecuta la semilla de `planes` **dentro de Docker**, antes de levantar el backend.
+Al iniciar, el servicio `db-init` aplica las migraciones Prisma y ejecuta la semilla (`planes` + **usuarios de prueba**) **dentro de Docker**, antes de levantar el backend.
 
 ```bash
 # 4. Tests (en el host)
 npm test
+```
+
+## Usuarios de prueba (Fase 1 — auth)
+
+Semilla local en `apps/backend/prisma/seed.ts`. Misma contraseña para todos (solo desarrollo):
+
+| Rol | Correo | Contraseña | Negocio |
+|---|---|---|---|
+| `propietario` | `ana@prueba-alfa.local` | `ClaveSegura123` | Préstamos Alfa (prueba) |
+| `cobrador` | `cobrador@prueba-alfa.local` | `ClaveSegura123` | Préstamos Alfa (prueba) |
+| `propietario` | `boris@prueba-beta.local` | `ClaveSegura123` | Créditos Beta (prueba) |
+
+### Probar el flujo
+
+1. Abrí **http://localhost:4200/login**
+2. Iniciá sesión con `ana@prueba-alfa.local` / `ClaveSegura123`
+3. Verificá el panel del propietario en `/app`
+4. Cerrá sesión e iniciá con `boris@prueba-beta.local` — no debe ver datos de Alfa
+5. Con `cobrador@prueba-alfa.local` el menú **Configuración** no aparece (rol cobrador)
+
+**API / Swagger:** http://localhost:3000/api/docs → `POST /api/auth/login` → copiá el `token` → Authorize (Bearer).
+
+**Postman:** importá `tests/postman/postman_collection.json` y el entorno que corresponda (`postman_environment.json` o `postman_environment.docker.json`). Ejecutá **Iniciar sesión (Propietario Alfa)** para guardar `token` y `negocio_id`.
+
+Si los usuarios no existen tras un pull nuevo, re-aplicá la semilla:
+
+```bash
+npm run db:docker:init
 ```
 
 ## Base de datos en Docker
@@ -45,7 +73,7 @@ docker compose down -v
 Orden al hacer `docker compose up`:
 
 1. `postgres` — arranca y pasa healthcheck
-2. `db-init` — ejecuta `prisma migrate deploy` + semilla de planes
+2. `db-init` — ejecuta `prisma migrate deploy` + semilla (planes y usuarios de prueba)
 3. `backend` — arranca cuando `db-init` terminó OK
 4. `front` — arranca cuando el backend responde en `/api/salud`
 
@@ -66,6 +94,7 @@ npm run db:docker:psql
 # dentro de psql:
 # \dt
 # SELECT codigo, nombre FROM planes;
+# SELECT correo, rol FROM usuarios;
 ```
 
 Ver logs del init:
@@ -88,7 +117,7 @@ npm run db:seed           # semilla desde el host
 
 | Servicio | URL |
 |---|---|
-| Frontend | http://localhost:4200 |
+| Frontend / login | http://localhost:4200/login |
 | Backend salud | http://localhost:3000/api/salud |
 | Swagger UI | http://localhost:3000/api/docs |
 | PostgreSQL | localhost:5432 |
@@ -96,13 +125,13 @@ npm run db:seed           # semilla desde el host
 ## Estructura
 
 ```
-apps/front       Angular (shell mínimo)
+apps/front       Angular (login + shell por rol)
 apps/backend     NestJS (capas: bd → entidades → servicios → controladores → routes)
   prisma/        Esquema, migraciones y semilla
 packages/shared-types
 docker/          scripts de inicialización BD
 docker-compose.yml
-tests/postman/   Colección local
+tests/postman/   Colección Postman (JSON + entornos)
 ```
 
 ## Variables de entorno

@@ -1,0 +1,27 @@
+<section class="login">
+  <div class="tarjeta">
+    <span class="badge">Fase 1</span>
+    <h1>Iniciar sesión</h1>
+    <p>Acceda al panel operativo de su negocio.</p>
+
+    <form [formGroup]="formulario" (ngSubmit)="enviar()">
+      <label>
+        Correo
+        <input type="email" formControlName="correo" autocomplete="email" />
+      </label>
+
+      <label>
+        Contraseña
+        <input type="password" formControlName="contrasena" autocomplete="current-password" />
+      </label>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <button type="submit" [disabled]="cargando() || formulario.invalid">
+        {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+      </button>
+    </form>
+  </div>
+</section>

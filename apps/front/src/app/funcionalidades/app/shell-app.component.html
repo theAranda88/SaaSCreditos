@@ -1,0 +1,27 @@
+<div class="layout">
+  <header class="barra">
+    <div>
+      <p class="marca">Creditos SaaS</p>
+      <h1>{{ tituloPanel() }}</h1>
+    </div>
+
+    @if (perfil(); as usuario) {
+      <div class="usuario">
+        <p>{{ usuario.nombre }}</p>
+        <span class="rol">{{ usuario.rol }}</span>
+        <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+      </div>
+    }
+  </header>
+
+  <nav class="menu">
+    <a routerLink="/app/inicio" routerLinkActive="activo">Inicio</a>
+    @if (perfil()?.rol === 'propietario' || perfil()?.rol === 'administrador') {
+      <a routerLink="/app/configuracion" routerLinkActive="activo">Configuración</a>
+    }
+  </nav>
+
+  <main>
+    <router-outlet />
+  </main>
+</div>

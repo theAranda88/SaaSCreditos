@@ -1,0 +1,27 @@
+$kind: http-request
+description: Crea negocio + usuario propietario en una transacción. Cambiar el correo si ya existe (409).
+url: "{{base_url}}/auth/registro"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "nombreComercial": "Nuevo Negocio Demo",
+      "nombre": "Usuario Demo",
+      "correo": "demo@nuevo-negocio.local",
+      "contrasena": "ClaveSegura123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const json = pm.response.json();
+        pm.environment.set('token', json.token);
+        if (json.usuario && json.usuario.negocio_id) {
+          pm.environment.set('negocio_id', json.usuario.negocio_id);
+        }
+      }
+    language: text/javascript
+order: 4000

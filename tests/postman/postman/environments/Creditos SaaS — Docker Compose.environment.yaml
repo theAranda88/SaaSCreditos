@@ -1,0 +1,14 @@
+name: Creditos SaaS — Docker Compose
+values:
+  - key: base_url
+    value: 'http://localhost:3000/api'
+  - key: api_root
+    value: 'http://localhost:3000'
+  - key: swagger_url
+    value: 'http://localhost:3000/api/docs'
+  - key: front_url
+    value: 'http://localhost:4200'
+  - key: token
+    value: ''
+  - key: negocio_id
+    value: ''

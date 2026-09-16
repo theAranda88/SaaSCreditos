@@ -1,0 +1,31 @@
+$kind: collection
+description: |-
+  Colección Postman del SaaS de gestión de créditos y cobro diario.
+
+  **Contraseña de prueba (semilla):** ClaveSegura123
+
+  **Entornos (importar uno o todos):**
+  | Archivo | Cuándo usar |
+  |---------|-------------|
+  | `postman_environment.json` | Backend expuesto en localhost (Docker o host) |
+  | `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |
+  | `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |
+
+  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`.
+
+  **Usuarios sembrados (Fase 1):**
+  | Rol | Correo |
+  |-----|--------|
+  | propietario | ana@prueba-alfa.local |
+  | cobrador | cobrador@prueba-alfa.local |
+  | propietario | boris@prueba-beta.local |
+
+  **Uso:**
+  1. Importar la colección y el entorno que corresponda
+  2. Seleccionar el entorno en Postman (esquina superior derecha)
+  3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`
+  4. Probar el resto de solicitudes
+
+  **Flujo auth — verificación de aislamiento:**
+  1. Propietario Alfa → login → `Obtener mi negocio`
+  2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403

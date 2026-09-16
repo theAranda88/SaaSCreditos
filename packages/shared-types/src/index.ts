@@ -1,3 +1,11 @@
+export type {
+  NegocioPerfil,
+  PayloadJwt,
+  PerfilUsuario,
+  RespuestaLogin,
+  RolUsuario,
+} from './auth';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

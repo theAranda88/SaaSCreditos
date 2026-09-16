@@ -1,0 +1,13 @@
+$kind: http-request
+description: "Stub Fase 1: responde 202 sin envío real de correo."
+url: "{{base_url}}/auth/recuperar-acceso"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "correo": "ana@prueba-alfa.local"
+    }
+order: 7000

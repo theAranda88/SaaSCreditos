@@ -1,0 +1,222 @@
+{
+  "info": {
+    "name": "API Creditos SaaS",
+    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Salud",
+      "description": "Verificación de disponibilidad de la API",
+      "item": [
+        {
+          "name": "Verificar salud de la API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/salud",
+            "description": "Endpoint público. Debe responder `estado: ok`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autenticación",
+      "description": "Registro, inicio de sesión y perfil (Fase 1)",
+      "item": [
+        {
+          "name": "Iniciar sesión (Propietario Alfa)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"ana@prueba-alfa.local\",\n  \"contrasena\": \"ClaveSegura123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login",
+            "description": "Negocio: Préstamos Alfa (prueba). El script guarda `token` y `negocio_id`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.usuario && json.usuario.negocio_id) {",
+                  "    pm.environment.set('negocio_id', json.usuario.negocio_id);",
+                  "  }",
+                  "  console.log('Token y negocio_id guardados en el entorno.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar sesión (Propietario Beta)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"boris@prueba-beta.local\",\n  \"contrasena\": \"ClaveSegura123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login",
+            "description": "Negocio: Créditos Beta (prueba). Útil para probar aislamiento entre tenants."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.usuario && json.usuario.negocio_id) {",
+                  "    pm.environment.set('negocio_id', json.usuario.negocio_id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar sesión (Cobrador)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"cobrador@prueba-alfa.local\",\n  \"contrasena\": \"ClaveSegura123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login",
+            "description": "Cobrador del negocio Alfa. No puede actualizar configuración del negocio."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.usuario && json.usuario.negocio_id) {",
+                  "    pm.environment.set('negocio_id', json.usuario.negocio_id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar negocio y propietario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComercial\": \"Nuevo Negocio Demo\",\n  \"nombre\": \"Usuario Demo\",\n  \"correo\": \"demo@nuevo-negocio.local\",\n  \"contrasena\": \"ClaveSegura123\"\n}"
+            },
+            "url": "{{base_url}}/auth/registro",
+            "description": "Crea negocio + usuario propietario en una transacción. Cambiar el correo si ya existe (409)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('token', json.token);",
+                  "  if (json.usuario && json.usuario.negocio_id) {",
+                  "    pm.environment.set('negocio_id', json.usuario.negocio_id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener perfil",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/auth/perfil",
+            "description": "Requiere JWT válido."
+          }
+        },
+        {
+          "name": "Cerrar sesión",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/auth/logout",
+            "description": "Stateless: el cliente debe descartar el token localmente."
+          }
+        },
+        {
+          "name": "Recuperar acceso (stub MVP)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"ana@prueba-alfa.local\"\n}"
+            },
+            "url": "{{base_url}}/auth/recuperar-acceso",
+            "description": "Stub Fase 1: responde 202 sin envío real de correo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Negocios",
+      "description": "Configuración mínima del negocio (RF-002)",
+      "item": [
+        {
+          "name": "Obtener mi negocio",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/negocios/mi-negocio",
+            "description": "Roles: propietario, administrador."
+          }
+        },
+        {
+          "name": "Actualizar mi negocio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComercial\": \"Préstamos Alfa Actualizado\",\n  \"configuracion\": {\n    \"zona_horaria\": \"America/Bogota\"\n  }\n}"
+            },
+            "url": "{{base_url}}/negocios/mi-negocio",
+            "description": "Solo propietario."
+          }
+        },
+        {
+          "name": "Obtener negocio por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/negocios/{{negocio_id}}",
+            "description": "Solo el propio `negocio_id` del token. Otro ID → 403."
+          }
+        }
+      ]
+    }
+  ]
+}

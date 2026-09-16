@@ -1,0 +1,7 @@
+$kind: http-request
+description: Requiere JWT válido.
+url: "{{base_url}}/auth/perfil"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 5000

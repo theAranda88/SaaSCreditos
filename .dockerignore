@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.cursor
+apps/front/src/**/*.spec.ts
+apps/backend/src/**/*.spec.ts
+**/.env
+coverage
+*.log

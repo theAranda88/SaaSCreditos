@@ -1,0 +1,7 @@
+$kind: http-request
+description: "Roles: propietario, administrador."
+url: "{{base_url}}/negocios/mi-negocio"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 1000

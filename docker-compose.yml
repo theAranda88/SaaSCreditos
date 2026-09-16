@@ -77,6 +77,20 @@ services:
     ports:
       - "${FRONT_PORT:-4200}:80"
 
+  test-e2e:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.test-e2e
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRETO: ${JWT_SECRETO:-secreto-dev-tests}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
     name: creditos_postgres_data

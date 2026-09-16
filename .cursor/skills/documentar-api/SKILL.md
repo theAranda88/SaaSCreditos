@@ -10,8 +10,10 @@ description: Actualiza OpenAPI/Swagger UI y colecciones Postman. Complementa, no
 ```
 apps/api/  (decoradores @nestjs/swagger)
 tests/postman/
-  CreditosSaaS.postman_collection.json
-  local.postman_environment.json
+  postman_collection.json
+  postman_environment.json
+  postman_environment.docker.json
+  postman_environment.production.json
 ```
 
 UI: `http://localhost:3000/api/docs`

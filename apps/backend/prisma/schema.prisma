@@ -18,6 +18,19 @@ enum estado_plan {
   inactivo
 }
 
+enum rol_usuario {
+  propietario
+  administrador
+  cobrador
+  soporte
+  admin_plataforma
+}
+
+enum estado_usuario {
+  activo
+  inactivo
+}
+
 model Negocio {
   id                 String         @id @default(uuid()) @db.Uuid
   nombreComercial    String         @map("nombre_comercial") @db.VarChar(180)
@@ -28,9 +41,30 @@ model Negocio {
   configuracion      Json           @default("{}")
   fechaCreacion      DateTime       @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
   fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+  usuarios           Usuario[]
 
   @@index([estado])
   @@map("negocios")
+}
+
+model Usuario {
+  id                 String         @id @default(uuid()) @db.Uuid
+  negocioId          String?        @map("negocio_id") @db.Uuid
+  nombre             String         @db.VarChar(160)
+  correo             String         @unique @db.VarChar(180)
+  hashContrasena     String         @map("hash_contrasena") @db.VarChar(255)
+  rol                rol_usuario
+  estado             estado_usuario @default(activo)
+  telefono           String?        @db.VarChar(30)
+  fechaCreacion      DateTime       @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  ultimoAcceso       DateTime?      @map("ultimo_acceso") @db.Timestamptz(6)
+  fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+  negocio            Negocio?       @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+
+  @@index([negocioId])
+  @@index([rol])
+  @@index([estado])
+  @@map("usuarios")
 }
 
 model Plan {
