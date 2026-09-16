@@ -1,0 +1,3 @@
+$kind: collection
+description: Gestión de cobradores del negocio (RF-004). Roles: propietario, administrador.
+order: 5000

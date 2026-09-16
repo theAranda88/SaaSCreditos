@@ -97,6 +97,20 @@ npm run db:docker:psql
 # SELECT correo, rol FROM usuarios;
 ```
 
+### DBeaver u otro cliente en el host
+
+El contenedor expone PostgreSQL en el puerto **5433** del host (no 5432) para evitar conflicto con una instalación nativa de PostgreSQL en Windows.
+
+| Campo | Valor |
+|---|---|
+| Host | `127.0.0.1` |
+| Puerto | `5433` |
+| Base de datos | `creditos` |
+| Usuario | `creditos` |
+| Contraseña | `creditos_dev` |
+
+Dentro de Docker la red interna sigue usando `postgres:5432`; solo cambia el mapeo hacia tu PC.
+
 Ver logs del init:
 
 ```bash
@@ -105,7 +119,7 @@ docker compose logs db-init
 
 ### Desarrollo Prisma en el host (opcional)
 
-Si creás migraciones nuevas desde tu máquina (fuera del contenedor), usá `DATABASE_URL` apuntando a `localhost` (ver `.env.example`):
+Si creás migraciones nuevas desde tu máquina (fuera del contenedor), usá `DATABASE_URL` apuntando a `localhost:5433` (ver `.env.example`):
 
 ```bash
 npm run db:migrate        # migrate dev (crea migración)
@@ -120,7 +134,7 @@ npm run db:seed           # semilla desde el host
 | Frontend / login | http://localhost:4200/login |
 | Backend salud | http://localhost:3000/api/salud |
 | Swagger UI | http://localhost:3000/api/docs |
-| PostgreSQL | localhost:5432 |
+| PostgreSQL (DBeaver / host) | `127.0.0.1:5433` (`creditos` / `creditos_dev`) |
 
 ## Estructura
 
@@ -141,7 +155,7 @@ tests/postman/   Colección Postman (JSON + entornos)
 | `POSTGRES_USER` | Usuario PostgreSQL | `creditos` |
 | `POSTGRES_PASSWORD` | Contraseña PostgreSQL | `creditos_dev` |
 | `POSTGRES_DB` | Base de datos | `creditos` |
-| `POSTGRES_PORT` | Puerto expuesto de PostgreSQL | `5432` |
+| `POSTGRES_PORT` | Puerto expuesto de PostgreSQL en el **host** (evita choque con PostgreSQL nativo en Windows) | `5433` |
 | `API_PORT` | Puerto del backend | `3000` |
 | `FRONT_PORT` | Puerto del frontend | `4200` |
 | `DATABASE_URL` | Prisma en el **host** (`localhost`) | ver `.env.example` |

@@ -1,0 +1,25 @@
+$kind: http-request
+description: Roles: propietario, administrador. Correo unique global (409 si duplica). Límite de plan no se aplica aún (Fase 7).
+url: "{{base_url}}/cobradores"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "nombre": "Carlos Cobrador",
+      "correo": "carlos.nuevo@prueba-alfa.local",
+      "contrasena": "ClaveSegura123",
+      "telefono": "3001234567"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const json = pm.response.json();
+        pm.environment.set('cobrador_id', json.id);
+      }
+    language: text/javascript
+order: 1000

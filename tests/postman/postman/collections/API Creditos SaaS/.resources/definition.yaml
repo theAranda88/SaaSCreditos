@@ -11,7 +11,7 @@ description: |-
   | `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |
   | `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |
 
-  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`.
+  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`.
 
   **Usuarios sembrados (Fase 1):**
   | Rol | Correo |
@@ -35,3 +35,9 @@ description: |-
   2. `Listar clientes` → debe incluir el creado
   3. Cobrador Alfa → login → `Crear cliente` → debe responder 403
   4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404
+
+  **Flujo cobradores (RF-004):**
+  1. Propietario Alfa → login → `Crear cobrador` (guarda `cobrador_id`)
+  2. `Listar cobradores` → solo rol cobrador del negocio
+  3. Cobrador → login → `Crear cobrador` → debe responder 403
+  4. Propietario Beta → `Obtener cobrador por ID` de Alfa → debe responder 404

@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "API Creditos SaaS",
-    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403\n\n**Flujo clientes (RF-003):**\n1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)\n2. `Listar clientes` → debe incluir el creado\n3. Cobrador Alfa → login → `Crear cliente` → debe responder 403\n4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404",
+    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403\n\n**Flujo clientes (RF-003):**\n1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)\n2. `Listar clientes` → debe incluir el creado\n3. Cobrador Alfa → login → `Crear cliente` → debe responder 403\n4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404\n\n**Flujo cobradores (RF-004):**\n1. Propietario Alfa → login → `Crear cobrador` (guarda `cobrador_id`)\n2. `Listar cobradores` → solo rol cobrador del negocio\n3. Cobrador → login → `Crear cobrador` → debe responder 403\n4. Propietario Beta → `Obtener cobrador por ID` de Alfa → debe responder 404",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -300,6 +300,92 @@
             },
             "url": "{{base_url}}/clientes/{{cliente_id}}/estado",
             "description": "Roles: propietario, administrador. Inactiva sin borrado físico."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cobradores",
+      "description": "Gestión de cobradores del negocio (RF-004). Roles: propietario, administrador.",
+      "item": [
+        {
+          "name": "Crear cobrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Cobrador\",\n  \"correo\": \"carlos.nuevo@prueba-alfa.local\",\n  \"contrasena\": \"ClaveSegura123\",\n  \"telefono\": \"3001234567\"\n}"
+            },
+            "url": "{{base_url}}/cobradores",
+            "description": "Roles: propietario, administrador. Correo unique global (409 si duplica). Límite de plan no se aplica aún (Fase 7)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('cobrador_id', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar cobradores",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/cobradores?nombre=Carlos&estado=activo",
+            "description": "Roles: propietario, administrador. Solo usuarios con rol cobrador del negocio."
+          }
+        },
+        {
+          "name": "Obtener cobrador por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/cobradores/{{cobrador_id}}",
+            "description": "Roles: propietario, administrador. Id de otro negocio → 404."
+          }
+        },
+        {
+          "name": "Actualizar cobrador",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"3009876543\"\n}"
+            },
+            "url": "{{base_url}}/cobradores/{{cobrador_id}}",
+            "description": "Roles: propietario, administrador. No cambia el rol ni negocio_id."
+          }
+        },
+        {
+          "name": "Cambiar estado del cobrador",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"inactivo\"\n}"
+            },
+            "url": "{{base_url}}/cobradores/{{cobrador_id}}/estado",
+            "description": "Roles: propietario, administrador. Inactiva sin borrar histórico."
           }
         }
       ]

@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador. Solo usuarios con rol cobrador del negocio.
+url: "{{base_url}}/cobradores?nombre=Carlos&estado=activo"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 2000

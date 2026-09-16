@@ -1,0 +1,14 @@
+$kind: http-request
+description: Roles: propietario, administrador. Inactiva sin borrar histórico. El cobrador no podrá iniciar sesión.
+url: "{{base_url}}/cobradores/{{cobrador_id}}/estado"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "estado": "inactivo"
+    }
+order: 5000

@@ -8,7 +8,7 @@ import { crearAppPruebas } from './utilidades-app';
 describe('Auth (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaClient;
-  const sufijo = Date.now();
+  const sufijo = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   const correoNegocioA = `negocio-a-${sufijo}@prueba.com`;
   const correoNegocioB = `negocio-b-${sufijo}@prueba.com`;
   const contrasena = 'ClaveSegura123';

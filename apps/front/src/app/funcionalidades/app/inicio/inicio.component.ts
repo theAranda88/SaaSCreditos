@@ -7,7 +7,7 @@ import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
     <section class="tarjeta">
       <h2>Bienvenido, {{ authServicio.perfilActual()?.nombre }}</h2>
       <p>Sesión activa para el negocio {{ authServicio.perfilActual()?.negocio_id }}.</p>
-      <p>Próximo paso: clientes y cobradores (Fase 2).</p>
+      <p>Gestione clientes y cobradores desde el menú (Fase 2).</p>
     </section>
   `,
   styles: `

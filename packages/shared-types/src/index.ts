@@ -8,6 +8,8 @@ export type {
 
 export type { ClientePerfil, EstadoCliente, TipoDocumento } from './clientes';
 
+export type { CobradorPerfil, EstadoUsuario } from './cobradores';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';
