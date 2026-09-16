@@ -402,7 +402,7 @@ Nombres de tablas, columnas y código de dominio en **español** (`docs/00-esque
 
 **clientes:** `id` UUID PK; `negocio_id` FK; `nombre_completo`; `tipo_documento`; `numero_documento`; `telefono`; `direccion` nullable; `referencia_ubicacion` nullable; `estado`; `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios. Unique `(negocio_id, tipo_documento, numero_documento)`.
 
-**creditos:** `id` UUID PK; `negocio_id` FK; `cliente_id` FK; `monto_principal` NUMERIC(18,2) > 0; `tasa_interes` NUMERIC(8,4) >= 0; `periodicidad` (diaria/semanal/quincenal/mensual); `numero_cuotas` >= 1; `fecha_desembolso`; `estado` (activo/pagado/mora/anulado/refinanciado); `condiciones_originales` JSONB inmutable; `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios.
+**creditos:** `id` UUID PK; `negocio_id` FK; `cliente_id` FK; `monto_principal` NUMERIC(18,2) > 0; `tasa_interes` NUMERIC(8,4) >= 0 (% sobre principal, dinámico por crédito); `valor_mora` NUMERIC(18,2) nullable (opcional; COP > 0 si el dueño cobra mora, una vez por cuota vencida); `periodicidad` (diaria/semanal/quincenal/mensual); `numero_cuotas` >= 1; `fecha_desembolso`; `estado` (activo/pagado/mora/anulado/refinanciado); `condiciones_originales` JSONB inmutable; `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios.
 
 **cuotas:** `id` UUID PK; `negocio_id` FK; `credito_id` FK; `numero_cuota`; `fecha_vencimiento`; `monto_esperado`; `saldo_pendiente`; `estado` (pendiente/pagada/parcial/mora/anulada). Unique `(credito_id, numero_cuota)`.
 
@@ -508,11 +508,11 @@ Los tiempos específicos se definirán en la planeación técnica.
 - Campos obligatorios de cliente.
 - Identificación y validaciones.
 - Tipos de crédito.
-- Cálculo exacto de tasa/interés/porcentaje.
-- Periodicidades definitivas.
-- Redondeos.
-- Mora y recargos.
-- Pagos parciales, anticipados o superiores.
+- Cálculo exacto de tasa/interés/porcentaje. **Cerrado v1.3:** flat sobre principal, `tasa_interes` por crédito.
+- Periodicidades definitivas. **Cerrado v1.3:** default `diaria`.
+- Redondeos. **Cerrado v1.3:** half-up a 2 decimales; última cuota absorbe residuo.
+- Mora y recargos. **Cerrado v1.3:** mora **opcional** del dueño de la cartera; si cobra, elige `valor_mora` COP (una vez por cuota vencida); 0 días de gracia.
+- Pagos parciales, anticipados o superiores. **Cerrado v1.3:** parcial sí; no superar saldo de la cuota.
 - Refinanciación/restructuración.
 - Anulación/corrección de pagos (política comercial; el modelo técnico ya contempla anulación con motivo).
 - Métodos de pago.

@@ -180,7 +180,7 @@ Reservadas V1: `notas_cobro` (observaciones de cobro), `comprobantes_pago` (comp
 
 **clientes** — deudor. `id` UUID PK; `negocio_id` FK; `nombre_completo`; `tipo_documento`; `numero_documento`; `telefono`; `direccion` nullable; `referencia_ubicacion` nullable; `estado`; `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios. Unique `(negocio_id, tipo_documento, numero_documento)`.
 
-**creditos** — crédito. `id` UUID PK; `negocio_id` FK; `cliente_id` FK; `monto_principal` NUMERIC(18,2) > 0; `tasa_interes` NUMERIC(8,4) >= 0 (validación legal pendiente); `periodicidad`; `numero_cuotas` >= 1; `fecha_desembolso` DATE; `estado`; `condiciones_originales` JSONB **inmutable** (RF-005); `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios.
+**creditos** — crédito. `id` UUID PK; `negocio_id` FK; `cliente_id` FK; `monto_principal` NUMERIC(18,2) > 0; `tasa_interes` NUMERIC(8,4) >= 0 (% sobre principal, dinámico por crédito; validación legal pendiente); `valor_mora` NUMERIC(18,2) nullable (opcional; COP > 0 si el dueño cobra mora); `periodicidad`; `numero_cuotas` >= 1; `fecha_desembolso` DATE; `estado`; `condiciones_originales` JSONB **inmutable** (RF-005); `fecha_creacion`; `fecha_actualizacion`; `creado_por` FK usuarios.
 
 **cuotas** — cuota. `id` UUID PK; `negocio_id` FK; `credito_id` FK; `numero_cuota`; `fecha_vencimiento` DATE; `monto_esperado`; `saldo_pendiente` (>= 0 y <= monto_esperado); `estado`. Unique `(credito_id, numero_cuota)`.
 
@@ -403,11 +403,11 @@ El modelo financiero definitivo debe incorporar churn, descuentos, impuestos, co
 - Nombre y marca comercial.
 - Campos definitivos de clientes.
 - Identificación y validaciones.
-- Reglas exactas de cálculo y tasas.
-- Periodicidades.
-- Redondeos.
-- Mora y recargos.
-- Pagos parciales/anticipados.
+- Reglas exactas de cálculo y tasas. **Cerrado:** `docs/00-esquema-bd.md` §7 (v1.3).
+- Periodicidades. **Cerrado:** default `diaria`.
+- Redondeos. **Cerrado:** half-up 2 decimales.
+- Mora y recargos. **Cerrado MVP:** mora opcional del dueño de la cartera; `valor_mora` nullable.
+- Pagos parciales/anticipados. **Cerrado:** parcial sí; no superar saldo de la cuota.
 - Refinanciación/restructuración.
 - Política comercial de anulación/corrección de pagos.
 - Métodos de pago y comprobantes.

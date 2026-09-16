@@ -7,7 +7,7 @@
 - Timestamps `TIMESTAMPTZ`, montos `NUMERIC(18,2)`, tasas `NUMERIC(8,4)`
 - Multiempresa: toda tabla de negocio lleva `negocio_id` (salvo catálogos globales y roles de plataforma)
 - Moneda operativa inicial: COP
-- Versión: 1.2 — 15 de septiembre de 2026 (nombres en español)
+- Versión: 1.3 — 15 de septiembre de 2026 (reglas financieras MVP: interés flat dinámico; mora opcional del dueño de la cartera)
 
 ---
 
@@ -143,12 +143,13 @@ Restricciones:
 | `negocio_id` | UUID FK → negocios.id | No | Desnormalizado para aislamiento |
 | `cliente_id` | UUID FK → clientes.id | No | |
 | `monto_principal` | NUMERIC(18,2) | No | CHECK `> 0` |
-| `tasa_interes` | NUMERIC(8,4) | No | CHECK `>= 0`. Sujeta a validación legal/financiera |
-| `periodicidad` | `periodicidad_credito` | No | |
-| `numero_cuotas` | INTEGER | No | CHECK `>= 1` |
-| `fecha_desembolso` | DATE | No | |
+| `tasa_interes` | NUMERIC(8,4) | No | CHECK `>= 0`. **% sobre el principal de este crédito** (no es un fijo global). Ej.: `20.0000` sobre `100000.00` → interés `20000.00`, total `120000.00`. Validación legal/financiera pendiente de producción |
+| `valor_mora` | NUMERIC(18,2) | Sí | **Opcional.** Lo elige el dueño de la cartera (propietario/administrador) al crear el crédito: si no cobra mora → `NULL`; si cobra → COP `> 0`. Se aplica **una vez** a cada cuota que entre en mora. El cobrador no lo define |
+| `periodicidad` | `periodicidad_credito` | No | Default operativo: `diaria` |
+| `numero_cuotas` | INTEGER | No | CHECK `>= 1`. No existe cuota 0 |
+| `fecha_desembolso` | DATE | No | La primera cuota vence al día siguiente (o +1 período si no es diaria) |
 | `estado` | `estado_credito` | No | Default `activo` |
-| `condiciones_originales` | JSONB | No | Snapshot **inmutable** (RF-005) |
+| `condiciones_originales` | JSONB | No | Snapshot **inmutable** (RF-005). Ver §7 |
 | `fecha_creacion` | TIMESTAMPTZ | No | Default `now()` |
 | `fecha_actualizacion` | TIMESTAMPTZ | No | Default `now()` |
 | `creado_por` | UUID FK → usuarios.id | No | |
@@ -156,6 +157,7 @@ Restricciones:
 Restricciones:
 
 - CHECK: `cliente_id` pertenece al mismo `negocio_id`
+- CHECK: `valor_mora IS NULL OR valor_mora > 0`
 - `condiciones_originales` no se actualiza después del insert (trigger recomendado)
 
 Índices: `negocio_id`, `cliente_id`, `estado`, `fecha_desembolso`.
@@ -169,11 +171,11 @@ Restricciones:
 | `credito_id` | UUID FK → creditos.id | No | ON DELETE RESTRICT |
 | `numero_cuota` | INTEGER | No | CHECK `>= 1` |
 | `fecha_vencimiento` | DATE | No | |
-| `monto_esperado` | NUMERIC(18,2) | No | CHECK `>= 0` |
-| `saldo_pendiente` | NUMERIC(18,2) | No | CHECK `>= 0` y `<= monto_esperado` |
+| `monto_esperado` | NUMERIC(18,2) | No | CHECK `>= 0`. Si la cuota entra en mora **y** el crédito tiene `valor_mora`, se le suma ese valor (una vez) |
+| `saldo_pendiente` | NUMERIC(18,2) | No | CHECK `>= 0` y `<= monto_esperado`. Al aplicar mora, si hay `valor_mora`, se incrementa en el mismo monto |
 | `estado` | `estado_cuota` | No | Default `pendiente` |
 
-Restricciones: Unique `(credito_id, numero_cuota)`.
+Restricciones: Unique `(credito_id, numero_cuota)`. No hay `numero_cuota = 0`.
 
 Índices: `negocio_id`, `credito_id`, `fecha_vencimiento`, `estado`.
 
@@ -377,12 +379,67 @@ Comprobantes viven en almacenamiento de objetos. La BD solo guarda `clave_almace
 
 ---
 
-## 7. Decisiones abiertas que no se resuelven inventando columnas
+## 7. Reglas financieras del MVP (cerradas — v1.3)
 
-- Fórmula exacta de interés, redondeo, mora y recargos
-- Política de pagos parciales, anticipados o superiores al saldo
+Fuente para Fase 3 (cuotas) y Fase 5–6 (pago y mora). No se hardcodea la tasa ni el recargo: van en el crédito.
+
+### 7.1 Interés (flat sobre principal, dinámico)
+
+- `tasa_interes` se captura **al crear cada crédito**. No hay tasa global de producto.
+- Fórmula: `interes = round(monto_principal × tasa_interes / 100, 2)` (half-up).
+- `total_a_pagar = monto_principal + interes`.
+- Ejemplo: principal `100000.00`, tasa `20.0000` → interés `20000.00`, total `120000.00`.
+
+### 7.2 Plan de cuotas
+
+- Periodicidad por defecto operativa: `diaria` (el catálogo semanal/quincenal/mensual usa la misma fórmula).
+- No hay cuota 0: `numero_cuota` empieza en 1. Primera `fecha_vencimiento` = `fecha_desembolso` + 1 período (diaria: día siguiente).
+- Cuotas 1…n−1 con el mismo `monto_esperado`; la última absorbe el residuo para que la suma = `total_a_pagar`.
+- Redondeo: half-up a 2 decimales (COP).
+
+### 7.3 Pagos
+
+- Parcial: permitido. `0 < monto < saldo_pendiente` → cuota `parcial`.
+- El monto de un pago **no puede superar** `cuotas.saldo_pendiente` (422). Un pago se aplica a **una** cuota.
+- Anticipar una cuota futura pendiente: sí (otro `POST` sobre esa cuota).
+- Pago válido no se edita: se anula. Anulan `propietario` y `administrador` con motivo obligatorio; el cobrador no anula.
+
+### 7.4 Mora (opcional; la decide el dueño de la cartera)
+
+- Quién: **propietario o administrador** del negocio al crear el crédito. El cobrador no elige mora.
+- El dueño **elige si cobra mora**. Si no: `valor_mora = NULL` y las cuotas vencidas solo cambian de estado (sin recargo).
+- Si cobra: indica un **valor en COP > 0**, propio de ese crédito (no hay mora global de producto).
+- 0 días de gracia: cuota con `fecha_vencimiento < hoy` y `saldo_pendiente > 0` → estado `mora`.
+- Recargo solo si `valor_mora` no es nulo, **una sola vez**: `monto_esperado += valor_mora` y `saldo_pendiente += valor_mora`.
+- No es recargo diario ni porcentaje en MVP.
+- Crédito: alguna cuota en mora → `mora`; todas pagadas → `pagado`.
+- Recargo por día / % de mora: V1.
+
+### 7.5 Snapshot `condiciones_originales` (inmutable)
+
+Al insertar el crédito se persiste al menos:
+
+```json
+{
+  "monto_principal": "100000.00",
+  "tasa_interes": "20.0000",
+  "cobra_mora": true,
+  "valor_mora": "5000.00",
+  "periodicidad": "diaria",
+  "numero_cuotas": 20,
+  "fecha_desembolso": "2026-09-16",
+  "formula_interes": "flat_sobre_principal",
+  "redondeo": "half_up_2",
+  "total_a_pagar": "120000.00",
+  "monto_cuota_base": "6000.00"
+}
+```
+
+Cambiar configuración del negocio no reescribe créditos existentes. Si el dueño no cobra mora: `"cobra_mora": false, "valor_mora": null`.
+
+### 7.6 Aún abiertas (no bloquean Fase 3)
+
 - Refinanciación / reestructuración (el estado `refinanciado` existe; el flujo no)
 - Campos adicionales de cliente
 - Facturación electrónica colombiana (`documento_fiscal` queda nullable)
-
-Cuando se cierren, este archivo se versiona a 1.3 **antes** de la migración.
+- Recargo de mora diario o porcentual (V1)
