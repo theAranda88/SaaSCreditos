@@ -1,0 +1,15 @@
+$kind: http-request
+description: Roles: propietario, administrador. No cambia negocio_id ni creado_por.
+url: "{{base_url}}/clientes/{{cliente_id}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "telefono": "3009876543",
+      "direccion": "Carrera 7 # 12-34"
+    }
+order: 4000

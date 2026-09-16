@@ -12,3 +12,5 @@ values:
     value: ''
   - key: negocio_id
     value: ''
+  - key: cliente_id
+    value: ''

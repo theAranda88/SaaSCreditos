@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador. Filtros opcionales de búsqueda.
+url: "{{base_url}}/clientes?nombre=María&estado=activo"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 2000

@@ -11,7 +11,7 @@ description: |-
   | `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |
   | `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |
 
-  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`.
+  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`.
 
   **Usuarios sembrados (Fase 1):**
   | Rol | Correo |
@@ -29,3 +29,9 @@ description: |-
   **Flujo auth — verificación de aislamiento:**
   1. Propietario Alfa → login → `Obtener mi negocio`
   2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403
+
+  **Flujo clientes (RF-003):**
+  1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)
+  2. `Listar clientes` → debe incluir el creado
+  3. Cobrador Alfa → login → `Crear cliente` → debe responder 403
+  4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404

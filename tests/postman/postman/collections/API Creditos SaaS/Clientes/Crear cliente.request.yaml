@@ -1,0 +1,27 @@
+$kind: http-request
+description: Roles: propietario, administrador. Documento único por negocio (409 si duplica).
+url: "{{base_url}}/clientes"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "nombreCompleto": "María Pérez",
+      "tipoDocumento": "CC",
+      "numeroDocumento": "1234567890",
+      "telefono": "3001234567",
+      "direccion": "Calle 10 # 5-20",
+      "referenciaUbicacion": "Frente al parque principal"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const json = pm.response.json();
+        pm.environment.set('cliente_id', json.id);
+      }
+    language: text/javascript
+order: 1000

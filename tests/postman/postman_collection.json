@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "API Creditos SaaS",
-    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403",
+    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403\n\n**Flujo clientes (RF-003):**\n1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)\n2. `Listar clientes` → debe incluir el creado\n3. Cobrador Alfa → login → `Crear cliente` → debe responder 403\n4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -214,6 +214,92 @@
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": "{{base_url}}/negocios/{{negocio_id}}",
             "description": "Solo el propio `negocio_id` del token. Otro ID → 403."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "description": "Gestión de clientes del negocio (RF-003). Roles: propietario, administrador.",
+      "item": [
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"María Pérez\",\n  \"tipoDocumento\": \"CC\",\n  \"numeroDocumento\": \"1234567890\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Calle 10 # 5-20\",\n  \"referenciaUbicacion\": \"Frente al parque principal\"\n}"
+            },
+            "url": "{{base_url}}/clientes",
+            "description": "Roles: propietario, administrador. Documento único por negocio (409 si duplica)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('cliente_id', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/clientes?nombre=María&estado=activo",
+            "description": "Roles: propietario, administrador. Filtros opcionales de búsqueda."
+          }
+        },
+        {
+          "name": "Obtener cliente por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/clientes/{{cliente_id}}",
+            "description": "Roles: propietario, administrador. Id de otro negocio → 404."
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"3009876543\",\n  \"direccion\": \"Carrera 7 # 12-34\"\n}"
+            },
+            "url": "{{base_url}}/clientes/{{cliente_id}}",
+            "description": "Roles: propietario, administrador. No cambia negocio_id ni creado_por."
+          }
+        },
+        {
+          "name": "Cambiar estado del cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"inactivo\"\n}"
+            },
+            "url": "{{base_url}}/clientes/{{cliente_id}}/estado",
+            "description": "Roles: propietario, administrador. Inactiva sin borrado físico."
           }
         }
       ]

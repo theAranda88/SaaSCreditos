@@ -31,6 +31,11 @@ enum estado_usuario {
   inactivo
 }
 
+enum estado_cliente {
+  activo
+  inactivo
+}
+
 model Negocio {
   id                 String         @id @default(uuid()) @db.Uuid
   nombreComercial    String         @map("nombre_comercial") @db.VarChar(180)
@@ -42,6 +47,7 @@ model Negocio {
   fechaCreacion      DateTime       @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
   fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
   usuarios           Usuario[]
+  clientes           Cliente[]
 
   @@index([estado])
   @@map("negocios")
@@ -60,11 +66,36 @@ model Usuario {
   ultimoAcceso       DateTime?      @map("ultimo_acceso") @db.Timestamptz(6)
   fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
   negocio            Negocio?       @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  clientesCreados    Cliente[]      @relation("ClientesCreados")
 
   @@index([negocioId])
   @@index([rol])
   @@index([estado])
   @@map("usuarios")
+}
+
+model Cliente {
+  id                  String         @id @default(uuid()) @db.Uuid
+  negocioId           String         @map("negocio_id") @db.Uuid
+  nombreCompleto      String         @map("nombre_completo") @db.VarChar(180)
+  tipoDocumento       String         @map("tipo_documento") @db.VarChar(20)
+  numeroDocumento     String         @map("numero_documento") @db.VarChar(40)
+  telefono            String         @db.VarChar(30)
+  direccion           String?        @db.VarChar(220)
+  referenciaUbicacion String?        @map("referencia_ubicacion") @db.VarChar(220)
+  estado              estado_cliente @default(activo)
+  fechaCreacion       DateTime       @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  fechaActualizacion  DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+  creadoPor           String         @map("creado_por") @db.Uuid
+  negocio             Negocio        @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  creador             Usuario        @relation("ClientesCreados", fields: [creadoPor], references: [id], onDelete: Restrict)
+
+  @@unique([negocioId, tipoDocumento, numeroDocumento])
+  @@index([negocioId])
+  @@index([negocioId, nombreCompleto])
+  @@index([negocioId, telefono])
+  @@index([creadoPor])
+  @@map("clientes")
 }
 
 model Plan {

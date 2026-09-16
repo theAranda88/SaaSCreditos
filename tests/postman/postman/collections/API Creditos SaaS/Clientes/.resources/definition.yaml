@@ -1,0 +1,3 @@
+$kind: collection
+description: Gestión de clientes del negocio (RF-003). Roles: propietario, administrador.
+order: 4000

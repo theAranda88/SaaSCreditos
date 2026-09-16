@@ -6,6 +6,8 @@ export type {
   RolUsuario,
 } from './auth';
 
+export type { ClientePerfil, EstadoCliente, TipoDocumento } from './clientes';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

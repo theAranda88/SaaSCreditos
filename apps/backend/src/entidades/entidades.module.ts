@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BdModule } from '../bd/bd.module';
+import { ClienteRepositorio } from '../entidades/cliente.repositorio';
 import { NegocioRepositorio } from '../entidades/negocio.repositorio';
 import { PlanRepositorio } from '../entidades/plan.repositorio';
 import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
@@ -10,7 +11,13 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
  */
 @Module({
   imports: [BdModule],
-  providers: [PlanRepositorio, UsuarioRepositorio, NegocioRepositorio],
-  exports: [PlanRepositorio, UsuarioRepositorio, NegocioRepositorio, BdModule],
+  providers: [PlanRepositorio, UsuarioRepositorio, NegocioRepositorio, ClienteRepositorio],
+  exports: [
+    PlanRepositorio,
+    UsuarioRepositorio,
+    NegocioRepositorio,
+    ClienteRepositorio,
+    BdModule,
+  ],
 })
 export class EntidadesModule {}

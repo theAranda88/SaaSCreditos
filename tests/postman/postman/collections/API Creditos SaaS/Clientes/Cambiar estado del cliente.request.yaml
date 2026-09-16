@@ -1,0 +1,14 @@
+$kind: http-request
+description: Roles: propietario, administrador. Inactiva sin borrado físico.
+url: "{{base_url}}/clientes/{{cliente_id}}/estado"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "estado": "inactivo"
+    }
+order: 5000
