@@ -36,6 +36,29 @@ enum estado_cliente {
   inactivo
 }
 
+enum periodicidad_credito {
+  diaria
+  semanal
+  quincenal
+  mensual
+}
+
+enum estado_credito {
+  activo
+  pagado
+  mora
+  anulado
+  refinanciado
+}
+
+enum estado_cuota {
+  pendiente
+  pagada
+  parcial
+  mora
+  anulada
+}
+
 model Negocio {
   id                 String         @id @default(uuid()) @db.Uuid
   nombreComercial    String         @map("nombre_comercial") @db.VarChar(180)
@@ -48,6 +71,9 @@ model Negocio {
   fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
   usuarios           Usuario[]
   clientes           Cliente[]
+  creditos           Credito[]
+  cuotas             Cuota[]
+  auditorias         Auditoria[]
 
   @@index([estado])
   @@map("negocios")
@@ -67,6 +93,8 @@ model Usuario {
   fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
   negocio            Negocio?       @relation(fields: [negocioId], references: [id], onDelete: Restrict)
   clientesCreados    Cliente[]      @relation("ClientesCreados")
+  creditosCreados    Credito[]      @relation("CreditosCreados")
+  auditorias         Auditoria[]
 
   @@index([negocioId])
   @@index([rol])
@@ -89,6 +117,7 @@ model Cliente {
   creadoPor           String         @map("creado_por") @db.Uuid
   negocio             Negocio        @relation(fields: [negocioId], references: [id], onDelete: Restrict)
   creador             Usuario        @relation("ClientesCreados", fields: [creadoPor], references: [id], onDelete: Restrict)
+  creditos            Credito[]
 
   @@unique([negocioId, tipoDocumento, numeroDocumento])
   @@index([negocioId])
@@ -110,4 +139,71 @@ model Plan {
   fechaCreacion        DateTime    @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
 
   @@map("planes")
+}
+
+model Credito {
+  id                    String               @id @default(uuid()) @db.Uuid
+  negocioId             String               @map("negocio_id") @db.Uuid
+  clienteId             String               @map("cliente_id") @db.Uuid
+  montoPrincipal        Decimal              @map("monto_principal") @db.Decimal(18, 2)
+  tasaInteres           Decimal              @map("tasa_interes") @db.Decimal(8, 4)
+  valorMora             Decimal?             @map("valor_mora") @db.Decimal(18, 2)
+  periodicidad          periodicidad_credito
+  numeroCuotas          Int                  @map("numero_cuotas")
+  fechaDesembolso       DateTime             @map("fecha_desembolso") @db.Date
+  estado                estado_credito       @default(activo)
+  condicionesOriginales Json                 @map("condiciones_originales")
+  fechaCreacion         DateTime             @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  fechaActualizacion    DateTime             @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+  creadoPor             String               @map("creado_por") @db.Uuid
+  negocio               Negocio              @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  cliente               Cliente              @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  creador               Usuario              @relation("CreditosCreados", fields: [creadoPor], references: [id], onDelete: Restrict)
+  cuotas                Cuota[]
+
+  @@index([negocioId])
+  @@index([clienteId])
+  @@index([estado])
+  @@index([fechaDesembolso])
+  @@map("creditos")
+}
+
+model Cuota {
+  id              String       @id @default(uuid()) @db.Uuid
+  negocioId       String       @map("negocio_id") @db.Uuid
+  creditoId       String       @map("credito_id") @db.Uuid
+  numeroCuota     Int          @map("numero_cuota")
+  fechaVencimiento DateTime    @map("fecha_vencimiento") @db.Date
+  montoEsperado   Decimal      @map("monto_esperado") @db.Decimal(18, 2)
+  saldoPendiente  Decimal      @map("saldo_pendiente") @db.Decimal(18, 2)
+  estado          estado_cuota @default(pendiente)
+  negocio         Negocio      @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  credito         Credito      @relation(fields: [creditoId], references: [id], onDelete: Restrict)
+
+  @@unique([creditoId, numeroCuota])
+  @@index([negocioId])
+  @@index([creditoId])
+  @@index([fechaVencimiento])
+  @@index([estado])
+  @@map("cuotas")
+}
+
+model Auditoria {
+  id        String   @id @default(uuid()) @db.Uuid
+  negocioId String?  @map("negocio_id") @db.Uuid
+  usuarioId String   @map("usuario_id") @db.Uuid
+  entidad   String   @db.VarChar(60)
+  entidadId String   @map("entidad_id") @db.Uuid
+  accion    String   @db.VarChar(40)
+  detalle   Json     @default("{}")
+  fecha     DateTime @default(now()) @db.Timestamptz(6)
+  ipOrigen  String?  @map("ip_origen") @db.VarChar(45)
+  negocio   Negocio? @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+
+  @@index([negocioId])
+  @@index([usuarioId])
+  @@index([entidad, entidadId])
+  @@index([fecha])
+  @@map("auditorias")
 }

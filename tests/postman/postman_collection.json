@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "API Creditos SaaS",
-    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403\n\n**Flujo clientes (RF-003):**\n1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)\n2. `Listar clientes` → debe incluir el creado\n3. Cobrador Alfa → login → `Crear cliente` → debe responder 403\n4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404\n\n**Flujo cobradores (RF-004):**\n1. Propietario Alfa → login → `Crear cobrador` (guarda `cobrador_id`)\n2. `Listar cobradores` → solo rol cobrador del negocio\n3. Cobrador → login → `Crear cobrador` → debe responder 403\n4. Propietario Beta → `Obtener cobrador por ID` de Alfa → debe responder 404",
+    "description": "Colección Postman del SaaS de gestión de créditos y cobro diario.\n\n**Contraseña de prueba (semilla):** ClaveSegura123\n\n**Entornos (importar uno o todos):**\n| Archivo | Cuándo usar |\n|---------|-------------|\n| `postman_environment.json` | Backend expuesto en localhost (Docker o host) |\n| `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |\n| `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |\n\n**Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`, `credito_id`, `cuota_id`.\n\n**Usuarios sembrados (Fase 1):**\n| Rol | Correo |\n|-----|--------|\n| propietario | ana@prueba-alfa.local |\n| cobrador | cobrador@prueba-alfa.local |\n| propietario | boris@prueba-beta.local |\n\n**Uso:**\n1. Importar la colección y el entorno que corresponda\n2. Seleccionar el entorno en Postman (esquina superior derecha)\n3. Ejecutar «Iniciar sesión» según el rol — guarda `token` y `negocio_id`\n4. Probar el resto de solicitudes\n\n**Flujo auth — verificación de aislamiento:**\n1. Propietario Alfa → login → `Obtener mi negocio`\n2. Propietario Beta → login → `Obtener negocio por ID` con `negocio_id` de Alfa → debe responder 403\n\n**Flujo clientes (RF-003):**\n1. Propietario Alfa → login → `Crear cliente` (guarda `cliente_id`)\n2. `Listar clientes` → debe incluir el creado\n3. Cobrador Alfa → login → `Crear cliente` → debe responder 403\n4. Propietario Beta → login → `Obtener cliente por ID` con `cliente_id` de Alfa → debe responder 404\n\n**Flujo cobradores (RF-004):**\n1. Propietario Alfa → login → `Crear cobrador` (guarda `cobrador_id`)\n2. `Listar cobradores` → solo rol cobrador del negocio\n3. Cobrador → login → `Crear cobrador` → debe responder 403\n4. Propietario Beta → `Obtener cobrador por ID` de Alfa → debe responder 404\n\n**Flujo créditos (RF-005 / RF-006):**\n1. Propietario Alfa → login → `Crear cliente` → `Crear credito` (guarda `credito_id`)\n2. `Consultar plan de cuotas` → N cuotas = `numero_cuotas`\n3. Cobrador → `Crear credito` → 403\n4. Propietario Beta → `Obtener credito por ID` de Alfa → 404",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -386,6 +386,72 @@
             },
             "url": "{{base_url}}/cobradores/{{cobrador_id}}/estado",
             "description": "Roles: propietario, administrador. Inactiva sin borrar histórico."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Creditos",
+      "description": "Alta de créditos y plan de cuotas (RF-005, RF-006, RF-014). Roles: propietario, administrador.",
+      "item": [
+        {
+          "name": "Crear credito",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": \"{{cliente_id}}\",\n  \"montoPrincipal\": 100000,\n  \"tasaInteres\": 20,\n  \"valorMora\": 5000,\n  \"periodicidad\": \"diaria\",\n  \"numeroCuotas\": 20,\n  \"fechaDesembolso\": \"2026-09-16\"\n}"
+            },
+            "url": "{{base_url}}/creditos",
+            "description": "Roles: propietario, administrador. Crea crédito + cuotas + auditoría en una transacción. condiciones_originales inmutable. Cobrador → 403. Cliente inactivo → 422."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('credito_id', json.credito.id);",
+                  "  if (json.cuotas && json.cuotas[0]) {",
+                  "    pm.environment.set('cuota_id', json.cuotas[0].id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar creditos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/creditos?estado=activo",
+            "description": "Roles: propietario, administrador. Filtra por negocio_id del token."
+          }
+        },
+        {
+          "name": "Obtener credito por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/creditos/{{credito_id}}",
+            "description": "Roles: propietario, administrador. Incluye condiciones_originales. Id de otro negocio → 404."
+          }
+        },
+        {
+          "name": "Consultar plan de cuotas",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/creditos/{{credito_id}}/cuotas",
+            "description": "Roles: propietario, administrador. Plan ordenado por numero_cuota. Otro negocio → 404."
           }
         }
       ]

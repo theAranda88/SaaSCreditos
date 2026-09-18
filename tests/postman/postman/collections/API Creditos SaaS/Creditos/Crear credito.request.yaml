@@ -1,0 +1,31 @@
+$kind: http-request
+description: Roles: propietario, administrador. Crea crédito + cuotas + auditoría en una transacción. condiciones_originales inmutable. Cobrador → 403. Cliente inactivo → 422.
+url: "{{base_url}}/creditos"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "clienteId": "{{cliente_id}}",
+      "montoPrincipal": 100000,
+      "tasaInteres": 20,
+      "valorMora": 5000,
+      "periodicidad": "diaria",
+      "numeroCuotas": 20,
+      "fechaDesembolso": "2026-09-16"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const json = pm.response.json();
+        pm.environment.set('credito_id', json.credito.id);
+        if (json.cuotas && json.cuotas[0]) {
+          pm.environment.set('cuota_id', json.cuotas[0].id);
+        }
+      }
+    language: text/javascript
+order: 1000

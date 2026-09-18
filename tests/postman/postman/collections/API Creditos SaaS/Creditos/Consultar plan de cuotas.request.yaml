@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador. Plan ordenado por numero_cuota. Otro negocio → 404.
+url: "{{base_url}}/creditos/{{credito_id}}/cuotas"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 4000

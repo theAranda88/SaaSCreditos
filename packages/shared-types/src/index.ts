@@ -10,6 +10,16 @@ export type { ClientePerfil, EstadoCliente, TipoDocumento } from './clientes';
 
 export type { CobradorPerfil, EstadoUsuario } from './cobradores';
 
+export type {
+  CondicionesOriginalesCredito,
+  CreditoCreado,
+  CreditoPerfil,
+  CuotaPerfil,
+  EstadoCredito,
+  EstadoCuota,
+  PeriodicidadCredito,
+} from './creditos';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

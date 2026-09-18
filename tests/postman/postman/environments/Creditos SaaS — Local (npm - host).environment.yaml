@@ -16,3 +16,7 @@ values:
     value: ''
   - key: cobrador_id
     value: ''
+  - key: credito_id
+    value: ''
+  - key: cuota_id
+    value: ''

@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador. Filtra por negocio_id del token. Query opcional clienteId y estado.
+url: "{{base_url}}/creditos?estado=activo"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 2000

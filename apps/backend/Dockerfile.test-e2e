@@ -11,6 +11,7 @@ COPY packages ./packages
 COPY apps/backend ./apps/backend
 
 RUN npm run db:generate --workspace=@creditos/backend
+RUN npm run build --workspace=@creditos/shared-types
 
 WORKDIR /app/apps/backend
-CMD ["npx", "vitest", "run", "test"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx vitest run test"]

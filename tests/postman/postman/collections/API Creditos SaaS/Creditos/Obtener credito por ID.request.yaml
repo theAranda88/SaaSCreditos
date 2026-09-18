@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador. Incluye condiciones_originales. Id de otro negocio → 404.
+url: "{{base_url}}/creditos/{{credito_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 3000

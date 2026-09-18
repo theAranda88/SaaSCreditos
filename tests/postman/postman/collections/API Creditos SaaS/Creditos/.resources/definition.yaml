@@ -1,0 +1,3 @@
+$kind: collection
+description: Alta de créditos y plan de cuotas (RF-005, RF-006, RF-014). Roles: propietario, administrador.
+order: 5000
