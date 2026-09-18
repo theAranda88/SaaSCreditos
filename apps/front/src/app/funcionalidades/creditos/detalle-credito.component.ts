@@ -37,6 +37,9 @@ import { CreditosServicio } from './creditos.servicio';
             {{ actual.condiciones_originales.total_a_pagar }}
           </p>
           <p class="aviso">Las condiciones originales no se modifican después del alta.</p>
+          <a [routerLink]="['/app/asignaciones/nueva']" [queryParams]="{ creditoId: actual.id }">
+            Asignar cartera
+          </a>
         </article>
 
         @if (cuotas().length === 0) {

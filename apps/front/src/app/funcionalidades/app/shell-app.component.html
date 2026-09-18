@@ -20,7 +20,11 @@
       <a routerLink="/app/clientes" routerLinkActive="activo">Clientes</a>
       <a routerLink="/app/creditos" routerLinkActive="activo">Créditos</a>
       <a routerLink="/app/cobradores" routerLinkActive="activo">Cobradores</a>
+      <a routerLink="/app/asignaciones" routerLinkActive="activo">Cartera</a>
       <a routerLink="/app/configuracion" routerLinkActive="activo">Configuración</a>
+    }
+    @if (esCobrador()) {
+      <a routerLink="/app/asignaciones" routerLinkActive="activo">Mi cartera</a>
     }
   </nav>
 

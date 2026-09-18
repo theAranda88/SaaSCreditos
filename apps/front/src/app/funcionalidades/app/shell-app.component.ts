@@ -20,6 +20,8 @@ export class ShellAppComponent {
     return rol !== undefined && ROLES_ADMINISTRACION_NEGOCIO.includes(rol);
   });
 
+  readonly esCobrador = computed(() => this.perfil()?.rol === 'cobrador');
+
   readonly tituloPanel = computed(() => {
     const rol = this.perfil()?.rol;
 

@@ -8,6 +8,7 @@ import { InicioComponent } from './funcionalidades/app/inicio/inicio.component';
 import { ConfiguracionComponent } from './funcionalidades/app/configuracion/configuracion.component';
 
 const guardAdministracion = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO]);
+const guardCartera = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO, 'cobrador']);
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -92,6 +93,22 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./funcionalidades/cobradores/formulario-cobrador.component').then(
             (modulo) => modulo.FormularioCobradorComponent,
+          ),
+      },
+      {
+        path: 'asignaciones',
+        canActivate: [guardCartera],
+        loadComponent: () =>
+          import('./funcionalidades/asignaciones/listado-asignaciones.component').then(
+            (modulo) => modulo.ListadoAsignacionesComponent,
+          ),
+      },
+      {
+        path: 'asignaciones/nueva',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/asignaciones/formulario-asignacion.component').then(
+            (modulo) => modulo.FormularioAsignacionComponent,
           ),
       },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
