@@ -11,7 +11,7 @@ description: |-
   | `postman_environment.docker.json` | Stack Docker Compose (`docker compose up`) |
   | `postman_environment.production.json` | Plantilla para API en producción (editar URLs) |
 
-  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`, `credito_id`, `cuota_id`.
+  **Variables clave:** `base_url` (API con `/api`), `api_root` (host sin `/api`), `swagger_url`, `front_url`, `token`, `negocio_id`, `cliente_id`, `cobrador_id`, `credito_id`, `cuota_id`, `asignacion_id`.
 
   **Usuarios sembrados (Fase 1):**
   | Rol | Correo |
@@ -47,3 +47,10 @@ description: |-
   2. `Consultar plan de cuotas` → N cuotas = `numero_cuotas`
   3. Cobrador → `Crear credito` → 403
   4. Propietario Beta → `Obtener credito por ID` de Alfa → 404
+
+  **Flujo asignación de cartera (RF-007):**
+  1. Propietario Alfa → `Crear cobrador` + `Crear credito` → `Asignar cartera` (guarda `asignacion_id`)
+  2. Reenviar `Asignar cartera` con otro cobrador → cierra la previa y deja una sola `activa`
+  3. Cobrador Alfa → `Listar asignaciones` → solo las suyas activas
+  4. Cobrador → `Asignar cartera` → 403
+  5. Propietario Beta → `Obtener asignacion por ID` de Alfa → 404

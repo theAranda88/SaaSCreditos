@@ -20,6 +20,12 @@ export type {
   PeriodicidadCredito,
 } from './creditos';
 
+export type {
+  AsignacionPerfil,
+  CreditoEnCartera,
+  EstadoAsignacion,
+} from './asignaciones';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

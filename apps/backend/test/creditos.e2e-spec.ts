@@ -114,6 +114,7 @@ describe('Creditos (e2e)', () => {
   afterAll(async () => {
     if (prisma) {
       const negocios = [negocioAId, negocioBId].filter(Boolean);
+      await prisma.asignacion.deleteMany({ where: { negocioId: { in: negocios } } });
       await prisma.cuota.deleteMany({ where: { negocioId: { in: negocios } } });
       await prisma.auditoria.deleteMany({ where: { negocioId: { in: negocios } } });
       await prisma.credito.deleteMany({ where: { negocioId: { in: negocios } } });

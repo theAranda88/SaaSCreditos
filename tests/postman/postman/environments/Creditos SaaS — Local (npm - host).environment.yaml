@@ -20,3 +20,5 @@ values:
     value: ''
   - key: cuota_id
     value: ''
+  - key: asignacion_id
+    value: ''

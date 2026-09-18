@@ -1,0 +1,23 @@
+$kind: http-request
+description: Roles: propietario, administrador. Primera asignación o reasignación atómica. Cobrador → 403. Cobrador inactivo / crédito no asignable → 422.
+url: "{{base_url}}/asignaciones"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "creditoId": "{{credito_id}}",
+      "cobradorId": "{{cobrador_id}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const json = pm.response.json();
+        pm.environment.set('asignacion_id', json.id);
+      }
+    language: text/javascript
+order: 1000

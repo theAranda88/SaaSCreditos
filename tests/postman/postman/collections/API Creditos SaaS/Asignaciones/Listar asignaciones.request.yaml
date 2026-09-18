@@ -1,0 +1,7 @@
+$kind: http-request
+description: Admin filtra por cobrador/crédito/estado. Cobrador ve solo sus asignaciones activas.
+url: "{{base_url}}/asignaciones?cobradorId={{cobrador_id}}&estado=activa"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 2000

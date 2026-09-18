@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles: propietario, administrador, cobrador. Cartera de otro cobrador → 403. Otro negocio → 404.
+url: "{{base_url}}/asignaciones/{{asignacion_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 3000
