@@ -47,6 +47,30 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'creditos',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/creditos/listado-creditos.component').then(
+            (modulo) => modulo.ListadoCreditosComponent,
+          ),
+      },
+      {
+        path: 'creditos/nuevo',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/creditos/formulario-credito.component').then(
+            (modulo) => modulo.FormularioCreditoComponent,
+          ),
+      },
+      {
+        path: 'creditos/:id',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/creditos/detalle-credito.component').then(
+            (modulo) => modulo.DetalleCreditoComponent,
+          ),
+      },
+      {
         path: 'cobradores',
         canActivate: [guardAdministracion],
         loadComponent: () =>
