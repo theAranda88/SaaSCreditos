@@ -62,10 +62,7 @@ export class PagosServicio {
     });
     const creditoIds = asignaciones.map((asignacion) => asignacion.creditoId);
     const cuotas = await this.pagoRepositorio.listarCuotasCobroPorCreditos(negocioId, creditoIds);
-
-    const cobros = cuotas
-      .map((cuota) => this.mapearCobroDelDia(cuota, fecha))
-      .filter((cobro) => cobro !== null) as CobroDelDia[];
+    const cobros = this.armarCobrosJornada(cuotas, fecha);
 
     return {
       fecha: fechaIso,
@@ -224,6 +221,66 @@ export class PagosServicio {
     };
   }
 
+  private armarCobrosJornada(
+    cuotas: Array<{
+      id: string;
+      creditoId: string;
+      numeroCuota: number;
+      fechaVencimiento: Date;
+      montoEsperado: Prisma.Decimal;
+      saldoPendiente: Prisma.Decimal;
+      estado: CobroDelDia['estado'];
+      credito: {
+        clienteId: string;
+        cliente: { nombreCompleto: string };
+      };
+    }>,
+    fechaConsulta: Date,
+  ): CobroDelDia[] {
+    const fechaConsultaIso = formatearFechaIso(fechaConsulta);
+    const porCredito = new Map<string, typeof cuotas>();
+
+    for (const cuota of cuotas) {
+      const actuales = porCredito.get(cuota.creditoId) ?? [];
+      actuales.push(cuota);
+      porCredito.set(cuota.creditoId, actuales);
+    }
+
+    const cobros: CobroDelDia[] = [];
+
+    for (const cuotasCredito of porCredito.values()) {
+      const ordenadas = [...cuotasCredito].sort((a, b) => {
+        const fechaA = formatearFechaIso(fechaCobroEfectiva(a.fechaVencimiento));
+        const fechaB = formatearFechaIso(fechaCobroEfectiva(b.fechaVencimiento));
+        return fechaA.localeCompare(fechaB) || a.numeroCuota - b.numeroCuota;
+      });
+
+      const vencidas = ordenadas.filter(
+        (cuota) => formatearFechaIso(fechaCobroEfectiva(cuota.fechaVencimiento)) <= fechaConsultaIso,
+      );
+
+      if (vencidas.length > 0) {
+        cobros.push(...vencidas.map((cuota) => this.mapearCobroDelDia(cuota, fechaConsultaIso, false)));
+        continue;
+      }
+
+      const proxima = ordenadas[0];
+      if (proxima) {
+        cobros.push(this.mapearCobroDelDia(proxima, fechaConsultaIso, true));
+      }
+    }
+
+    return cobros.sort((a, b) => {
+      if (a.atrasado !== b.atrasado) {
+        return a.atrasado ? -1 : 1;
+      }
+      if (a.programado !== b.programado) {
+        return a.programado ? 1 : -1;
+      }
+      return a.fecha_cobro_efectiva.localeCompare(b.fecha_cobro_efectiva);
+    });
+  }
+
   private mapearCobroDelDia(
     cuota: {
       id: string;
@@ -238,15 +295,11 @@ export class PagosServicio {
         cliente: { nombreCompleto: string };
       };
     },
-    fechaConsulta: Date,
-  ): CobroDelDia | null {
+    fechaConsultaIso: string,
+    programado: boolean,
+  ): CobroDelDia {
     const fechaCobroEfectivaIso = formatearFechaIso(fechaCobroEfectiva(cuota.fechaVencimiento));
-    const fechaConsultaIso = formatearFechaIso(fechaConsulta);
-    const atrasado = fechaCobroEfectivaIso < fechaConsultaIso;
-
-    if (fechaCobroEfectivaIso > fechaConsultaIso) {
-      return null;
-    }
+    const atrasado = !programado && fechaCobroEfectivaIso < fechaConsultaIso;
 
     return {
       cuota_id: cuota.id,
@@ -260,6 +313,7 @@ export class PagosServicio {
       cliente_id: cuota.credito.clienteId,
       cliente_nombre_completo: cuota.credito.cliente.nombreCompleto,
       atrasado,
+      programado,
     };
   }
 

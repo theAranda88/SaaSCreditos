@@ -36,6 +36,8 @@ export interface CobroDelDia {
   cliente_id: string;
   cliente_nombre_completo: string;
   atrasado: boolean;
+  /** Próxima cuota del crédito cuando aún no vence hoy (anticipo permitido). */
+  programado: boolean;
 }
 
 /** Respuesta de cobros del día con indicador de día hábil. */

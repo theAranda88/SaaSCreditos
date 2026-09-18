@@ -69,13 +69,30 @@ describe('ListadoAsignacionesComponent', () => {
 
   it('no debe mostrar el botón de asignar al cobrador ni pedir cobradores', async () => {
     const cobradoresServicio = { listar: vi.fn(() => of([])) };
+    const asignacionCobrador = {
+      id: 'asignacion-1',
+      negocio_id: 'negocio-a',
+      credito_id: 'credito-1',
+      cobrador_id: 'cobrador-1',
+      fecha_asignacion: '2026-09-18T12:00:00.000Z',
+      fecha_fin: null,
+      estado: 'activa' as const,
+      asignado_por: 'usuario-1',
+      credito: {
+        id: 'credito-1',
+        cliente_id: 'cliente-1',
+        cliente_nombre_completo: 'María Pérez',
+        estado: 'activo' as const,
+        monto_principal: '100000.00',
+      },
+    };
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [ListadoAsignacionesComponent],
       providers: [
         provideRouter([]),
-        { provide: AsignacionesServicio, useValue: { listar: () => of([]) } },
+        { provide: AsignacionesServicio, useValue: { listar: () => of([asignacionCobrador]) } },
         { provide: CobradoresServicio, useValue: cobradoresServicio },
         { provide: AuthServicio, useValue: { perfilActual: signal(perfilCobrador) } },
       ],
@@ -88,6 +105,8 @@ describe('ListadoAsignacionesComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Mi cartera');
     expect(fixture.nativeElement.textContent).not.toContain('Asignar cartera');
+    expect(fixture.nativeElement.textContent).toContain('Revisar cobro');
+    expect(fixture.nativeElement.textContent).toContain('Ir a cobros del día');
     expect(cobradoresServicio.listar).not.toHaveBeenCalled();
   });
 });

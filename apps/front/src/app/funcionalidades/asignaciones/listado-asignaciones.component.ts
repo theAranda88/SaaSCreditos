@@ -24,12 +24,14 @@ import { AsignacionesServicio } from './asignaciones.servicio';
             @if (puedeAdministrar()) {
               Un crédito activo o en mora tiene un cobrador responsable. Reasignar cierra la previa.
             } @else {
-              Créditos asignados a usted. El recaudo se registra en el siguiente módulo.
+              Revise y confirme cada cobro desde <strong>Cobros del día</strong> o use el botón de cada fila.
             }
           </p>
         </div>
         @if (puedeAdministrar()) {
           <a routerLink="/app/asignaciones/nueva" class="boton-primario">Asignar cartera</a>
+        } @else {
+          <a routerLink="/app/cobros" class="boton-primario">Ir a cobros del día</a>
         }
       </header>
 
@@ -77,6 +79,9 @@ import { AsignacionesServicio } from './asignaciones.servicio';
                 }
                 <th>Asignación</th>
                 <th>Desde</th>
+                @if (!puedeAdministrar()) {
+                  <th>Acción</th>
+                }
               </tr>
             </thead>
             <tbody>
@@ -92,6 +97,17 @@ import { AsignacionesServicio } from './asignaciones.servicio';
                     <span class="estado">{{ asignacion.estado }}</span>
                   </td>
                   <td>{{ fechaCorta(asignacion.fecha_asignacion) }}</td>
+                  @if (!puedeAdministrar()) {
+                    <td>
+                      <a
+                        class="boton-tabla"
+                        [routerLink]="['/app/cobros']"
+                        [queryParams]="{ creditoId: asignacion.credito_id }"
+                      >
+                        Revisar cobro
+                      </a>
+                    </td>
+                  }
                 </tr>
               }
             </tbody>
@@ -109,8 +125,9 @@ import { AsignacionesServicio } from './asignaciones.servicio';
     label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
     select, button, .boton-primario { padding: 0.65rem 0.8rem; border-radius: 0.5rem; font-size: 0.95rem; }
     select { border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; cursor: pointer; }
-    .boton-primario { display: inline-flex; align-items: center; }
+    .filtros button, .boton-primario, .boton-tabla { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; cursor: pointer; }
+    .boton-primario, .boton-tabla { display: inline-flex; align-items: center; justify-content: center; }
+    .boton-tabla { padding: 0.55rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; white-space: nowrap; }
     .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }

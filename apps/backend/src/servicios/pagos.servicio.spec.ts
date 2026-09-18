@@ -91,6 +91,46 @@ describe('PagosServicio', () => {
     );
   });
 
+  it('debe incluir la próxima cuota programada si aún no vence hoy', async () => {
+    vi.mocked(asignacionRepositorio.listar).mockResolvedValue([
+      {
+        id: 'asignacion-1',
+        negocioId: 'negocio-a',
+        creditoId: 'credito-1',
+        cobradorId: 'cobrador-1',
+        fechaAsignacion: fechaFija,
+        fechaFin: null,
+        estado: 'activa',
+        asignadoPor: 'usuario-1',
+      },
+    ]);
+    vi.mocked(pagoRepositorio.listarCuotasCobroPorCreditos).mockResolvedValue([
+      {
+        id: 'cuota-futura',
+        negocioId: 'negocio-a',
+        creditoId: 'credito-1',
+        numeroCuota: 1,
+        fechaVencimiento: new Date('2026-09-25T00:00:00.000Z'),
+        montoEsperado: new Prisma.Decimal('6000.00'),
+        saldoPendiente: new Prisma.Decimal('6000.00'),
+        estado: 'pendiente',
+        credito: {
+          id: 'credito-1',
+          clienteId: 'cliente-1',
+          cliente: { id: 'cliente-1', nombreCompleto: 'Luis Gómez' },
+        },
+      },
+    ]);
+
+    const respuesta = await pagosServicio.listarCobrosDelDia(usuarioCobrador, {
+      fecha: '2026-09-21',
+    });
+
+    expect(respuesta.cobros).toHaveLength(1);
+    expect(respuesta.cobros[0]?.programado).toBe(true);
+    expect(respuesta.cobros[0]?.atrasado).toBe(false);
+  });
+
   it('debe devolver dia_habil=false en domingo sin cobros', async () => {
     const respuesta = await pagosServicio.listarCobrosDelDia(usuarioCobrador, {
       fecha: '2026-09-20',
