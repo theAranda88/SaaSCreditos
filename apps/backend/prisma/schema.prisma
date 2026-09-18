@@ -212,6 +212,7 @@ model Cuota {
   @@index([creditoId])
   @@index([fechaVencimiento])
   @@index([estado])
+  @@index([negocioId, fechaVencimiento, estado])
   @@map("cuotas")
 }
 

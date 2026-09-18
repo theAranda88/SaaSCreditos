@@ -35,6 +35,14 @@ export type {
   ResumenDiarioPago,
 } from './pagos';
 
+export type {
+  ItemCartera,
+  ResultadoAplicarMora,
+  SegmentoCartera,
+} from './cartera';
+
+export type { DashboardNegocio } from './dashboard';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

@@ -120,6 +120,22 @@ export const routes: Routes = [
             (modulo) => modulo.JornadaCobroComponent,
           ),
       },
+      {
+        path: 'cartera',
+        canActivate: [guardCartera],
+        loadComponent: () =>
+          import('./funcionalidades/cartera/listado-cartera.component').then(
+            (modulo) => modulo.ListadoCarteraComponent,
+          ),
+      },
+      {
+        path: 'dashboard',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/dashboard/dashboard.component').then(
+            (modulo) => modulo.DashboardComponent,
+          ),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
     ],
   },

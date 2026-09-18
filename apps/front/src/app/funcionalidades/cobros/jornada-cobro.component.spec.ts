@@ -75,6 +75,54 @@ describe('JornadaCobroComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('No hay cobro en domingos');
     expect(fixture.nativeElement.textContent).toContain('Hoy no hay jornada de cobro');
+    expect(fixture.nativeElement.textContent).toContain('Domingo');
+  });
+
+  it('debe marcar vencimiento trasladado cuando cae en domingo', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [JornadaCobroComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: CobrosServicio,
+          useValue: {
+            listarCobrosDelDia: () =>
+              of({
+                fecha: '2026-09-21',
+                dia_habil: true,
+                mensaje: null,
+                cobros: [
+                  {
+                    ...cobroPendiente,
+                    fecha_vencimiento: '2026-09-20',
+                    fecha_cobro_efectiva: '2026-09-21',
+                  },
+                ],
+              }),
+            resumenDiario: () =>
+              of({
+                fecha: '2026-09-21',
+                dia_habil: true,
+                cobrador_id: 'cobrador-1',
+                esperado: '12000.00',
+                cobrado: '0.00',
+                pendiente: '12000.00',
+              }),
+            listarHistorial: () => of([]),
+            registrarPago: () => of({} as never),
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(JornadaCobroComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Domingo');
+    expect(fixture.nativeElement.textContent).toContain('Trasladado');
   });
 
   it('debe confirmar antes de disparar un solo POST de cobro', () => {

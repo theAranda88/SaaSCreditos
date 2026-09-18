@@ -1,0 +1,7 @@
+$kind: http-request
+description: Segmentos vigente, mora, pagada. Cobrador solo ve su cartera asignada.
+url: "{{base_url}}/cartera?segmento=vigente"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 1000

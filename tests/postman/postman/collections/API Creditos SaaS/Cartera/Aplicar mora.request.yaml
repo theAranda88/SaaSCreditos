@@ -1,0 +1,7 @@
+$kind: http-request
+description: Marca cuotas vencidas en mora y suma valor_mora una sola vez. Solo propietario/administrador.
+url: "{{base_url}}/cartera/aplicar-mora"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+order: 2000

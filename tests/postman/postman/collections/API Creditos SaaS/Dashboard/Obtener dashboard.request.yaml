@@ -1,0 +1,7 @@
+$kind: http-request
+description: KPIs del negocio autenticado. Cobrador → 403.
+url: "{{base_url}}/dashboard"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 1000

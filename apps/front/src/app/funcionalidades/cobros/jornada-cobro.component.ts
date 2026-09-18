@@ -15,6 +15,10 @@ import {
 } from '../../nucleo/constantes/pagos.constantes';
 import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { fechaHoyIsoColombia } from '../../nucleo/utilidades/fecha-colombia';
+import {
+  infoDiaCalendario,
+  vencimientoTrasladado,
+} from '../../nucleo/utilidades/dias-habiles-colombia';
 import { CobrosServicio } from './cobros.servicio';
 
 type PasoJornada = 'lista' | 'confirmar' | 'exito';
@@ -27,7 +31,14 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
       <header class="encabezado">
         <div>
           <h2>Cobros del día</h2>
-          <p class="fecha">{{ fechaConsulta() }}</p>
+          <p class="fecha">
+            {{ fechaConsulta() }}
+            @if (infoFechaConsulta(); as info) {
+              @if (!info.esHabil) {
+                <span class="etiqueta inhabil">{{ info.etiqueta }}</span>
+              }
+            }
+          </p>
         </div>
         <button type="button" class="boton-secundario" (click)="cargar()" [disabled]="cargando()">
           Actualizar
@@ -52,7 +63,10 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
       }
 
       @if (respuestaCobros()?.dia_habil === false) {
-        <p class="aviso">{{ respuestaCobros()?.mensaje }}</p>
+        <p class="aviso inhabil">
+          <span class="etiqueta inhabil">{{ infoFechaConsulta()?.etiqueta ?? 'Día inhábil' }}</span>
+          {{ respuestaCobros()?.mensaje }}
+        </p>
       }
 
       @if (error()) {
@@ -77,7 +91,18 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
               <article class="tarjeta-cobro">
                 <div class="info">
                   <h3>{{ cobro.cliente_nombre_completo }}</h3>
-                  <p>Cuota {{ cobro.numero_cuota }} · Saldo {{ cobro.saldo_pendiente }}</p>
+                  <p>
+                    Cuota {{ cobro.numero_cuota }} · Vence {{ cobro.fecha_vencimiento }}
+                    @if (esVencimientoInhabil(cobro.fecha_vencimiento)) {
+                      <span class="etiqueta inhabil">{{ etiquetaDia(cobro.fecha_vencimiento) }}</span>
+                    }
+                    @if (esVencimientoTrasladado(cobro)) {
+                      <span class="etiqueta trasladado">
+                        Trasladado · cobro {{ cobro.fecha_cobro_efectiva }}
+                      </span>
+                    }
+                  </p>
+                  <p class="saldo">Saldo {{ cobro.saldo_pendiente }}</p>
                   @if (cobro.atrasado) {
                     <span class="etiqueta atraso">Atrasado</span>
                   }
@@ -101,8 +126,24 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
           <dl>
             <div><dt>Cliente</dt><dd>{{ cobro.cliente_nombre_completo }}</dd></div>
             <div><dt>Cuota</dt><dd>{{ cobro.numero_cuota }}</dd></div>
-            <div><dt>Vencimiento</dt><dd>{{ cobro.fecha_vencimiento }}</dd></div>
-            <div><dt>Cobro efectivo</dt><dd>{{ cobro.fecha_cobro_efectiva }}</dd></div>
+            <div>
+              <dt>Vencimiento</dt>
+              <dd>
+                {{ cobro.fecha_vencimiento }}
+                @if (esVencimientoInhabil(cobro.fecha_vencimiento)) {
+                  <span class="etiqueta inhabil">{{ etiquetaDia(cobro.fecha_vencimiento) }}</span>
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>Cobro efectivo</dt>
+              <dd>
+                {{ cobro.fecha_cobro_efectiva }}
+                @if (esVencimientoTrasladado(cobro)) {
+                  <span class="etiqueta trasladado">Trasladado</span>
+                }
+              </dd>
+            </div>
             <div><dt>Saldo pendiente</dt><dd>{{ cobro.saldo_pendiente }}</dd></div>
           </dl>
 
@@ -168,7 +209,8 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
     .pagina { display: grid; gap: 1rem; max-width: 720px; margin: 0 auto; }
     .encabezado { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
     h2 { margin: 0; font-size: 1.5rem; }
-    .fecha { margin: 0.25rem 0 0; color: #64748b; }
+    .fecha { margin: 0.25rem 0 0; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+    .saldo { margin: 0.15rem 0 0; color: #475569; font-size: 0.9rem; }
     .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
     .resumen article { padding: 0.9rem; border-radius: 0.75rem; background: #ffffff; border: 1px solid #e5e7eb; text-align: center; }
     .resumen.inhabil { opacity: 0.7; }
@@ -182,6 +224,8 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
     .atraso { background: #fee2e2; color: #b91c1c; }
     .programado { background: #dbeafe; color: #1d4ed8; }
     .estado { background: #ecfdf5; color: #166534; }
+    .inhabil { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+    .trasladado { background: #f5f3ff; color: #5b21b6; }
     .vacio a { color: #1d4ed8; font-weight: 600; }
     .boton-cobrar, .boton-primario { min-height: 3rem; min-width: 6.5rem; padding: 0.75rem 1rem; border: none; border-radius: 0.75rem; background: #1d4ed8; color: #ffffff; font-size: 1rem; font-weight: 700; cursor: pointer; }
     .boton-secundario { min-height: 3rem; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.75rem; background: #ffffff; cursor: pointer; }
@@ -215,6 +259,7 @@ export class JornadaCobroComponent implements OnInit {
   readonly etiquetasMetodo = ETIQUETAS_METODO_PAGO;
 
   readonly fechaConsulta = signal(this.fechaHoyIso());
+  readonly infoFechaConsulta = signal(infoDiaCalendario(this.fechaHoyIso()));
   readonly respuestaCobros = signal<CobrosDelDiaRespuesta | null>(null);
   readonly resumen = signal<ResumenDiarioPago | null>(null);
   readonly cobroSeleccionado = signal<CobroDelDia | null>(null);
@@ -245,6 +290,7 @@ export class JornadaCobroComponent implements OnInit {
     this.cobrosServicio.listarCobrosDelDia(fecha).subscribe({
       next: (respuesta) => {
         this.respuestaCobros.set(respuesta);
+        this.infoFechaConsulta.set(infoDiaCalendario(respuesta.fecha));
         this.cargando.set(false);
 
         if (creditoId) {
@@ -261,7 +307,10 @@ export class JornadaCobroComponent implements OnInit {
     });
 
     this.cobrosServicio.resumenDiario(fecha).subscribe({
-      next: (totales) => this.resumen.set(totales),
+      next: (totales) => {
+        this.resumen.set(totales);
+        this.infoFechaConsulta.set(infoDiaCalendario(totales.fecha));
+      },
       error: () => {
         /* El resumen es complementario; el listado ya muestra el error principal. */
       },
@@ -347,6 +396,18 @@ export class JornadaCobroComponent implements OnInit {
     this.cobroSeleccionado.set(null);
     this.paso.set('lista');
     this.cargar();
+  }
+
+  esVencimientoInhabil(fechaIso: string): boolean {
+    return !infoDiaCalendario(fechaIso).esHabil;
+  }
+
+  etiquetaDia(fechaIso: string): string {
+    return infoDiaCalendario(fechaIso).etiqueta ?? 'Día inhábil';
+  }
+
+  esVencimientoTrasladado(cobro: CobroDelDia): boolean {
+    return vencimientoTrasladado(cobro.fecha_vencimiento, cobro.fecha_cobro_efectiva);
   }
 
   private fechaHoyIso(): string {

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BdModule } from '../bd/bd.module';
 import { AsignacionRepositorio } from '../entidades/asignacion.repositorio';
+import { CarteraRepositorio } from '../entidades/cartera.repositorio';
 import { PagoRepositorio } from '../entidades/pago.repositorio';
 import { ClienteRepositorio } from '../entidades/cliente.repositorio';
 import { CreditoRepositorio } from '../entidades/credito.repositorio';
@@ -21,6 +22,7 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
     ClienteRepositorio,
     CreditoRepositorio,
     AsignacionRepositorio,
+    CarteraRepositorio,
     PagoRepositorio,
   ],
   exports: [
@@ -30,6 +32,7 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
     ClienteRepositorio,
     CreditoRepositorio,
     AsignacionRepositorio,
+    CarteraRepositorio,
     PagoRepositorio,
     BdModule,
   ],

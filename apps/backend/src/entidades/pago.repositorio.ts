@@ -108,6 +108,23 @@ export class PagoRepositorio {
     return resultado._sum.monto ?? new Prisma.Decimal(0);
   }
 
+  async sumarPagosValidosDelNegocioDia(
+    negocioId: string,
+    inicioDia: Date,
+    finDia: Date,
+  ): Promise<Prisma.Decimal> {
+    const resultado = await this.prisma.pago.aggregate({
+      where: {
+        negocioId,
+        estado: 'valido',
+        fechaPago: { gte: inicioDia, lt: finDia },
+      },
+      _sum: { monto: true },
+    });
+
+    return resultado._sum.monto ?? new Prisma.Decimal(0);
+  }
+
   async registrarPago(datos: DatosRegistrarPago): Promise<Pago> {
     return this.prisma.$transaction(async (tx) => {
       const cuota = await tx.cuota.findFirst({

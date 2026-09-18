@@ -3,6 +3,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { CreditoPerfil, CuotaPerfil } from '@creditos/shared-types';
 import { forkJoin } from 'rxjs';
 import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import {
+  fechaCobroEfectiva,
+  infoDiaCalendario,
+  vencimientoTrasladado,
+} from '../../nucleo/utilidades/dias-habiles-colombia';
 import { CreditosServicio } from './creditos.servicio';
 
 @Component({
@@ -51,6 +56,7 @@ import { CreditosServicio } from './creditos.servicio';
                 <tr>
                   <th>#</th>
                   <th>Vencimiento</th>
+                  <th>Cobro efectivo</th>
                   <th>Esperado</th>
                   <th>Saldo</th>
                   <th>Estado</th>
@@ -58,9 +64,22 @@ import { CreditosServicio } from './creditos.servicio';
               </thead>
               <tbody>
                 @for (cuota of cuotas(); track cuota.id) {
-                  <tr>
+                  <tr [class.fila-inhabil]="!infoDiaCalendario(cuota.fecha_vencimiento).esHabil">
                     <td>{{ cuota.numero_cuota }}</td>
-                    <td>{{ cuota.fecha_vencimiento }}</td>
+                    <td>
+                      {{ cuota.fecha_vencimiento }}
+                      @if (!infoDiaCalendario(cuota.fecha_vencimiento).esHabil) {
+                        <span class="etiqueta inhabil">
+                          {{ infoDiaCalendario(cuota.fecha_vencimiento).etiqueta }}
+                        </span>
+                      }
+                    </td>
+                    <td>
+                      {{ fechaCobroEfectiva(cuota.fecha_vencimiento) }}
+                      @if (vencimientoTrasladado(cuota.fecha_vencimiento, fechaCobroEfectiva(cuota.fecha_vencimiento))) {
+                        <span class="etiqueta trasladado">Trasladado</span>
+                      }
+                    </td>
                     <td>{{ cuota.monto_esperado }}</td>
                     <td>{{ cuota.saldo_pendiente }}</td>
                     <td>{{ cuota.estado }}</td>
@@ -86,10 +105,17 @@ import { CreditosServicio } from './creditos.servicio';
     .tabla-contenedor { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    .fila-inhabil { background: #fffbeb; }
+    .etiqueta { display: inline-block; margin-left: 0.35rem; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.72rem; }
+    .inhabil { background: #fff7ed; color: #9a3412; }
+    .trasladado { background: #f5f3ff; color: #5b21b6; }
     .error { color: #b91c1c; }
   `,
 })
 export class DetalleCreditoComponent implements OnInit {
+  readonly infoDiaCalendario = infoDiaCalendario;
+  readonly fechaCobroEfectiva = fechaCobroEfectiva;
+  readonly vencimientoTrasladado = vencimientoTrasladado;
   private readonly creditosServicio = inject(CreditosServicio);
   private readonly ruta = inject(ActivatedRoute);
 
