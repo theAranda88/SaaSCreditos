@@ -26,6 +26,15 @@ export type {
   EstadoAsignacion,
 } from './asignaciones';
 
+export type {
+  CobroDelDia,
+  CobrosDelDiaRespuesta,
+  EstadoPago,
+  MetodoPago,
+  PagoPerfil,
+  ResumenDiarioPago,
+} from './pagos';
+
 /** Respuesta estándar del endpoint de salud de la API. */
 export interface RespuestaSaludApi {
   estado: 'ok';

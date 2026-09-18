@@ -1,0 +1,7 @@
+$kind: http-request
+description: RC-009. Esperado, cobrado y pendiente. Admin debe enviar cobradorId.
+url: "{{base_url}}/pagos/resumen-diario?fecha=2026-09-21&cobradorId={{cobrador_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 5000

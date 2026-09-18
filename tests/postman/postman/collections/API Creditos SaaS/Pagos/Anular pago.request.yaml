@@ -1,0 +1,14 @@
+$kind: http-request
+description: Solo propietario/administrador. Revierte saldos y audita.
+url: "{{base_url}}/pagos/{{pago_id}}/anular"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "motivoAnulacion": "Error de digitación en el monto"
+    }
+order: 3000

@@ -64,6 +64,19 @@ enum estado_asignacion {
   finalizada
 }
 
+enum metodo_pago {
+  efectivo
+  transferencia
+  nequi
+  daviplata
+  otro
+}
+
+enum estado_pago {
+  valido
+  anulado
+}
+
 model Negocio {
   id                 String         @id @default(uuid()) @db.Uuid
   nombreComercial    String         @map("nombre_comercial") @db.VarChar(180)
@@ -79,6 +92,7 @@ model Negocio {
   creditos           Credito[]
   cuotas             Cuota[]
   asignaciones       Asignacion[]
+  pagos              Pago[]
   auditorias         Auditoria[]
 
   @@index([estado])
@@ -102,6 +116,8 @@ model Usuario {
   creditosCreados             Credito[]     @relation("CreditosCreados")
   asignacionesComoCobrador    Asignacion[]  @relation("AsignacionesCobrador")
   asignacionesCreadas         Asignacion[]  @relation("AsignacionesAsignadoPor")
+  pagosRegistrados            Pago[]        @relation("PagosCobrador")
+  pagosAnulados               Pago[]        @relation("PagosAnuladoPor")
   auditorias                  Auditoria[]
 
   @@index([negocioId])
@@ -169,6 +185,7 @@ model Credito {
   creador               Usuario              @relation("CreditosCreados", fields: [creadoPor], references: [id], onDelete: Restrict)
   cuotas                Cuota[]
   asignaciones          Asignacion[]
+  pagos                 Pago[]
 
   @@index([negocioId])
   @@index([clienteId])
@@ -188,6 +205,7 @@ model Cuota {
   estado          estado_cuota @default(pendiente)
   negocio         Negocio      @relation(fields: [negocioId], references: [id], onDelete: Restrict)
   credito         Credito      @relation(fields: [creditoId], references: [id], onDelete: Restrict)
+  pagos           Pago[]
 
   @@unique([creditoId, numeroCuota])
   @@index([negocioId])
@@ -217,6 +235,36 @@ model Asignacion {
   @@index([estado])
   @@index([negocioId, cobradorId, estado])
   @@map("asignaciones")
+}
+
+model Pago {
+  id              String       @id @default(uuid()) @db.Uuid
+  negocioId       String       @map("negocio_id") @db.Uuid
+  cuotaId         String       @map("cuota_id") @db.Uuid
+  creditoId       String       @map("credito_id") @db.Uuid
+  cobradorId      String       @map("cobrador_id") @db.Uuid
+  monto           Decimal      @db.Decimal(18, 2)
+  fechaPago       DateTime     @map("fecha_pago") @db.Timestamptz(6)
+  metodoPago      metodo_pago  @map("metodo_pago")
+  estado          estado_pago  @default(valido)
+  motivoAnulacion String?      @map("motivo_anulacion") @db.VarChar(240)
+  anuladoPor      String?      @map("anulado_por") @db.Uuid
+  fechaAnulacion  DateTime?    @map("fecha_anulacion") @db.Timestamptz(6)
+  fechaCreacion   DateTime     @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  negocio         Negocio      @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  cuota           Cuota        @relation(fields: [cuotaId], references: [id], onDelete: Restrict)
+  credito         Credito      @relation(fields: [creditoId], references: [id], onDelete: Restrict)
+  cobrador        Usuario      @relation("PagosCobrador", fields: [cobradorId], references: [id], onDelete: Restrict)
+  anulador        Usuario?     @relation("PagosAnuladoPor", fields: [anuladoPor], references: [id], onDelete: Restrict)
+
+  @@index([negocioId])
+  @@index([creditoId])
+  @@index([cuotaId])
+  @@index([cobradorId])
+  @@index([fechaPago])
+  @@index([estado])
+  @@index([negocioId, fechaPago, estado])
+  @@map("pagos")
 }
 
 model Auditoria {

@@ -1,0 +1,3 @@
+$kind: collection
+description: Cobro diario, historial y anulación (RF-008, RF-009). Respeta domingos y festivos colombianos.
+order: 7000

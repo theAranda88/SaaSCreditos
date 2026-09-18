@@ -1,0 +1,7 @@
+$kind: http-request
+description: Domingos/festivos → dia_habil=false. Incluye atrasos. Cobrador solo su cartera.
+url: "{{base_url}}/pagos/cobros-del-dia?fecha=2026-09-21"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 1000

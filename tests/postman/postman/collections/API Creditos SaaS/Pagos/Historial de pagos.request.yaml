@@ -1,0 +1,7 @@
+$kind: http-request
+description: RF-009. Historial por creditoId.
+url: "{{base_url}}/pagos?creditoId={{credito_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 4000

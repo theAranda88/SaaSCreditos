@@ -4,6 +4,7 @@ import type {
   PeriodicidadCredito,
 } from '@creditos/shared-types';
 import { FORMULA_INTERES, REDONDEO } from '../nucleo/constantes/creditos.constantes';
+import { ajustarVencimientoADiaHabil } from '../nucleo/utilidades/dias-habiles-colombia';
 
 export type CuotaCalculada = {
   numeroCuota: number;
@@ -108,13 +109,15 @@ export function generarPlanCuotas(parametros: ParametrosPlanCuotas): PlanCuotasC
       : montoCuotaBase;
     acumulado = acumulado.add(montoEsperado);
 
+    const fechaVencimientoBruta = sumarPeriodos(
+      parametros.fechaDesembolso,
+      parametros.periodicidad,
+      numeroCuota,
+    );
+
     cuotas.push({
       numeroCuota,
-      fechaVencimiento: sumarPeriodos(
-        parametros.fechaDesembolso,
-        parametros.periodicidad,
-        numeroCuota,
-      ),
+      fechaVencimiento: ajustarVencimientoADiaHabil(fechaVencimientoBruta),
       montoEsperado,
     });
   }

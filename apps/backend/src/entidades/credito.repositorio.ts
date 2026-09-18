@@ -53,6 +53,12 @@ export class CreditoRepositorio {
     });
   }
 
+  async buscarCuotaPorIdYNegocio(cuotaId: string, negocioId: string): Promise<Cuota | null> {
+    return this.prisma.cuota.findFirst({
+      where: { id: cuotaId, negocioId },
+    });
+  }
+
   async crearConPlan(datos: DatosAltaCredito): Promise<{ credito: Credito; cuotas: Cuota[] }> {
     return this.prisma.$transaction(async (tx) => {
       const credito = await tx.credito.create({
