@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { crearAppPruebas } from './utilidades-app';
+import { crearAppPruebas, borrarSuscripciones } from './utilidades-app';
 
 describe('Cobradores (e2e)', () => {
   let app: INestApplication;
@@ -67,6 +67,7 @@ describe('Cobradores (e2e)', () => {
           ],
         },
       });
+      await borrarSuscripciones(prisma, [negocioAId, negocioBId]);
       await prisma.negocio.deleteMany({
         where: { id: { in: [negocioAId, negocioBId].filter(Boolean) } },
       });

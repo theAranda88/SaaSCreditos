@@ -1,5 +1,5 @@
 $kind: http-request
-description: Roles: propietario, administrador. Correo unique global (409 si duplica). Límite de plan no se aplica aún (Fase 7).
+description: Roles: propietario, administrador. Correo unique global (409 si duplica). 422 si se supera planes.limite_cobradores.
 url: "{{base_url}}/cobradores"
 method: POST
 headers:

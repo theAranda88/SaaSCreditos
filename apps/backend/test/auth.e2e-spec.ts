@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { crearAppPruebas } from './utilidades-app';
+import { crearAppPruebas, borrarSuscripciones } from './utilidades-app';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
@@ -68,6 +68,7 @@ describe('Auth (e2e)', () => {
           ],
         },
       });
+      await borrarSuscripciones(prisma, [negocioAId, negocioBId]);
       await prisma.negocio.deleteMany({
         where: { id: { in: [negocioAId, negocioBId].filter(Boolean) } },
       });
@@ -120,6 +121,16 @@ describe('Auth (e2e)', () => {
 
     expect(usuario?.hashContrasena).toMatch(/^\$2[aby]\$/);
     expect(usuario?.hashContrasena).not.toBe(contrasena);
+  });
+
+  it('debe crear suscripción activa al plan emprendedor en el registro', async () => {
+    const suscripcion = await prisma.suscripcion.findUnique({
+      where: { negocioId: negocioAId },
+      include: { plan: true },
+    });
+
+    expect(suscripcion?.estado).toBe('activa');
+    expect(suscripcion?.plan.codigo).toBe('emprendedor');
   });
 
   it('debe rechazar consulta de negocio ajeno con 403', async () => {

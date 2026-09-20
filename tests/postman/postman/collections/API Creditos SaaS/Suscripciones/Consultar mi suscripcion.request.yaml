@@ -1,0 +1,18 @@
+$kind: http-request
+description: Roles propietario/administrador. Disponible aunque el negocio esté suspendido.
+url: "{{base_url}}/suscripciones/mia"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 200) {
+        const json = pm.response.json();
+        pm.environment.set('suscripcion_id', json.id);
+        if (json.plan && json.plan.id) {
+          pm.environment.set('plan_id', json.plan.id);
+        }
+      }
+    language: text/javascript
+order: 1000

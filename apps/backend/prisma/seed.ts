@@ -6,6 +6,9 @@ const prisma = new PrismaClient();
 /** Contraseña compartida de usuarios de prueba (solo desarrollo local). */
 export const CONTRASENA_USUARIOS_PRUEBA = 'ClaveSegura123';
 
+/** Correo del administrador de plataforma sembrado (solo desarrollo local). */
+export const CORREO_ADMIN_PLATAFORMA = 'admin@plataforma.local';
+
 const RONDAS_BCRYPT = 12;
 
 const planesSemilla = [
@@ -62,6 +65,15 @@ const negociosPrueba = [
   },
 ] as const;
 
+function fechaHoyUtc(): Date {
+  const ahora = new Date();
+  return new Date(Date.UTC(ahora.getUTCFullYear(), ahora.getUTCMonth(), ahora.getUTCDate()));
+}
+
+function sumarMesesUtc(fecha: Date, meses: number): Date {
+  return new Date(Date.UTC(fecha.getUTCFullYear(), fecha.getUTCMonth() + meses, fecha.getUTCDate()));
+}
+
 async function sembrarPlanes(): Promise<number> {
   for (const plan of planesSemilla) {
     await prisma.plan.upsert({
@@ -84,7 +96,7 @@ async function sembrarNegocioConPropietario(
   nombreComercial: string,
   propietario: { nombre: string; correo: string },
   hashContrasena: string,
-): Promise<void> {
+): Promise<string | null> {
   const correo = propietario.correo.toLowerCase();
   const existente = await prisma.usuario.findUnique({ where: { correo } });
 
@@ -102,10 +114,10 @@ async function sembrarNegocioConPropietario(
       where: { id: existente.negocioId },
       data: { nombreComercial },
     });
-    return;
+    return existente.negocioId;
   }
 
-  await prisma.negocio.create({
+  const negocio = await prisma.negocio.create({
     data: {
       nombreComercial,
       usuarios: {
@@ -118,6 +130,8 @@ async function sembrarNegocioConPropietario(
       },
     },
   });
+
+  return negocio.id;
 }
 
 async function sembrarCobrador(
@@ -154,16 +168,55 @@ async function sembrarCobrador(
   });
 }
 
-async function sembrarUsuariosPrueba(hashContrasena: string): Promise<number> {
+async function sembrarSuscripcion(negocioId: string, planId: string): Promise<void> {
+  const hoy = fechaHoyUtc();
+  await prisma.suscripcion.upsert({
+    where: { negocioId },
+    update: {},
+    create: {
+      negocioId,
+      planId,
+      estado: 'activa',
+      fechaInicio: hoy,
+      fechaRenovacion: sumarMesesUtc(hoy, 1),
+    },
+  });
+}
+
+async function sembrarAdminPlataforma(hashContrasena: string): Promise<void> {
+  await prisma.usuario.upsert({
+    where: { correo: CORREO_ADMIN_PLATAFORMA },
+    update: {
+      nombre: 'Admin Plataforma',
+      hashContrasena,
+      rol: 'admin_plataforma',
+      estado: 'activo',
+      negocioId: null,
+    },
+    create: {
+      nombre: 'Admin Plataforma',
+      correo: CORREO_ADMIN_PLATAFORMA,
+      hashContrasena,
+      rol: 'admin_plataforma',
+    },
+  });
+}
+
+async function sembrarUsuariosPrueba(hashContrasena: string): Promise<{ usuarios: number; negocios: string[] }> {
   let usuariosCreados = 0;
+  const negocioIds: string[] = [];
 
   for (const negocio of negociosPrueba) {
-    await sembrarNegocioConPropietario(
+    const negocioId = await sembrarNegocioConPropietario(
       negocio.nombreComercial,
       negocio.propietario,
       hashContrasena,
     );
     usuariosCreados += 1;
+
+    if (negocioId) {
+      negocioIds.push(negocioId);
+    }
 
     if ('cobrador' in negocio && negocio.cobrador) {
       await sembrarCobrador(negocio.nombreComercial, negocio.cobrador, hashContrasena);
@@ -171,15 +224,30 @@ async function sembrarUsuariosPrueba(hashContrasena: string): Promise<number> {
     }
   }
 
-  return usuariosCreados;
+  await sembrarAdminPlataforma(hashContrasena);
+  usuariosCreados += 1;
+
+  return { usuarios: usuariosCreados, negocios: negocioIds };
 }
 
 async function main(): Promise<void> {
   const planes = await sembrarPlanes();
-  const hashContrasena = await bcrypt.hash(CONTRASENA_USUARIOS_PRUEBA, RONDAS_BCRYPT);
-  const usuarios = await sembrarUsuariosPrueba(hashContrasena);
+  const planInicial = await prisma.plan.findUnique({ where: { codigo: 'emprendedor' } });
 
-  console.log(`Semilla aplicada: ${planes} planes, ${usuarios} usuarios de prueba`);
+  if (!planInicial) {
+    throw new Error('No se encontró el plan emprendedor tras la semilla');
+  }
+
+  const hashContrasena = await bcrypt.hash(CONTRASENA_USUARIOS_PRUEBA, RONDAS_BCRYPT);
+  const { usuarios, negocios } = await sembrarUsuariosPrueba(hashContrasena);
+
+  for (const negocioId of negocios) {
+    await sembrarSuscripcion(negocioId, planInicial.id);
+  }
+
+  console.log(
+    `Semilla aplicada: ${planes} planes, ${usuarios} usuarios de prueba, ${negocios.length} suscripciones`,
+  );
 }
 
 main()

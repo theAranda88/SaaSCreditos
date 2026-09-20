@@ -1,0 +1,15 @@
+$kind: http-request
+description: Solo propietario. Stub sin pasarela. 422 si los cobradores activos no caben en el plan destino.
+url: "{{base_url}}/suscripciones/checkout-stub"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "planId": "{{plan_id}}",
+      "referenciaPagoExterno": "stub-checkout-001"
+    }
+order: 2000

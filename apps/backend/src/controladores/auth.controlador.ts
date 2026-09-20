@@ -23,6 +23,7 @@ import { LoginDto } from '../dtos/login.dto';
 import { RecuperarAccesoDto } from '../dtos/recuperar-acceso.dto';
 import { RegistroDto } from '../dtos/registro.dto';
 import { Publico } from '../nucleo/decoradores/publico.decorador';
+import { PermitirNegocioNoOperativo } from '../nucleo/decoradores/permitir-negocio-no-operativo.decorador';
 import { UsuarioActual } from '../nucleo/decoradores/usuario-actual.decorador';
 import { GuardLimiteLogin } from '../nucleo/guards/guard-limite-login';
 import { AuthServicio } from '../servicios/auth.servicio';
@@ -54,6 +55,7 @@ export class AuthControlador {
 
   @Post('logout')
   @ApiBearerAuth()
+  @PermitirNegocioNoOperativo()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cierra sesión (stateless: el cliente descarta el token)' })
   @ApiOkResponse({ description: 'Sesión cerrada' })
@@ -74,6 +76,7 @@ export class AuthControlador {
 
   @Get('perfil')
   @ApiBearerAuth()
+  @PermitirNegocioNoOperativo()
   @ApiOperation({ summary: 'Obtiene el perfil del usuario autenticado' })
   @ApiOkResponse({ description: 'Perfil del usuario' })
   @ApiUnauthorizedResponse({ description: 'Token ausente o inválido' })

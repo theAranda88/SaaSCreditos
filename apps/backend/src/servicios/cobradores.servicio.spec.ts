@@ -1,13 +1,15 @@
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import type { Usuario } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PerfilUsuario } from '@creditos/shared-types';
 import type { UsuarioRepositorio } from '../entidades/usuario.repositorio';
 import { CobradoresServicio } from './cobradores.servicio';
+import type { CupoPlanServicio } from './cupo-plan.servicio';
 
 describe('CobradoresServicio', () => {
   let cobradoresServicio: CobradoresServicio;
   let usuarioRepositorio: UsuarioRepositorio;
+  let cupoPlanServicio: CupoPlanServicio;
 
   const usuarioPropietario: PerfilUsuario = {
     id: 'usuario-1',
@@ -45,7 +47,11 @@ describe('CobradoresServicio', () => {
       actualizarUltimoAcceso: vi.fn(),
     } as unknown as UsuarioRepositorio;
 
-    cobradoresServicio = new CobradoresServicio(usuarioRepositorio);
+    cupoPlanServicio = {
+      exigirCupoParaAlta: vi.fn().mockResolvedValue(undefined),
+    } as unknown as CupoPlanServicio;
+
+    cobradoresServicio = new CobradoresServicio(usuarioRepositorio, cupoPlanServicio);
   });
 
   it('debe crear un cobrador del negocio autenticado sin exponer el hash', async () => {
@@ -59,7 +65,7 @@ describe('CobradoresServicio', () => {
       telefono: '3001234567',
     });
 
-    expect(usuarioRepositorio.contarCobradoresActivos).toHaveBeenCalledWith('negocio-a');
+    expect(cupoPlanServicio.exigirCupoParaAlta).toHaveBeenCalledWith('negocio-a');
     expect(usuarioRepositorio.crear).toHaveBeenCalledWith(
       expect.objectContaining({
         nombre: 'Carlos Cobrador',
@@ -144,5 +150,35 @@ describe('CobradoresServicio', () => {
     expect(resultado).toHaveLength(1);
     expect(resultado[0]?.negocio_id).toBe('negocio-a');
     expect(resultado[0]?.rol).toBe('cobrador');
+  });
+
+  it('debe rechazar crear cobrador cuando el cupo del plan está lleno', async () => {
+    vi.mocked(cupoPlanServicio.exigirCupoParaAlta).mockRejectedValue(
+      new UnprocessableEntityException('El plan Emprendedor permite hasta 3 cobradores activos'),
+    );
+
+    await expect(
+      cobradoresServicio.crear(usuarioPropietario, {
+        nombre: 'Extra',
+        correo: 'extra@ejemplo.com',
+        contrasena: 'ClaveSegura123',
+      }),
+    ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    expect(usuarioRepositorio.crear).not.toHaveBeenCalled();
+  });
+
+  it('debe rechazar reactivar cobrador cuando el cupo está lleno', async () => {
+    vi.mocked(usuarioRepositorio.buscarCobradorPorIdYNegocio).mockResolvedValue({
+      ...cobradorActivo,
+      estado: 'inactivo',
+    });
+    vi.mocked(cupoPlanServicio.exigirCupoParaAlta).mockRejectedValue(
+      new UnprocessableEntityException('El plan Emprendedor permite hasta 3 cobradores activos'),
+    );
+
+    await expect(
+      cobradoresServicio.cambiarEstado(usuarioPropietario, 'cobrador-1', { estado: 'activo' }),
+    ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    expect(usuarioRepositorio.actualizar).not.toHaveBeenCalled();
   });
 });

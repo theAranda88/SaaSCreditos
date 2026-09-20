@@ -1,0 +1,14 @@
+$kind: http-request
+description: Solo admin_plataforma. Transacción negocio + suscripción + auditoría. Suspendido → 403 en operaciones de negocio.
+url: "{{base_url}}/plataforma/negocios/{{negocio_id}}/estado"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token_plataforma}}
+body:
+  type: text
+  content: |-
+    {
+      "estado": "suspendido"
+    }
+order: 2000

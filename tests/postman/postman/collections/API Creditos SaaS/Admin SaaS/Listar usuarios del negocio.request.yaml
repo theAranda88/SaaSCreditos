@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles admin_plataforma, soporte (RA-003).
+url: "{{base_url}}/plataforma/negocios/{{negocio_id}}/usuarios"
+method: GET
+headers:
+  Authorization: Bearer {{token_plataforma}}
+order: 3000

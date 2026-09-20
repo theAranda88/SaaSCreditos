@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { PayloadJwt, PerfilUsuario, RespuestaLogin } from '@creditos/shared-types';
@@ -12,6 +13,11 @@ import type { LoginDto } from '../dtos/login.dto';
 import type { RegistroDto } from '../dtos/registro.dto';
 import { NegocioRepositorio } from '../entidades/negocio.repositorio';
 import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
+import {
+  CODIGO_PLAN_INICIAL,
+  MENSAJE_PLAN_INICIAL_AUSENTE,
+} from '../nucleo/constantes/planes.constantes';
+import { fechaHoyUtc, sumarMesesUtc } from '../nucleo/utilidades/fechas-plan';
 
 const RONDAS_BCRYPT = 12;
 
@@ -35,6 +41,12 @@ export class AuthServicio {
     const hashContrasena = await bcrypt.hash(dto.contrasena, RONDAS_BCRYPT);
 
     const resultado = await this.prisma.$transaction(async (tx) => {
+      const planInicial = await tx.plan.findUnique({ where: { codigo: CODIGO_PLAN_INICIAL } });
+
+      if (!planInicial) {
+        throw new UnprocessableEntityException(MENSAJE_PLAN_INICIAL_AUSENTE);
+      }
+
       const negocio = await tx.negocio.create({
         data: {
           nombreComercial: dto.nombreComercial.trim(),
@@ -51,6 +63,17 @@ export class AuthServicio {
           hashContrasena,
           rol: 'propietario',
           telefono: dto.telefono?.trim() ?? null,
+        },
+      });
+
+      const hoy = fechaHoyUtc();
+      await tx.suscripcion.create({
+        data: {
+          negocioId: negocio.id,
+          planId: planInicial.id,
+          estado: 'activa',
+          fechaInicio: hoy,
+          fechaRenovacion: sumarMesesUtc(hoy, 1),
         },
       });
 

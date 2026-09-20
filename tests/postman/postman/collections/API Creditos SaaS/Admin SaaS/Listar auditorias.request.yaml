@@ -1,0 +1,7 @@
+$kind: http-request
+description: Roles admin_plataforma, soporte (RA-007).
+url: "{{base_url}}/plataforma/auditorias?negocioId={{negocio_id}}"
+method: GET
+headers:
+  Authorization: Bearer {{token_plataforma}}
+order: 4000

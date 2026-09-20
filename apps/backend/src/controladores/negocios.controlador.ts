@@ -10,6 +10,7 @@ import {
 import type { NegocioPerfil, PerfilUsuario } from '@creditos/shared-types';
 import { ActualizarNegocioDto } from '../dtos/actualizar-negocio.dto';
 import { Roles } from '../nucleo/decoradores/roles.decorador';
+import { PermitirNegocioNoOperativo } from '../nucleo/decoradores/permitir-negocio-no-operativo.decorador';
 import { UsuarioActual } from '../nucleo/decoradores/usuario-actual.decorador';
 import { NegociosServicio } from '../servicios/negocios.servicio';
 
@@ -23,6 +24,7 @@ export class NegociosControlador {
 
   @Get('mi-negocio')
   @Roles('propietario', 'administrador')
+  @PermitirNegocioNoOperativo()
   @ApiOperation({ summary: 'Consulta los datos del negocio del usuario autenticado' })
   @ApiOkResponse({ description: 'Datos del negocio' })
   @ApiForbiddenResponse({ description: 'Rol no autorizado o sin negocio asignado' })

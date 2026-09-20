@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { crearAppPruebas } from './utilidades-app';
+import { crearAppPruebas, borrarSuscripciones } from './utilidades-app';
 
 describe('Asignaciones (e2e)', () => {
   let app: INestApplication;
@@ -149,6 +149,7 @@ describe('Asignaciones (e2e)', () => {
           ],
         },
       });
+      await borrarSuscripciones(prisma, negocios);
       await prisma.negocio.deleteMany({ where: { id: { in: negocios } } });
       await prisma.$disconnect();
     }

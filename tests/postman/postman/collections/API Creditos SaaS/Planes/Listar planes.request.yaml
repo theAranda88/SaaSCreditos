@@ -1,0 +1,7 @@
+$kind: http-request
+description: Autenticado. Roles de negocio ven planes activos; plataforma ve el catálogo completo.
+url: "{{base_url}}/planes"
+method: GET
+headers:
+  Authorization: Bearer {{token}}
+order: 1000

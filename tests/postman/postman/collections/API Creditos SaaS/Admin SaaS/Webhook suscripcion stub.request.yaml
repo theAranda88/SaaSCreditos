@@ -1,0 +1,16 @@
+$kind: http-request
+description: Stub de webhook. Eventos pago_aprobado, pago_fallido, cancelacion.
+url: "{{base_url}}/plataforma/webhooks/suscripcion-stub"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token_plataforma}}
+body:
+  type: text
+  content: |-
+    {
+      "suscripcionId": "{{suscripcion_id}}",
+      "evento": "pago_aprobado",
+      "referenciaPagoExterno": "pasarela-ref-001"
+    }
+order: 5000

@@ -18,6 +18,13 @@ enum estado_plan {
   inactivo
 }
 
+enum estado_suscripcion {
+  activa
+  pago_fallido
+  cancelada
+  suspendida
+}
+
 enum rol_usuario {
   propietario
   administrador
@@ -94,6 +101,7 @@ model Negocio {
   asignaciones       Asignacion[]
   pagos              Pago[]
   auditorias         Auditoria[]
+  suscripcion        Suscripcion?
 
   @@index([estado])
   @@map("negocios")
@@ -152,17 +160,37 @@ model Cliente {
 }
 
 model Plan {
-  id                   String      @id @default(uuid()) @db.Uuid
-  codigo               String      @unique @db.VarChar(40)
-  nombre               String      @db.VarChar(80)
-  limiteCobradores     Int         @map("limite_cobradores")
-  precioImplementacion Decimal     @map("precio_implementacion") @db.Decimal(18, 2)
-  precioMensual        Decimal     @map("precio_mensual") @db.Decimal(18, 2)
-  caracteristicas      Json        @default("{}")
-  estado               estado_plan @default(activo)
-  fechaCreacion        DateTime    @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  id                   String        @id @default(uuid()) @db.Uuid
+  codigo               String        @unique @db.VarChar(40)
+  nombre               String        @db.VarChar(80)
+  limiteCobradores     Int           @map("limite_cobradores")
+  precioImplementacion Decimal       @map("precio_implementacion") @db.Decimal(18, 2)
+  precioMensual        Decimal       @map("precio_mensual") @db.Decimal(18, 2)
+  caracteristicas      Json          @default("{}")
+  estado               estado_plan   @default(activo)
+  fechaCreacion        DateTime      @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  suscripciones        Suscripcion[]
 
   @@map("planes")
+}
+
+model Suscripcion {
+  id                     String              @id @default(uuid()) @db.Uuid
+  negocioId              String              @unique @map("negocio_id") @db.Uuid
+  planId                 String              @map("plan_id") @db.Uuid
+  estado                 estado_suscripcion
+  fechaInicio            DateTime            @map("fecha_inicio") @db.Date
+  fechaRenovacion        DateTime            @map("fecha_renovacion") @db.Date
+  fechaCancelacion       DateTime?           @map("fecha_cancelacion") @db.Date
+  referenciaPagoExterno  String?             @map("referencia_pago_externo") @db.VarChar(120)
+  fechaCreacion          DateTime            @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  fechaActualizacion     DateTime            @updatedAt @map("fecha_actualizacion") @db.Timestamptz(6)
+  negocio                Negocio             @relation(fields: [negocioId], references: [id], onDelete: Restrict)
+  plan                   Plan                @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([planId])
+  @@index([estado])
+  @@map("suscripciones")
 }
 
 model Credito {

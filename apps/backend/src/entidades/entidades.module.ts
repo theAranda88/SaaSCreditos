@@ -7,6 +7,8 @@ import { ClienteRepositorio } from '../entidades/cliente.repositorio';
 import { CreditoRepositorio } from '../entidades/credito.repositorio';
 import { NegocioRepositorio } from '../entidades/negocio.repositorio';
 import { PlanRepositorio } from '../entidades/plan.repositorio';
+import { SuscripcionRepositorio } from '../entidades/suscripcion.repositorio';
+import { AuditoriaRepositorio } from '../entidades/auditoria.repositorio';
 import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
 
 /**
@@ -17,6 +19,8 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
   imports: [BdModule],
   providers: [
     PlanRepositorio,
+    SuscripcionRepositorio,
+    AuditoriaRepositorio,
     UsuarioRepositorio,
     NegocioRepositorio,
     ClienteRepositorio,
@@ -27,6 +31,8 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
   ],
   exports: [
     PlanRepositorio,
+    SuscripcionRepositorio,
+    AuditoriaRepositorio,
     UsuarioRepositorio,
     NegocioRepositorio,
     ClienteRepositorio,

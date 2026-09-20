@@ -65,6 +65,13 @@ export class UsuarioRepositorio {
     });
   }
 
+  async listarPorNegocio(negocioId: string): Promise<Usuario[]> {
+    return this.prisma.usuario.findMany({
+      where: { negocioId },
+      orderBy: [{ rol: 'asc' }, { nombre: 'asc' }],
+    });
+  }
+
   async actualizarUltimoAcceso(id: string): Promise<void> {
     await this.prisma.usuario.update({
       where: { id },

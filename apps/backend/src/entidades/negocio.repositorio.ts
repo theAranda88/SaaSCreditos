@@ -10,6 +10,20 @@ export class NegocioRepositorio {
     return this.prisma.negocio.findUnique({ where: { id } });
   }
 
+  async listarConSuscripcion() {
+    return this.prisma.negocio.findMany({
+      include: { suscripcion: { include: { plan: true } } },
+      orderBy: { fechaCreacion: 'desc' },
+    });
+  }
+
+  async buscarPorIdConSuscripcion(id: string) {
+    return this.prisma.negocio.findUnique({
+      where: { id },
+      include: { suscripcion: { include: { plan: true } } },
+    });
+  }
+
   async crear(datos: Prisma.NegocioCreateInput): Promise<Negocio> {
     return this.prisma.negocio.create({ data: datos });
   }

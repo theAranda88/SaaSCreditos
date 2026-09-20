@@ -15,11 +15,13 @@ import type { ConsultarCobradoresDto } from '../dtos/consultar-cobradores.dto';
 import type { CrearCobradorDto } from '../dtos/crear-cobrador.dto';
 import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
 import { RONDAS_BCRYPT } from '../nucleo/constantes/usuarios.constantes';
+import { CupoPlanServicio } from './cupo-plan.servicio';
 
 @Injectable()
 export class CobradoresServicio {
   constructor(
     @Inject(UsuarioRepositorio) private readonly usuarioRepositorio: UsuarioRepositorio,
+    @Inject(CupoPlanServicio) private readonly cupoPlanServicio: CupoPlanServicio,
   ) {}
 
   async crear(usuario: PerfilUsuario, dto: CrearCobradorDto): Promise<CobradorPerfil> {
@@ -105,6 +107,11 @@ export class CobradoresServicio {
     dto: CambiarEstadoCobradorDto,
   ): Promise<CobradorPerfil> {
     const cobrador = await this.obtenerDelNegocio(usuario, id);
+
+    if (dto.estado === 'activo' && cobrador.estado !== 'activo') {
+      await this.asegurarCupoPlan(cobrador.negocioId!);
+    }
+
     const actualizado = await this.usuarioRepositorio.actualizar(cobrador.id, cobrador.negocioId!, {
       estado: dto.estado,
     });
@@ -113,11 +120,10 @@ export class CobradoresServicio {
   }
 
   /**
-   * Hook de plan (RF-015 / Fase 7): consulta el cupo actual.
-   * No aplica `planes.limite_cobradores` todavía.
+   * Aplica `planes.limite_cobradores` del plan contratado (RF-015 / Fase 7).
    */
   async asegurarCupoPlan(negocioId: string): Promise<void> {
-    await this.usuarioRepositorio.contarCobradoresActivos(negocioId);
+    await this.cupoPlanServicio.exigirCupoParaAlta(negocioId);
   }
 
   private async obtenerDelNegocio(usuario: PerfilUsuario, id: string): Promise<Usuario> {

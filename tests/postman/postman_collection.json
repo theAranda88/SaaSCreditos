@@ -509,6 +509,162 @@
           }
         }
       ]
+    },
+    {
+      "name": "Planes",
+      "description": "Catálogo comercial global (RF-015 / RA-004).",
+      "item": [
+        {
+          "name": "Listar planes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/planes",
+            "description": "Roles de negocio ven planes activos. Plataforma ve el catálogo completo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Suscripciones",
+      "description": "Consulta y checkout stub de la suscripción del negocio (RF-015).",
+      "item": [
+        {
+          "name": "Consultar mi suscripcion",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/suscripciones/mia",
+            "description": "Roles propietario/administrador. Disponible aunque el negocio esté suspendido."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('suscripcion_id', json.id);",
+                  "  if (json.plan && json.plan.id) {",
+                  "    pm.environment.set('plan_id', json.plan.id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Checkout stub",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planId\": \"{{plan_id}}\",\n  \"referenciaPagoExterno\": \"stub-checkout-001\"\n}"
+            },
+            "url": "{{base_url}}/suscripciones/checkout-stub",
+            "description": "Solo propietario. 422 si el cupo no cabe en el plan destino."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin SaaS",
+      "description": "Administración de plataforma (RA-001…RA-005, RA-007).",
+      "item": [
+        {
+          "name": "Iniciar sesion (Admin plataforma)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@plataforma.local\",\n  \"contrasena\": \"ClaveSegura123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login",
+            "description": "Usuario sembrado. Guarda token y token_plataforma."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('token', json.token);",
+                  "  pm.environment.set('token_plataforma', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar negocios",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_plataforma}}" }],
+            "url": "{{base_url}}/plataforma/negocios",
+            "description": "Roles admin_plataforma, soporte."
+          }
+        },
+        {
+          "name": "Suspender negocio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token_plataforma}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"suspendido\"\n}"
+            },
+            "url": "{{base_url}}/plataforma/negocios/{{negocio_id}}/estado",
+            "description": "Solo admin_plataforma. Transacción + auditoría."
+          }
+        },
+        {
+          "name": "Listar usuarios del negocio",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_plataforma}}" }],
+            "url": "{{base_url}}/plataforma/negocios/{{negocio_id}}/usuarios",
+            "description": "RA-003."
+          }
+        },
+        {
+          "name": "Listar auditorias",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token_plataforma}}" }],
+            "url": "{{base_url}}/plataforma/auditorias?negocioId={{negocio_id}}",
+            "description": "RA-007."
+          }
+        },
+        {
+          "name": "Webhook suscripcion stub",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token_plataforma}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"suscripcionId\": \"{{suscripcion_id}}\",\n  \"evento\": \"pago_aprobado\",\n  \"referenciaPagoExterno\": \"pasarela-ref-001\"\n}"
+            },
+            "url": "{{base_url}}/plataforma/webhooks/suscripcion-stub",
+            "description": "Stub sin pasarela real."
+          }
+        }
+      ]
     }
   ]
 }
