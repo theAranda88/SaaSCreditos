@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
+import { rutaInicioPorRol } from '../../../nucleo/auth/roles-negocio';
 
 @Component({
   selector: 'app-login',
@@ -34,9 +35,9 @@ export class LoginComponent {
     const { correo, contrasena } = this.formulario.getRawValue();
 
     this.authServicio.iniciarSesion(correo, contrasena).subscribe({
-      next: () => {
+      next: (respuesta) => {
         this.cargando.set(false);
-        void this.router.navigate(['/app']);
+        void this.router.navigate([rutaInicioPorRol(respuesta.usuario.rol)]);
       },
       error: () => {
         this.cargando.set(false);

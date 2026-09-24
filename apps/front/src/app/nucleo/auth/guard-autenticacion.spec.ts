@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { AuthServicio } from './auth.servicio';
 import { crearGuardRol } from './guard-rol';
 import { guardAutenticacion } from './guard-autenticacion';
+import { guardExigirNegocio, guardExigirPlataforma } from './guard-panel';
+import { rutaInicioPorRol } from './roles-negocio';
 
 describe('guardAutenticacion', () => {
   it('debe redirigir a login si no hay sesión', () => {
@@ -50,5 +52,73 @@ describe('crearGuardRol', () => {
 
     expect(resultado).toBeInstanceOf(UrlTree);
     expect((resultado as UrlTree).toString()).toBe('/app');
+  });
+});
+
+describe('rutaInicioPorRol', () => {
+  it('debe enviar a plataforma a los roles de administración SaaS', () => {
+    expect(rutaInicioPorRol('admin_plataforma')).toBe('/plataforma');
+    expect(rutaInicioPorRol('soporte')).toBe('/plataforma');
+    expect(rutaInicioPorRol('propietario')).toBe('/app');
+  });
+});
+
+describe('guardExigirPlataforma', () => {
+  it('debe redirigir al panel de negocio si el rol no es de plataforma', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthServicio,
+          useValue: {
+            perfilActual: () => ({
+              id: 'usuario-1',
+              nombre: 'Ana',
+              correo: 'ana@ejemplo.com',
+              rol: 'propietario',
+              negocio_id: 'negocio-a',
+            }),
+          },
+        },
+      ],
+    });
+
+    const resultado = TestBed.runInInjectionContext(() =>
+      guardExigirPlataforma({} as never, {} as never),
+    );
+
+    expect(resultado).toBeInstanceOf(UrlTree);
+    expect((resultado as UrlTree).toString()).toBe('/app');
+  });
+});
+
+describe('guardExigirNegocio', () => {
+  it('debe redirigir a plataforma si el usuario no tiene negocio', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthServicio,
+          useValue: {
+            perfilActual: () => ({
+              id: 'admin-1',
+              nombre: 'Admin',
+              correo: 'admin@plataforma.local',
+              rol: 'admin_plataforma',
+              negocio_id: null,
+            }),
+          },
+        },
+      ],
+    });
+
+    const resultado = TestBed.runInInjectionContext(() =>
+      guardExigirNegocio({} as never, {} as never),
+    );
+
+    expect(resultado).toBeInstanceOf(UrlTree);
+    expect((resultado as UrlTree).toString()).toBe('/plataforma');
   });
 });

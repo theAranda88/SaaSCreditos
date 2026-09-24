@@ -23,6 +23,7 @@
       <a routerLink="/app/asignaciones" routerLinkActive="activo">Asignaciones</a>
       <a routerLink="/app/cartera" routerLinkActive="activo">Cartera</a>
       <a routerLink="/app/dashboard" routerLinkActive="activo">Dashboard</a>
+      <a routerLink="/app/suscripcion" routerLinkActive="activo">Suscripción</a>
       <a routerLink="/app/configuracion" routerLinkActive="activo">Configuración</a>
     }
     @if (esCobrador()) {
@@ -31,6 +32,13 @@
       <a routerLink="/app/cartera" routerLinkActive="activo">Mi cartera</a>
     }
   </nav>
+
+  @if (servicioNoOperativo()) {
+    <p class="aviso-suscripcion">
+      El servicio de este negocio no está activo.
+      <a routerLink="/app/suscripcion">Ver suscripción</a>
+    </p>
+  }
 
   <main>
     <router-outlet />

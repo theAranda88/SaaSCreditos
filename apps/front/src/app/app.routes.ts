@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
 import { crearGuardRol } from './nucleo/auth/guard-rol';
 import { guardAutenticacion } from './nucleo/auth/guard-autenticacion';
-import { ROLES_ADMINISTRACION_NEGOCIO } from './nucleo/auth/roles-negocio';
+import { guardExigirNegocio, guardExigirPlataforma } from './nucleo/auth/guard-panel';
+import { ROLES_ADMINISTRACION_NEGOCIO, ROLES_PLATAFORMA } from './nucleo/auth/roles-negocio';
 import { LoginComponent } from './funcionalidades/auth/login/login.component';
 import { ShellAppComponent } from './funcionalidades/app/shell-app.component';
 import { InicioComponent } from './funcionalidades/app/inicio/inicio.component';
@@ -10,13 +11,14 @@ import { ConfiguracionComponent } from './funcionalidades/app/configuracion/conf
 const guardAdministracion = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO]);
 const guardCartera = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO, 'cobrador']);
 const guardCobrador = crearGuardRol(['cobrador']);
+const guardPlataforma = crearGuardRol([...ROLES_PLATAFORMA]);
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: 'app',
     component: ShellAppComponent,
-    canActivate: [guardAutenticacion],
+    canActivate: [guardAutenticacion, guardExigirNegocio],
     children: [
       { path: 'inicio', component: InicioComponent },
       {
@@ -136,7 +138,40 @@ export const routes: Routes = [
             (modulo) => modulo.DashboardComponent,
           ),
       },
+      {
+        path: 'suscripcion',
+        canActivate: [guardAdministracion],
+        loadComponent: () =>
+          import('./funcionalidades/suscripciones/consulta-suscripcion.component').then(
+            (modulo) => modulo.ConsultaSuscripcionComponent,
+          ),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
+    ],
+  },
+  {
+    path: 'plataforma',
+    loadComponent: () =>
+      import('./funcionalidades/plataforma/shell-plataforma.component').then(
+        (modulo) => modulo.ShellPlataformaComponent,
+      ),
+    canActivate: [guardAutenticacion, guardExigirPlataforma, guardPlataforma],
+    children: [
+      {
+        path: 'negocios',
+        loadComponent: () =>
+          import('./funcionalidades/plataforma/listado-negocios-plataforma.component').then(
+            (modulo) => modulo.ListadoNegociosPlataformaComponent,
+          ),
+      },
+      {
+        path: 'negocios/:id',
+        loadComponent: () =>
+          import('./funcionalidades/plataforma/detalle-negocio-plataforma.component').then(
+            (modulo) => modulo.DetalleNegocioPlataformaComponent,
+          ),
+      },
+      { path: '', pathMatch: 'full', redirectTo: 'negocios' },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
