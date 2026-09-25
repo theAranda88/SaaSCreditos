@@ -2,8 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { AuthServicio } from '../../nucleo/auth/auth.servicio';
 import { PlataformaServicio } from './plataforma.servicio';
 import { ListadoNegociosPlataformaComponent } from './listado-negocios-plataforma.component';
+
+const proveedorAuthAdmin = {
+  provide: AuthServicio,
+  useValue: { perfilActual: () => ({ rol: 'admin_plataforma' as const }) },
+};
 
 describe('ListadoNegociosPlataformaComponent', () => {
   it('debe mostrar estado vacío cuando no hay negocios', async () => {
@@ -11,6 +17,7 @@ describe('ListadoNegociosPlataformaComponent', () => {
       imports: [ListadoNegociosPlataformaComponent],
       providers: [
         provideRouter([]),
+        proveedorAuthAdmin,
         { provide: PlataformaServicio, useValue: { listarNegocios: () => of([]) } },
       ],
     });
@@ -29,6 +36,7 @@ describe('ListadoNegociosPlataformaComponent', () => {
       imports: [ListadoNegociosPlataformaComponent],
       providers: [
         provideRouter([]),
+        proveedorAuthAdmin,
         {
           provide: PlataformaServicio,
           useValue: {
@@ -63,5 +71,6 @@ describe('ListadoNegociosPlataformaComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Préstamos Alfa (prueba)');
     expect(fixture.nativeElement.textContent).toContain('Emprendedor');
+    expect(fixture.nativeElement.textContent).toContain('Nuevo negocio');
   });
 });

@@ -1,15 +1,14 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PrismaServicio } from '../bd/prisma.servicio';
-import { AuthServicio } from './auth.servicio';
 import type { UsuarioRepositorio } from '../entidades/usuario.repositorio';
-import type { NegocioRepositorio } from '../entidades/negocio.repositorio';
+import { AuthServicio } from './auth.servicio';
+import type { AltaNegocioServicio } from './alta-negocio.servicio';
 
 describe('AuthServicio', () => {
   let authServicio: AuthServicio;
   let usuarioRepositorio: UsuarioRepositorio;
-  let prisma: PrismaServicio;
+  let altaNegocioServicio: AltaNegocioServicio;
   let jwtService: JwtService;
 
   beforeEach(() => {
@@ -20,20 +19,15 @@ describe('AuthServicio', () => {
       actualizarUltimoAcceso: vi.fn(),
     } as unknown as UsuarioRepositorio;
 
-    prisma = {
-      $transaction: vi.fn(),
-    } as unknown as PrismaServicio;
+    altaNegocioServicio = {
+      crearNegocioYPropietario: vi.fn(),
+    } as unknown as AltaNegocioServicio;
 
     jwtService = {
       signAsync: vi.fn().mockResolvedValue('token-jwt-falso'),
     } as unknown as JwtService;
 
-    authServicio = new AuthServicio(
-      prisma,
-      usuarioRepositorio,
-      {} as NegocioRepositorio,
-      jwtService,
-    );
+    authServicio = new AuthServicio(usuarioRepositorio, altaNegocioServicio, jwtService);
   });
 
   it('debe rechazar login con credenciales inválidas', async () => {
@@ -48,19 +42,9 @@ describe('AuthServicio', () => {
   });
 
   it('debe rechazar registro con correo duplicado', async () => {
-    vi.mocked(usuarioRepositorio.buscarPorCorreo).mockResolvedValue({
-      id: 'usuario-existente',
-      negocioId: 'negocio-1',
-      nombre: 'Existente',
-      correo: 'ana@ejemplo.com',
-      hashContrasena: 'hash',
-      rol: 'propietario',
-      estado: 'activo',
-      telefono: null,
-      fechaCreacion: new Date(),
-      ultimoAcceso: null,
-      fechaActualizacion: new Date(),
-    });
+    vi.mocked(altaNegocioServicio.crearNegocioYPropietario).mockRejectedValue(
+      new ConflictException('El correo ya está registrado'),
+    );
 
     await expect(
       authServicio.registrar({

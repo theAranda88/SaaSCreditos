@@ -2,15 +2,15 @@
 
 **Documento de Especificación de Requerimientos de Software (SRS)**
 
-Versión 1.2 — Documento base de definición (nombres en español + calidad)
+Versión 1.3 — Documento base de definición (nombres en español + calidad)
 
 Preparado para: uso interno, planificación del producto y equipo de desarrollo
 
-Fecha: 15 de septiembre de 2026
+Fecha de última revisión: **24 de septiembre de 2026**
 
 **DOCUMENTO DE TRABAJO.** Este documento formaliza la definición inicial del producto. Las decisiones marcadas como *por definir* deben confirmarse antes de convertirlas en compromisos de implementación.
 
-Cambios respecto a v1.0: frontend Angular; monorepo dockerizado desde el inicio; Swagger UI y colecciones Postman como criterio de desarrollo; esquema de base de datos formalizado (entidades, relaciones, campos, índices y transacciones). v1.2: nombres de tablas/columnas y código de dominio en español; tests automatizados como puerta de entrega.
+Cambios respecto a v1.0: frontend Angular; monorepo dockerizado desde el inicio; Swagger UI y colecciones Postman como criterio de desarrollo; esquema de base de datos formalizado (entidades, relaciones, campos, índices y transacciones). v1.2: nombres de tablas/columnas y código de dominio en español; tests automatizados como puerta de entrega. **v1.3 (2026-09-24):** alta de negocio asistida por `admin_plataforma` (RA-002); flujo §12.1b; criterio MVP de registro aclarado (RF-001 self-service + onboarding asistido).
 
 ---
 
@@ -196,7 +196,7 @@ Notas:
 | ID | Requerimiento | Descripción | Prioridad |
 |---|---|---|---|
 | RA-001 | Acceso administrativo | Acceso separado y protegido. | MVP |
-| RA-002 | Gestión de negocios | Consultar, activar, suspender y administrar cuentas. | MVP |
+| RA-002 | Gestión de negocios | Consultar, **dar de alta cuentas nuevas** (propietario inicial + suscripción), activar, suspender y administrar cuentas. Solo `admin_plataforma` crea negocios; `soporte` consulta. | MVP |
 | RA-003 | Gestión de usuarios | Buscar y administrar usuarios por negocio. | MVP |
 | RA-004 | Planes y límites | Crear/editar planes y límites. | MVP |
 | RA-005 | Suscripciones | Consultar estado, pagos y cancelaciones. | MVP |
@@ -330,7 +330,9 @@ El desarrollo terminado es código + Swagger/Postman **+ tests en verde**. Si la
 
 ## 12. Flujos del sistema
 
-**12.1 Alta del negocio:** Landing → Registro → autenticación → creación de negocio → selección de plan → pago/activación → configuración → dashboard.
+**12.1 Alta del negocio (self-service, RF-001):** Landing → Registro público → autenticación → creación de negocio → plan inicial (Emprendedor) → suscripción activa → configuración → dashboard.
+
+**12.1b Alta asistida por plataforma (RA-002, desde 2026-09-24):** `admin_plataforma` → panel Negocios → **Nuevo negocio** → datos del negocio y del propietario → plan inicial (por defecto Emprendedor) → transacción atómica (`negocios` + `usuarios` + `suscripciones` + `auditorias`) → el propietario accede con login normal (no se comparte sesión del admin).
 
 **12.2 Cliente y crédito:** Cliente → validación → crédito → condiciones → cuotas → activación → asignación.
 
@@ -487,7 +489,7 @@ Los tiempos específicos se definirán en la planeación técnica.
 
 ### Criterios de aceptación del MVP
 
-- Un negocio puede registrarse y acceder de forma segura.
+- Un negocio puede registrarse y acceder de forma segura (**RF-001** vía `POST /api/auth/registro` y/o UI de registro; **RA-002** vía alta asistida por `admin_plataforma` en panel de plataforma).
 - Puede crear cobradores y clientes.
 - Puede crear un crédito y consultar sus cuotas.
 - Puede asignar cartera.

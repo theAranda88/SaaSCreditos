@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Mejoras V2 — Operación y UX</title>
+  <style>
+    @page { margin: 2cm; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 100%;
+    }
+    h1 { font-size: 22pt; border-bottom: 2px solid #1d4ed8; padding-bottom: 0.3em; }
+    h2 { font-size: 14pt; color: #1e3a8a; margin-top: 1.4em; page-break-after: avoid; }
+    h3 { font-size: 12pt; margin-top: 1em; }
+    table { border-collapse: collapse; width: 100%; font-size: 10pt; margin: 0.8em 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 0.35em 0.5em; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; }
+    code { background: #f1f5f9; padding: 0.1em 0.3em; font-size: 9pt; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.8em; font-size: 9pt; white-space: pre-wrap; }
+    .meta { color: #64748b; font-size: 10pt; margin-bottom: 1.5em; }
+    .meta strong { color: #334155; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5em 0; }
+    ul { padding-left: 1.2em; }
+    li { margin: 0.25em 0; }
+  </style>
+</head>
+<body>
+
+<p class="meta"><strong>SAAS DE GESTIÓN DE CRÉDITOS Y COBRO DIARIO</strong><br />
+Documento de planificación — Mejoras V2 Operación y UX<br />
+Versión 1.0 · 24 de septiembre de 2026</p>
+
+<h1>Mejoras V2 — Operación, cobro y experiencia de uso</h1>
+<p>Documento SDD para implementación por etapas vía <code>.cursor/workflows/ROUTER.md</code>. Fuente Markdown canónica: <code>docs/03-Mejoras-V2-Operacion-UX.md</code>.</p>
+
+<hr />
+
+<h2>1. Resumen ejecutivo</h2>
+<p>Correcciones de uso real tras MVP: formularios más estrictos, cuotas por <strong>plazo en meses</strong>, asignación sin créditos ya asignados, cobro móvil enriquecido, abonos mayores a una cuota, cierre de jornada del cobrador y cierre diario del dueño, UI más compacta e <strong>Inicio = dashboard gráfico</strong>.</p>
+
+<h2>2. Checklist maestro (21 ítems)</h2>
+<table>
+  <thead><tr><th>ID</th><th>Tema</th></tr></thead>
+  <tbody>
+    <tr><td>RV2-001</td><td>Moneda en select (alta plataforma)</td></tr>
+    <tr><td>RV2-002–003</td><td>Dirección obligatoria + barrio cliente</td></tr>
+    <tr><td>RV2-004–005</td><td>Plazo meses + cuotas auto (domingo excluido diaria)</td></tr>
+    <tr><td>RV2-006–009</td><td>Listado créditos + asignación limpia</td></tr>
+    <tr><td>RV2-010–016</td><td>Jornada cobrador, historial, métodos, abono</td></tr>
+    <tr><td>RV2-017–018</td><td>Cierre jornada y cierre diario admin</td></tr>
+    <tr><td>RV2-019–021</td><td>UI densa, Inicio gráfico, sin pestaña Dashboard</td></tr>
+  </tbody>
+</table>
+<p>Detalle completo y casillas ☐ en el Markdown §3.</p>
+
+<h2>3. Etapas y ramas sugeridas</h2>
+<table>
+  <thead><tr><th>Etapa</th><th>Rama Git</th><th>ROUTER</th></tr></thead>
+  <tbody>
+    <tr><td>V2-A</td><td><code>feature/creditos_v2_inicio_dashboard_ui</code></td><td>frontend-feature, corregir-front</td></tr>
+    <tr><td>V2-B</td><td><code>feature/creditos_v2_clientes_barrio_moneda</code></td><td>schema-bd, backend-crud, frontend-crud</td></tr>
+    <tr><td>V2-C</td><td><code>feature/creditos_v2_plazo_meses_cuotas</code></td><td>backend-feature, frontend-feature</td></tr>
+    <tr><td>V2-D</td><td><code>feature/creditos_v2_listado_asignacion</code></td><td>backend-feature, frontend-feature</td></tr>
+    <tr><td>V2-E</td><td><code>feature/creditos_v2_jornada_cobrador</code></td><td>registrar-pago, frontend-feature</td></tr>
+    <tr><td>V2-F</td><td><code>feature/creditos_v2_comprobante_transferencia</code></td><td>schema-bd, backend-feature, documentar-api</td></tr>
+    <tr><td>V2-G</td><td><code>feature/creditos_v2_cierres_diarios</code></td><td>schema-bd, backend-feature, frontend-feature</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Reglas clave</h2>
+<ul>
+  <li><strong>Asignación:</strong> no listar créditos con cobrador activo en alta de asignación.</li>
+  <li><strong>Pago mayor:</strong> permitir monto &gt; saldo cuota; excedente abona cuotas siguientes sin recalcular interés total.</li>
+  <li><strong>Transferencia:</strong> solo efectivo/transferencia; foto obligatoria en transferencia.</li>
+  <li><strong>Cierres:</strong> jornada cobrador inmutable; admin recepciona recaudo del día.</li>
+</ul>
+
+<h2>5. Coordinación SDD</h2>
+<pre>Necesito: etapa V2-D del docs/03-Mejoras-V2-Operacion-UX.md
+Alcance: RV2-006, RV2-008, RV2-009
+Rama sugerida: feature/creditos_v2_listado_asignacion</pre>
+<p>Tras OK → código → <code>calidad-tests</code> en verde. Base de ramas: <code>creditos-prepro</code>.</p>
+
+<h2>6. Trazabilidad pantallas (prueba de campo)</h2>
+<table>
+  <thead><tr><th>Ref.</th><th>Pantalla</th><th>RV2</th></tr></thead>
+  <tbody>
+    <tr><td>Img. 1</td><td>Nuevo negocio — moneda</td><td>RV2-001</td></tr>
+    <tr><td>Img. 2</td><td>Cliente — dirección</td><td>RV2-002, 003</td></tr>
+    <tr><td>Img. 3</td><td>Nuevo crédito — cuotas</td><td>RV2-004, 005</td></tr>
+    <tr><td>Img. 4</td><td>Listado créditos</td><td>RV2-006, 007</td></tr>
+    <tr><td>Img. 5–6</td><td>Asignar cartera</td><td>RV2-008, 009</td></tr>
+    <tr><td>Img. 7–12</td><td>Cobros del día</td><td>RV2-010 … 016</td></tr>
+  </tbody>
+</table>
+
+<p class="meta"><em>Documento completo, esquema BD propuesto y criterios por etapa: docs/03-Mejoras-V2-Operacion-UX.md</em></p>
+
+</body>
+</html>

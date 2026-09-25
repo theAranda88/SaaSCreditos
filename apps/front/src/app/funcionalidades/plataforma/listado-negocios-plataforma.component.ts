@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { NegocioPlataforma } from '@creditos/shared-types';
+import { AuthServicio } from '../../nucleo/auth/auth.servicio';
 import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { PlataformaServicio } from './plataforma.servicio';
 
@@ -9,9 +10,14 @@ import { PlataformaServicio } from './plataforma.servicio';
   imports: [RouterLink],
   template: `
     <section class="pagina">
-      <header>
-        <h2>Negocios</h2>
-        <p>Cuentas de la plataforma, su plan y estado de servicio.</p>
+      <header class="encabezado">
+        <div>
+          <h2>Negocios</h2>
+          <p>Cuentas de la plataforma, su plan y estado de servicio.</p>
+        </div>
+        @if (esAdminPlataforma()) {
+          <a routerLink="/plataforma/negocios/nuevo" class="btn-nuevo">Nuevo negocio</a>
+        }
       </header>
 
       @if (error()) {
@@ -58,6 +64,16 @@ import { PlataformaServicio } from './plataforma.servicio';
   `,
   styles: `
     .pagina { display: grid; gap: 1.25rem; }
+    .encabezado { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+    .btn-nuevo {
+      padding: 0.65rem 1rem;
+      border-radius: 0.5rem;
+      background: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+    }
     h2 { margin: 0; }
     header p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
     .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
@@ -71,10 +87,12 @@ import { PlataformaServicio } from './plataforma.servicio';
 })
 export class ListadoNegociosPlataformaComponent implements OnInit {
   private readonly plataformaServicio = inject(PlataformaServicio);
+  private readonly authServicio = inject(AuthServicio);
 
   readonly negocios = signal<NegocioPlataforma[]>([]);
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
+  readonly esAdminPlataforma = () => this.authServicio.perfilActual()?.rol === 'admin_plataforma';
 
   ngOnInit(): void {
     this.cargar();

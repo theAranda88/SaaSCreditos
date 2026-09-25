@@ -17,6 +17,8 @@ describe('Planes y suscripciones (e2e)', () => {
   let negocioAId = '';
   let planEmprendedorId = '';
   let planProfesionalId = '';
+  let negocioAltaPlataformaId = '';
+  const correoAltaPlataforma = `alta-plat-${sufijo}@prueba.com`;
 
   beforeAll(async () => {
     app = await crearAppPruebas();
@@ -59,14 +61,23 @@ describe('Planes y suscripciones (e2e)', () => {
 
   afterAll(async () => {
     if (prisma) {
-      await prisma.auditoria.deleteMany({ where: { negocioId: negocioAId } });
+      await prisma.auditoria.deleteMany({
+        where: { negocioId: { in: [negocioAId, negocioAltaPlataformaId].filter(Boolean) } },
+      });
       await prisma.usuario.deleteMany({
         where: {
-          OR: [{ correo: correoAdmin }, { negocioId: negocioAId }],
+          OR: [
+            { correo: correoAdmin },
+            { negocioId: negocioAId },
+            { correo: correoAltaPlataforma },
+            ...(negocioAltaPlataformaId ? [{ negocioId: negocioAltaPlataformaId }] : []),
+          ],
         },
       });
-      await borrarSuscripciones(prisma, [negocioAId]);
-      await prisma.negocio.deleteMany({ where: { id: negocioAId } });
+      await borrarSuscripciones(prisma, [negocioAId, negocioAltaPlataformaId].filter(Boolean));
+      await prisma.negocio.deleteMany({
+        where: { id: { in: [negocioAId, negocioAltaPlataformaId].filter(Boolean) } },
+      });
       await prisma.$disconnect();
     }
 
@@ -167,6 +178,45 @@ describe('Planes y suscripciones (e2e)', () => {
       where: { negocioId: negocioAId, accion: 'suspender' },
     });
     expect(auditoria).not.toBeNull();
+  });
+
+  it('debe crear negocio asistido por admin_plataforma con auditoría', async () => {
+    const respuesta = await request(app.getHttpServer())
+      .post('/api/plataforma/negocios')
+      .set('Authorization', `Bearer ${tokenAdmin}`)
+      .send({
+        nombreComercial: `Alta Plataforma ${sufijo}`,
+        nombre: 'Propietario Alta',
+        correo: correoAltaPlataforma,
+        contrasena,
+      })
+      .expect(201);
+
+    negocioAltaPlataformaId = respuesta.body.id;
+    expect(respuesta.body.suscripcion.plan_codigo).toBe('emprendedor');
+
+    const loginPropietario = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ correo: correoAltaPlataforma, contrasena })
+      .expect(200);
+
+    expect(loginPropietario.body.usuario.negocio_id).toBe(negocioAltaPlataformaId);
+
+    const auditoria = await prisma.auditoria.findFirst({
+      where: { negocioId: negocioAltaPlataformaId, accion: 'crear' },
+    });
+    expect(auditoria).not.toBeNull();
+
+    await request(app.getHttpServer())
+      .post('/api/plataforma/negocios')
+      .set('Authorization', `Bearer ${tokenNegocioA}`)
+      .send({
+        nombreComercial: 'X',
+        nombre: 'Y',
+        correo: `no-admin-${sufijo}@test.com`,
+        contrasena,
+      })
+      .expect(403);
   });
 
   it('debe listar negocios en plataforma y rechazar clientes con admin_plataforma', async () => {

@@ -7,7 +7,7 @@
 - Timestamps `TIMESTAMPTZ`, montos `NUMERIC(18,2)`, tasas `NUMERIC(8,4)`
 - Multiempresa: toda tabla de negocio lleva `negocio_id` (salvo catálogos globales y roles de plataforma)
 - Moneda operativa inicial: COP
-- Versión: 1.3 — 15 de septiembre de 2026 (reglas financieras MVP: interés flat dinámico; mora opcional del dueño de la cartera)
+- Versión: 1.4 — 24 de septiembre de 2026 (transacción de alta de negocio RF-001 / RA-002; v1.3: reglas financieras MVP)
 
 ---
 
@@ -317,7 +317,18 @@ Tabla **append-only**: no se actualiza ni se borra desde la aplicación.
 
 Toda consulta de negocio **debe** filtrar por `negocio_id` del usuario autenticado. El frontend no es fuente de confianza. `negocio_id` va desnormalizado en `creditos`, `cuotas`, `pagos` y `asignaciones`.
 
-### 5.2 Transacción de registro de pago (obligatoria)
+### 5.2 Transacción de alta de negocio (RF-001 / RA-002)
+
+Una sola transacción atómica al registrarse (público) o al crearlo `admin_plataforma`:
+
+1. Insertar `negocios` (`estado = activo`)
+2. Insertar `usuarios` con `rol = propietario` (correo único global)
+3. Insertar `suscripciones` (`estado = activa`, plan inicial por defecto **Emprendedor**)
+4. Si el origen es panel plataforma: insertar `auditorias` (`entidad = negocios`, `accion = crear`, `usuario_id` del admin)
+
+Si el correo ya existe → 409. Si falta el plan inicial en catálogo → 422. Rollback completo ante cualquier fallo.
+
+### 5.3 Transacción de registro de pago (obligatoria)
 
 Una sola transacción atómica:
 
@@ -328,7 +339,7 @@ Una sola transacción atómica:
 
 Si cualquier paso falla, rollback completo. No se admite estado parcial.
 
-### 5.3 Transacción de anulación de pago
+### 5.4 Transacción de anulación de pago
 
 1. Marcar el pago `anulado` con motivo, usuario y fecha
 2. Recalcular saldo y estado de la cuota y del crédito
@@ -336,20 +347,20 @@ Si cualquier paso falla, rollback completo. No se admite estado parcial.
 
 No se borra el pago.
 
-### 5.4 Transacción de reasignación
+### 5.5 Transacción de reasignación
 
 1. Cerrar asignación activa
 2. Crear asignación nueva
 3. Auditar `accion = reasignar`
 
-### 5.5 Índices iniciales de cartera
+### 5.6 Índices iniciales de cartera
 
 - `cuotas (negocio_id, fecha_vencimiento, estado)` — cobros del día y mora
 - `pagos (negocio_id, fecha_pago, estado)` — recaudo diario
 - `asignaciones (negocio_id, cobrador_id, estado)` — mi cartera
 - `clientes (negocio_id, numero_documento)`
 
-### 5.6 Archivos
+### 5.7 Archivos
 
 Comprobantes viven en almacenamiento de objetos. La BD solo guarda `clave_almacenamiento` / `url_archivo`.
 
@@ -359,7 +370,7 @@ Comprobantes viven en almacenamiento de objetos. La BD solo guarda `clave_almace
 
 | ID | Requerimiento | Tablas |
 |---|---|---|
-| RF-001 / RC-001 | Registro e inicio de sesión | `usuarios`, `negocios` |
+| RF-001 / RC-001 | Registro e inicio de sesión | `usuarios`, `negocios`, `suscripciones` |
 | RF-002 | Configuración del negocio | `negocios.configuracion` |
 | RF-003 | Gestión de clientes | `clientes` |
 | RF-004 | Gestión de cobradores | `usuarios` (rol cobrador) + `planes` / `suscripciones` |
@@ -375,7 +386,8 @@ Comprobantes viven en almacenamiento de objetos. La BD solo guarda `clave_almace
 | RC-002 | Mi cartera | `asignaciones` + `creditos` + `clientes` |
 | RC-010 | Observaciones | `notas_cobro` (V1) |
 | RC-011 | Comprobante | `comprobantes_pago` (V1) |
-| RA-001…RA-007 | Administración SaaS | `negocios`, `usuarios`, `suscripciones`, `auditorias` |
+| RA-002 | Alta / gestión de negocios (plataforma) | `negocios`, `usuarios`, `suscripciones`, `auditorias` |
+| RA-001 / RA-003 / RA-007 | Administración SaaS (consulta) | `negocios`, `usuarios`, `suscripciones`, `auditorias` |
 
 ---
 

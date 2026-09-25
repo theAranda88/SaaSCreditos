@@ -6,7 +6,9 @@ import type { AuditoriaRepositorio } from '../entidades/auditoria.repositorio';
 import type { NegocioRepositorio } from '../entidades/negocio.repositorio';
 import type { PlanRepositorio } from '../entidades/plan.repositorio';
 import type { SuscripcionRepositorio } from '../entidades/suscripcion.repositorio';
+import type { SuscripcionRepositorio } from '../entidades/suscripcion.repositorio';
 import type { UsuarioRepositorio } from '../entidades/usuario.repositorio';
+import type { AltaNegocioServicio } from './alta-negocio.servicio';
 import { PlataformaServicio } from './plataforma.servicio';
 
 describe('PlataformaServicio', () => {
@@ -15,6 +17,7 @@ describe('PlataformaServicio', () => {
   let usuarioRepositorio: UsuarioRepositorio;
   let planRepositorio: PlanRepositorio;
   let prisma: PrismaServicio;
+  let altaNegocioServicio: AltaNegocioServicio;
 
   const admin: PerfilUsuario = {
     id: 'admin-1',
@@ -76,6 +79,10 @@ describe('PlataformaServicio', () => {
       auditoria: { create: vi.fn() },
     })) } as unknown as PrismaServicio;
 
+    altaNegocioServicio = {
+      crearNegocioYPropietario: vi.fn(),
+    } as unknown as AltaNegocioServicio;
+
     servicio = new PlataformaServicio(
       negocioRepositorio,
       usuarioRepositorio,
@@ -83,6 +90,7 @@ describe('PlataformaServicio', () => {
       {} as SuscripcionRepositorio,
       {} as AuditoriaRepositorio,
       prisma,
+      altaNegocioServicio,
     );
   });
 
@@ -121,5 +129,42 @@ describe('PlataformaServicio', () => {
     await expect(
       servicio.actualizarPlan(admin, 'plan-1', { estado: 'inactivo' }),
     ).rejects.toBeInstanceOf(UnprocessableEntityException);
+  });
+
+  it('debe rechazar crear negocio si el rol es soporte', async () => {
+    await expect(
+      servicio.crearNegocio(soporte, {
+        nombreComercial: 'Nuevo',
+        nombre: 'Dueño',
+        correo: 'nuevo@test.com',
+        contrasena: 'ClaveSegura123',
+      }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('debe delegar la creación de negocio al servicio de alta', async () => {
+    vi.mocked(altaNegocioServicio.crearNegocioYPropietario).mockResolvedValue({
+      negocio: { id: 'negocio-nuevo', nombreComercial: 'Nuevo', moneda: 'COP' },
+      usuario: {
+        id: 'u1',
+        nombre: 'Dueño',
+        correo: 'nuevo@test.com',
+        rol: 'propietario',
+        negocioId: 'negocio-nuevo',
+      },
+    });
+    vi.mocked(negocioRepositorio.buscarPorIdConSuscripcion).mockResolvedValue(negocio);
+
+    await servicio.crearNegocio(admin, {
+      nombreComercial: 'Nuevo',
+      nombre: 'Dueño',
+      correo: 'nuevo@test.com',
+      contrasena: 'ClaveSegura123',
+    });
+
+    expect(altaNegocioServicio.crearNegocioYPropietario).toHaveBeenCalledWith(
+      expect.objectContaining({ correo: 'nuevo@test.com' }),
+      expect.objectContaining({ registrarAuditoriaPlataforma: { usuarioAdminId: admin.id } }),
+    );
   });
 });

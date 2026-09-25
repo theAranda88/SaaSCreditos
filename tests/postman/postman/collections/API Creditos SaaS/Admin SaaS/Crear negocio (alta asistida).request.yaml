@@ -1,0 +1,18 @@
+name: Crear negocio (alta asistida)
+method: POST
+url: "{{base_url}}/plataforma/negocios"
+description: Solo admin_plataforma (RA-002, 2026-09-24). Negocio + propietario + suscripción + auditoría.
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token_plataforma}}
+body:
+  mode: raw
+  raw: |
+    {
+      "nombreComercial": "Préstamos Demo",
+      "nombre": "Propietario Demo",
+      "correo": "demo-plataforma@ejemplo.com",
+      "contrasena": "ClaveSegura123",
+      "moneda": "COP",
+      "codigoPlan": "emprendedor"
+    }

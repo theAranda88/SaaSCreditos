@@ -29,6 +29,21 @@ describe('PlataformaServicio', () => {
     peticion.flush([]);
   });
 
+  it('debe crear negocio en POST /api/plataforma/negocios', () => {
+    servicio
+      .crearNegocio({
+        nombreComercial: 'Nuevo',
+        nombre: 'Dueño',
+        correo: 'n@t.com',
+        contrasena: 'ClaveSegura123',
+      })
+      .subscribe();
+
+    const peticion = httpMock.expectOne('/api/plataforma/negocios');
+    expect(peticion.request.method).toBe('POST');
+    peticion.flush({ id: 'n1' });
+  });
+
   it('debe suspender con PATCH /api/plataforma/negocios/:id/estado', () => {
     servicio.cambiarEstadoNegocio('negocio-a', 'suspendido').subscribe();
 

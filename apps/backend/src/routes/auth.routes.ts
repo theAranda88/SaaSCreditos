@@ -5,6 +5,7 @@ import { AuthControlador } from '../controladores/auth.controlador';
 import { EntidadesModule } from '../entidades/entidades.module';
 import { JwtEstrategia } from '../nucleo/estrategias/jwt.estrategia';
 import { AuthServicio } from '../servicios/auth.servicio';
+import { AltaNegocioServicio } from '../servicios/alta-negocio.servicio';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { AuthServicio } from '../servicios/auth.servicio';
     }),
   ],
   controllers: [AuthControlador],
-  providers: [AuthServicio, JwtEstrategia],
-  exports: [AuthServicio, JwtModule, JwtEstrategia],
+  providers: [AltaNegocioServicio, AuthServicio, JwtEstrategia],
+  exports: [AltaNegocioServicio, AuthServicio, JwtModule, JwtEstrategia],
 })
 export class AuthRoutes {}

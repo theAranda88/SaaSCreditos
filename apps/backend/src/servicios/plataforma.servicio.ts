@@ -27,6 +27,8 @@ import { UsuarioRepositorio } from '../entidades/usuario.repositorio';
 import { AuditoriaRepositorio } from '../entidades/auditoria.repositorio';
 import { fechaHoyUtc, formatearFechaIso, sumarMesesUtc } from '../nucleo/utilidades/fechas-plan';
 import { mapearPlan } from '../nucleo/utilidades/mapeadores-plan';
+import type { CrearNegocioPlataformaDto } from '../dtos/crear-negocio-plataforma.dto';
+import { AltaNegocioServicio } from './alta-negocio.servicio';
 
 const ROLES_PLATAFORMA: RolUsuario[] = ['admin_plataforma', 'soporte'];
 
@@ -40,7 +42,36 @@ export class PlataformaServicio {
     private readonly suscripcionRepositorio: SuscripcionRepositorio,
     @Inject(AuditoriaRepositorio) private readonly auditoriaRepositorio: AuditoriaRepositorio,
     @Inject(PrismaServicio) private readonly prisma: PrismaServicio,
+    @Inject(AltaNegocioServicio) private readonly altaNegocioServicio: AltaNegocioServicio,
   ) {}
+
+  async crearNegocio(
+    usuario: PerfilUsuario,
+    dto: CrearNegocioPlataformaDto,
+  ): Promise<NegocioPlataforma> {
+    this.exigirAdminPlataforma(usuario);
+
+    const resultado = await this.altaNegocioServicio.crearNegocioYPropietario(
+      {
+        nombreComercial: dto.nombreComercial,
+        nombre: dto.nombre,
+        correo: dto.correo,
+        contrasena: dto.contrasena,
+        moneda: dto.moneda,
+        telefono: dto.telefono,
+        codigoPlan: dto.codigoPlan,
+      },
+      { registrarAuditoriaPlataforma: { usuarioAdminId: usuario.id } },
+    );
+
+    const negocio = await this.negocioRepositorio.buscarPorIdConSuscripcion(resultado.negocio.id);
+
+    if (!negocio) {
+      throw new NotFoundException('Negocio no encontrado');
+    }
+
+    return this.mapearNegocioPlataforma(negocio);
+  }
 
   async listarNegocios(usuario: PerfilUsuario): Promise<NegocioPlataforma[]> {
     this.exigirPlataforma(usuario);

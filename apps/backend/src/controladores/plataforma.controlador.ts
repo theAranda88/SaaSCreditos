@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -30,6 +31,7 @@ import type {
 } from '@creditos/shared-types';
 import { ActualizarPlanDto } from '../dtos/actualizar-plan.dto';
 import { CambiarEstadoNegocioDto } from '../dtos/cambiar-estado-negocio.dto';
+import { CrearNegocioPlataformaDto } from '../dtos/crear-negocio-plataforma.dto';
 import { ConsultarAuditoriasDto } from '../dtos/consultar-auditorias.dto';
 import { WebhookSuscripcionDto } from '../dtos/webhook-suscripcion.dto';
 import { Roles } from '../nucleo/decoradores/roles.decorador';
@@ -52,6 +54,23 @@ export class PlataformaControlador {
   @ApiOkResponse({ description: 'Listado de negocios con suscripción' })
   async listarNegocios(@UsuarioActual() usuario: PerfilUsuario): Promise<NegocioPlataforma[]> {
     return this.plataformaServicio.listarNegocios(usuario);
+  }
+
+  @Post('negocios')
+  @Roles('admin_plataforma')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Crea un negocio con propietario y suscripción (RA-002)',
+    description:
+      'Alta asistida: transacción negocios + usuarios (propietario) + suscripciones + auditoría. El propietario inicia sesión por su cuenta.',
+  })
+  @ApiCreatedResponse({ description: 'Negocio creado' })
+  @ApiUnprocessableEntityResponse({ description: 'Plan inicial no disponible' })
+  async crearNegocio(
+    @UsuarioActual() usuario: PerfilUsuario,
+    @Body() dto: CrearNegocioPlataformaDto,
+  ): Promise<NegocioPlataforma> {
+    return this.plataformaServicio.crearNegocio(usuario, dto);
   }
 
   @Get('negocios/:id')

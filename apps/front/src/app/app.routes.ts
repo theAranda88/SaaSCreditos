@@ -12,6 +12,7 @@ const guardAdministracion = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO]);
 const guardCartera = crearGuardRol([...ROLES_ADMINISTRACION_NEGOCIO, 'cobrador']);
 const guardCobrador = crearGuardRol(['cobrador']);
 const guardPlataforma = crearGuardRol([...ROLES_PLATAFORMA]);
+const guardAdminPlataforma = crearGuardRol(['admin_plataforma']);
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -157,6 +158,14 @@ export const routes: Routes = [
       ),
     canActivate: [guardAutenticacion, guardExigirPlataforma, guardPlataforma],
     children: [
+      {
+        path: 'negocios/nuevo',
+        loadComponent: () =>
+          import('./funcionalidades/plataforma/crear-negocio-plataforma.component').then(
+            (modulo) => modulo.CrearNegocioPlataformaComponent,
+          ),
+        canActivate: [guardAdminPlataforma],
+      },
       {
         path: 'negocios',
         loadComponent: () =>

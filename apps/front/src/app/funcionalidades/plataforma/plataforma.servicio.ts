@@ -8,6 +8,16 @@ import type {
 } from '@creditos/shared-types';
 import { Observable } from 'rxjs';
 
+export type CrearNegocioPlataformaPayload = {
+  nombreComercial: string;
+  nombre: string;
+  correo: string;
+  contrasena: string;
+  moneda?: string;
+  telefono?: string;
+  codigoPlan?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class PlataformaServicio {
   private readonly http = inject(HttpClient);
@@ -15,6 +25,10 @@ export class PlataformaServicio {
 
   listarNegocios(): Observable<NegocioPlataforma[]> {
     return this.http.get<NegocioPlataforma[]>(`${this.urlBase}/negocios`);
+  }
+
+  crearNegocio(datos: CrearNegocioPlataformaPayload): Observable<NegocioPlataforma> {
+    return this.http.post<NegocioPlataforma>(`${this.urlBase}/negocios`, datos);
   }
 
   obtenerNegocio(id: string): Observable<NegocioPlataforma> {

@@ -169,6 +169,8 @@ Plantilla versionada: `.env.example`. Copiar a `.env` antes de `docker compose u
 
 | Documento | PDF |
 |---|---|
+| Mejoras V2 operación/UX (SDD) | `docs/03-Mejoras-V2-Operacion-UX.md` |
+| Mejoras V2 (PDF) | [SaaS_Gestion_Creditos_Mejoras_V2_Operacion_UX_v1.0.pdf](docs/pdf/SaaS_Gestion_Creditos_Mejoras_V2_Operacion_UX_v1.0.pdf) |
 | SRS v1.2 | [SaaS_Gestion_Creditos_SRS_v1.2.pdf](docs/pdf/SaaS_Gestion_Creditos_SRS_v1.2.pdf) |
 | Arquitectura y finanzas v1.2 | [SaaS_Gestion_Creditos_Arquitectura_Finanzas_v1.2.pdf](docs/pdf/SaaS_Gestion_Creditos_Arquitectura_Finanzas_v1.2.pdf) |
 

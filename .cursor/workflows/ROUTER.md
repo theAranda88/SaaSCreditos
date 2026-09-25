@@ -48,6 +48,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 | Bug (saldo, 403, no compila, Compose) | `debug-fix.md` | zona del síntoma + test de regresión | todo el repo |
 | Mejorar código **sin** cambiar comportamiento | `refactor.md` | área acotada + suite verde | “aprovechar” para features |
 | **Cerrar entrega** / tests del cambio / suite en rojo | `calidad-tests.md` + skill `calidad-tests` | specs del módulo tocado | reescribir la feature |
+| **Etapa V2** (mejoras operación/UX post-MVP) | `docs/03-Mejoras-V2-Operacion-UX.md` §5 → workflow de esa etapa | solo RV2 de la etapa elegida | mezclar varias etapas V2 en una rama |
 
 > Si no encaja en ninguna fila, casi seguro son **dos filas seguidas** (ej. CRUD API listo → `calidad-tests` → `frontend-crud`). No improvises un camino nuevo.
 
@@ -76,6 +77,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 ## Contexto vivo (no lo cargues entero)
 
 - Plan por fases (MVP): `.cursor/docs/PLAN_IMPLEMENTACION.md`
+- **Mejoras V2 (operación/UX, post-MVP):** `docs/03-Mejoras-V2-Operacion-UX.md` — etapas V2-A…V2-G, checklist RV2-001…
 - SRS: `docs/01-SRS.md`
 - Arquitectura: `docs/02-Arquitectura-Finanzas.md`
 - Esquema BD: `docs/00-esquema-bd.md`

@@ -615,6 +615,36 @@
           }
         },
         {
+          "name": "Crear negocio (alta asistida)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token_plataforma}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreComercial\": \"Préstamos Demo {{$timestamp}}\",\n  \"nombre\": \"Propietario Demo\",\n  \"correo\": \"demo-{{$timestamp}}@ejemplo.com\",\n  \"contrasena\": \"ClaveSegura123\",\n  \"moneda\": \"COP\",\n  \"codigoPlan\": \"emprendedor\"\n}"
+            },
+            "url": "{{base_url}}/plataforma/negocios",
+            "description": "Solo admin_plataforma (RA-002). Crea negocio + propietario + suscripción + auditoría."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  pm.environment.set('negocio_id', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
           "name": "Suspender negocio",
           "request": {
             "method": "PATCH",
