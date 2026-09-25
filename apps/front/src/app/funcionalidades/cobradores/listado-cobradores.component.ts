@@ -90,9 +90,8 @@ import { CobradoresServicio } from './cobradores.servicio';
     .encabezado p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
     .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
     label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
-    input, select, button, .boton-primario { padding: 0.65rem 0.8rem; border-radius: 0.5rem; font-size: 0.95rem; }
-    input, select { border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; cursor: pointer; }
+    input, select { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
+    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; text-decoration: none; cursor: pointer; }
     .boton-primario { display: inline-flex; align-items: center; }
     .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
     table { width: 100%; border-collapse: collapse; }

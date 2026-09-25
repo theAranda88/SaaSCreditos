@@ -3,12 +3,12 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 import { DashboardServicio } from './dashboard.servicio';
-import { DashboardComponent } from './dashboard.component';
+import { PanelIndicadoresNegocioComponent } from './panel-indicadores-negocio.component';
 
-describe('DashboardComponent', () => {
+describe('PanelIndicadoresNegocioComponent', () => {
   it('debe mostrar aviso cuando el día no es hábil', async () => {
     TestBed.configureTestingModule({
-      imports: [DashboardComponent],
+      imports: [PanelIndicadoresNegocioComponent],
       providers: [
         provideRouter([]),
         {
@@ -18,23 +18,24 @@ describe('DashboardComponent', () => {
               of({
                 fecha: '2026-09-20',
                 recaudo_dia: '0.00',
-                cartera_activa: '0.00',
-                cartera_mora: '0.00',
-                cobradores_activos: 0,
-                creditos_activos: 0,
-                creditos_en_mora: 0,
+                cartera_activa: '100.00',
+                cartera_mora: '25.00',
+                cobradores_activos: 1,
+                creditos_activos: 4,
+                creditos_en_mora: 1,
               }),
           },
         },
       ],
     });
 
-    const fixture = TestBed.createComponent(DashboardComponent);
+    const fixture = TestBed.createComponent(PanelIndicadoresNegocioComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Domingo');
     expect(fixture.nativeElement.textContent).toContain('no hay jornada de cobro');
+    expect(fixture.nativeElement.textContent).toContain('Composición de cartera');
   });
 });

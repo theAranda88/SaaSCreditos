@@ -133,11 +133,8 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        canActivate: [guardAdministracion],
-        loadComponent: () =>
-          import('./funcionalidades/dashboard/dashboard.component').then(
-            (modulo) => modulo.DashboardComponent,
-          ),
+        pathMatch: 'full',
+        redirectTo: 'inicio',
       },
       {
         path: 'suscripcion',

@@ -123,9 +123,8 @@ import { AsignacionesServicio } from './asignaciones.servicio';
     .encabezado p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
     .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
     label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
-    select, button, .boton-primario { padding: 0.65rem 0.8rem; border-radius: 0.5rem; font-size: 0.95rem; }
-    select { border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario, .boton-tabla { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; cursor: pointer; }
+    select, input { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
+    .filtros button, .boton-primario, .boton-tabla { border: none; background: #1d4ed8; color: #ffffff; text-decoration: none; cursor: pointer; }
     .boton-primario, .boton-tabla { display: inline-flex; align-items: center; justify-content: center; }
     .boton-tabla { padding: 0.55rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; white-space: nowrap; }
     .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }

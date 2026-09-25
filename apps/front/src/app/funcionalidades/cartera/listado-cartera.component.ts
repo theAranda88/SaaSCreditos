@@ -111,8 +111,8 @@ const SEGMENTOS: SegmentoCartera[] = ['vigente', 'mora', 'pagada'];
     h2 { margin: 0; }
     .filtros { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
     label { display: grid; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
-    select, button { min-height: 2.75rem; padding: 0.65rem 0.85rem; border-radius: 0.65rem; border: 1px solid #d1d5db; }
-    .boton-primario { border: none; background: #1d4ed8; color: #ffffff; font-weight: 700; cursor: pointer; }
+    select, button { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
+    .boton-primario { border: none; background: #1d4ed8; color: #ffffff; cursor: pointer; }
     .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
