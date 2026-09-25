@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { PerfilUsuario } from '@creditos/shared-types';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
 import { NegociosServicio } from '../../negocios/negocios.servicio';
+import { proveedoresTraduccionPrueba } from '../../../nucleo/i18n/proveedores-traduccion-prueba';
 import { ConfiguracionComponent } from './configuracion.component';
 
 const perfilPropietario: PerfilUsuario = {
@@ -21,6 +22,7 @@ describe('ConfiguracionComponent', () => {
     TestBed.configureTestingModule({
       imports: [ConfiguracionComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         {
           provide: NegociosServicio,
           useValue: {

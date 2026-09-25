@@ -28,6 +28,7 @@
     40-respuestas-chat.mdc    alwaysApply
     50-calidad-tests.mdc      alwaysApply (sin verde no hay entrega)
   skills/                     recetas paso a paso
+    frontend-arquitectura     capas, tokens SCSS, i18n (previo a UI)
     backend-crud, backend-feature, registrar-pago,
     frontend-crud, frontend-feature, backend-to-frontend,
     auth-flow, documentar-api, calidad-tests, control-versiones

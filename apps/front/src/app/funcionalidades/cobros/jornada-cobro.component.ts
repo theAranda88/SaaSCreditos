@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import type {
   CobroDelDia,
   CobrosDelDiaRespuesta,
@@ -9,11 +10,8 @@ import type {
   PagoPerfil,
   ResumenDiarioPago,
 } from '@creditos/shared-types';
-import {
-  ETIQUETAS_METODO_PAGO,
-  METODOS_PAGO,
-} from '../../nucleo/constantes/pagos.constantes';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { METODOS_PAGO } from '../../nucleo/constantes/pagos.constantes';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { fechaHoyIsoColombia } from '../../nucleo/utilidades/fecha-colombia';
 import {
   infoDiaCalendario,
@@ -25,12 +23,12 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
 
 @Component({
   selector: 'app-jornada-cobro',
-  imports: [ReactiveFormsModule, DatePipe, RouterLink],
+  imports: [ReactiveFormsModule, DatePipe, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header class="encabezado">
         <div>
-          <h2>Cobros del día</h2>
+          <h2>{{ 'cobros.jornada.titulo' | translate }}</h2>
           <p class="fecha">
             {{ fechaConsulta() }}
             @if (infoFechaConsulta(); as info) {
@@ -41,22 +39,22 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
           </p>
         </div>
         <button type="button" class="boton-secundario" (click)="cargar()" [disabled]="cargando()">
-          Actualizar
+          {{ 'comun.acciones.actualizar' | translate }}
         </button>
       </header>
 
       @if (resumen(); as totales) {
         <div class="resumen" [class.inhabil]="!totales.dia_habil">
           <article>
-            <span>Esperado</span>
+            <span>{{ 'cobros.jornada.resumen_esperado' | translate }}</span>
             <strong>{{ totales.esperado }}</strong>
           </article>
           <article>
-            <span>Cobrado</span>
+            <span>{{ 'cobros.jornada.resumen_cobrado' | translate }}</span>
             <strong>{{ totales.cobrado }}</strong>
           </article>
           <article>
-            <span>Pendiente</span>
+            <span>{{ 'cobros.jornada.resumen_pendiente' | translate }}</span>
             <strong>{{ totales.pendiente }}</strong>
           </article>
         </div>
@@ -64,23 +62,23 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
 
       @if (respuestaCobros()?.dia_habil === false) {
         <p class="aviso inhabil">
-          <span class="etiqueta inhabil">{{ infoFechaConsulta()?.etiqueta ?? 'Día inhábil' }}</span>
+          <span class="etiqueta inhabil">{{ etiquetaDia(infoFechaConsulta()!.fecha) }}</span>
           {{ respuestaCobros()?.mensaje }}
         </p>
       }
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (paso() === 'lista') {
         @if (cargando()) {
-          <p>Cargando obligaciones…</p>
+          <p>{{ 'comun.carga.obligaciones' | translate }}</p>
         } @else if ((respuestaCobros()?.cobros?.length ?? 0) === 0) {
           <p class="vacio">
             @if (respuestaCobros()?.dia_habil) {
-              No hay cuotas pendientes en su cartera. Verifique asignaciones en
-              <a routerLink="/app/asignaciones">Mi cartera</a>.
+              {{ 'cobros.jornada.vacio_con_cartera' | translate }}
+              <a routerLink="/app/asignaciones">{{ 'comun.navegacion.mi_cartera' | translate }}</a>.
             } @else {
               Hoy no hay jornada de cobro (domingo o festivo).
             }
@@ -92,27 +90,35 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
                 <div class="info">
                   <h3>{{ cobro.cliente_nombre_completo }}</h3>
                   <p>
-                    Cuota {{ cobro.numero_cuota }} · Vence {{ cobro.fecha_vencimiento }}
+                    {{
+                      'cobros.jornada.cuota_linea'
+                        | translate: { numero: cobro.numero_cuota, fecha: cobro.fecha_vencimiento }
+                    }}
                     @if (esVencimientoInhabil(cobro.fecha_vencimiento)) {
                       <span class="etiqueta inhabil">{{ etiquetaDia(cobro.fecha_vencimiento) }}</span>
                     }
                     @if (esVencimientoTrasladado(cobro)) {
                       <span class="etiqueta trasladado">
-                        Trasladado · cobro {{ cobro.fecha_cobro_efectiva }}
+                        {{
+                          'cobros.jornada.trasladado_cobro'
+                            | translate: { fecha: cobro.fecha_cobro_efectiva }
+                        }}
                       </span>
                     }
                   </p>
-                  <p class="saldo">Saldo {{ cobro.saldo_pendiente }}</p>
+                  <p class="saldo">{{
+                    'cobros.jornada.saldo' | translate: { monto: cobro.saldo_pendiente }
+                  }}</p>
                   @if (cobro.atrasado) {
-                    <span class="etiqueta atraso">Atrasado</span>
+                    <span class="etiqueta atraso">{{ 'cobros.jornada.etiqueta_atrasado' | translate }}</span>
                   }
                   @if (cobro.programado) {
-                    <span class="etiqueta programado">Próximo</span>
+                    <span class="etiqueta programado">{{ 'cobros.jornada.etiqueta_proximo' | translate }}</span>
                   }
                   <span class="etiqueta estado">{{ cobro.estado }}</span>
                 </div>
                 <button type="button" class="boton-cobrar" (click)="seleccionarCobro(cobro)">
-                  Revisar cobro
+                  {{ 'cobros.jornada.revisar_cobro' | translate }}
                 </button>
               </article>
             }
@@ -122,12 +128,12 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
 
       @if (paso() === 'confirmar' && cobroSeleccionado(); as cobro) {
         <section class="panel-cobro">
-          <h3>Ficha rápida</h3>
+          <h3>{{ 'cobros.jornada.ficha_rapida' | translate }}</h3>
           <dl>
-            <div><dt>Cliente</dt><dd>{{ cobro.cliente_nombre_completo }}</dd></div>
-            <div><dt>Cuota</dt><dd>{{ cobro.numero_cuota }}</dd></div>
+            <div><dt>{{ 'comun.filtros.cliente' | translate }}</dt><dd>{{ cobro.cliente_nombre_completo }}</dd></div>
+            <div><dt>{{ 'cobros.jornada.campo_cuota' | translate }}</dt><dd>{{ cobro.numero_cuota }}</dd></div>
             <div>
-              <dt>Vencimiento</dt>
+              <dt>{{ 'cobros.jornada.campo_vencimiento' | translate }}</dt>
               <dd>
                 {{ cobro.fecha_vencimiento }}
                 @if (esVencimientoInhabil(cobro.fecha_vencimiento)) {
@@ -136,20 +142,22 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
               </dd>
             </div>
             <div>
-              <dt>Cobro efectivo</dt>
+              <dt>{{ 'cobros.jornada.campo_cobro_efectivo' | translate }}</dt>
               <dd>
                 {{ cobro.fecha_cobro_efectiva }}
                 @if (esVencimientoTrasladado(cobro)) {
-                  <span class="etiqueta trasladado">Trasladado</span>
+                  <span class="etiqueta trasladado">{{
+                    'cobros.jornada.trasladado_cobro' | translate: { fecha: cobro.fecha_cobro_efectiva }
+                  }}</span>
                 }
               </dd>
             </div>
-            <div><dt>Saldo pendiente</dt><dd>{{ cobro.saldo_pendiente }}</dd></div>
+            <div><dt>{{ 'cobros.jornada.campo_saldo_pendiente' | translate }}</dt><dd>{{ cobro.saldo_pendiente }}</dd></div>
           </dl>
 
           @if (historial().length > 0) {
             <div class="historial">
-              <h4>Historial reciente</h4>
+              <h4>{{ 'cobros.jornada.historial_reciente' | translate }}</h4>
               <ul>
                 @for (pago of historial(); track pago.id) {
                   <li>{{ pago.fecha_pago | date: 'short' }} · {{ pago.monto }} · {{ pago.estado }}</li>
@@ -160,34 +168,45 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
 
           <form [formGroup]="formulario" (ngSubmit)="revisar()">
             <label>
-              Monto a cobrar
+              {{ 'cobros.jornada.monto_a_cobrar' | translate }}
               <input type="number" formControlName="monto" min="0.01" step="0.01" inputmode="decimal" />
             </label>
             <label>
-              Método
+              {{ 'cobros.jornada.metodo' | translate }}
               <select formControlName="metodoPago">
                 @for (metodo of metodosPago; track metodo) {
-                  <option [value]="metodo">{{ etiquetasMetodo[metodo] }}</option>
+                  <option [value]="metodo">{{ claveMetodoPago(metodo) | translate }}</option>
                 }
               </select>
             </label>
             <div class="acciones">
-              <button type="button" class="boton-secundario" (click)="cancelar()">Volver</button>
+              <button type="button" class="boton-secundario" (click)="cancelar()">{{
+                'cobros.jornada.volver' | translate
+              }}</button>
               <button type="submit" class="boton-primario" [disabled]="formulario.invalid || guardando()">
-                Revisar cobro
+                {{ 'cobros.jornada.revisar_cobro' | translate }}
               </button>
             </div>
           </form>
 
           @if (confirmacion(); as datos) {
             <div class="confirmacion">
-              <p>¿Confirma registrar <strong>{{ datos.monto }}</strong> por <strong>{{ etiquetasMetodo[datos.metodoPago] }}</strong>?</p>
+              <p>
+                {{
+                  'cobros.jornada.confirmar_pregunta'
+                    | translate
+                      : {
+                          monto: datos.monto,
+                          metodo: (claveMetodoPago(datos.metodoPago) | translate),
+                        }
+                }}
+              </p>
               <div class="acciones">
                 <button type="button" class="boton-secundario" (click)="cancelarConfirmacion()">
-                  Corregir
+                  {{ 'comun.acciones.corregir' | translate }}
                 </button>
                 <button type="button" class="boton-primario" (click)="confirmar()" [disabled]="guardando()">
-                  Confirmar cobro
+                  {{ 'cobros.jornada.confirmar_cobro' | translate }}
                 </button>
               </div>
             </div>
@@ -197,66 +216,28 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
 
       @if (paso() === 'exito' && pagoRegistrado(); as pago) {
         <section class="exito">
-          <h3>Cobro registrado</h3>
-          <p>Monto: <strong>{{ pago.monto }}</strong></p>
-          <p>Estado: {{ pago.estado }}</p>
-          <button type="button" class="boton-primario" (click)="volverALista()">Volver a la jornada</button>
+          <h3>{{ 'cobros.jornada.exito_titulo' | translate }}</h3>
+          <p>{{ 'cobros.jornada.exito_monto' | translate }} <strong>{{ pago.monto }}</strong></p>
+          <p>{{ 'cobros.jornada.exito_estado' | translate }} {{ ('comun.estados.' + pago.estado) | translate }}</p>
+          <button type="button" class="boton-primario" (click)="volverALista()">{{
+            'cobros.jornada.volver_jornada' | translate
+          }}</button>
         </section>
       }
     </section>
   `,
-  styles: `
-    .pagina { display: grid; gap: 1rem; max-width: 720px; margin: 0 auto; }
-    .encabezado { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-    h2 { margin: 0; font-size: 1.5rem; }
-    .fecha { margin: 0.25rem 0 0; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
-    .saldo { margin: 0.15rem 0 0; color: #475569; font-size: 0.9rem; }
-    .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-    .resumen article { padding: 0.9rem; border-radius: 0.75rem; background: #ffffff; border: 1px solid #e5e7eb; text-align: center; }
-    .resumen.inhabil { opacity: 0.7; }
-    .resumen span { display: block; font-size: 0.8rem; color: #64748b; }
-    .resumen strong { font-size: 1.1rem; }
-    .lista-cobros { display: grid; gap: 0.75rem; }
-    .tarjeta-cobro { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.85rem; }
-    .info h3 { margin: 0 0 0.25rem; font-size: 1.05rem; }
-    .info p { margin: 0; color: #64748b; font-size: 0.9rem; }
-    .etiqueta { display: inline-block; margin-top: 0.35rem; margin-right: 0.35rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; text-transform: capitalize; }
-    .atraso { background: #fee2e2; color: #b91c1c; }
-    .programado { background: #dbeafe; color: #1d4ed8; }
-    .estado { background: #ecfdf5; color: #166534; }
-    .inhabil { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-    .trasladado { background: #f5f3ff; color: #5b21b6; }
-    .vacio a { color: #1d4ed8; font-weight: 600; }
-    .boton-cobrar, .boton-primario { min-height: 3rem; min-width: 6.5rem; padding: 0.75rem 1rem; border: none; border-radius: 0.75rem; background: #1d4ed8; color: #ffffff; font-size: 1rem; font-weight: 700; cursor: pointer; }
-    .boton-secundario { min-height: 3rem; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.75rem; background: #ffffff; cursor: pointer; }
-    .panel-cobro, .exito { padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.85rem; display: grid; gap: 1rem; }
-    dl { display: grid; gap: 0.5rem; margin: 0; }
-    dl div { display: flex; justify-content: space-between; gap: 1rem; }
-    dt { color: #64748b; }
-    dd { margin: 0; font-weight: 600; text-align: right; }
-    form { display: grid; gap: 0.85rem; }
-    label { display: grid; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
-    input, select { padding: 0.85rem; border: 1px solid #d1d5db; border-radius: 0.65rem; font-size: 1rem; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .confirmacion { padding: 1rem; border-radius: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; }
-    .historial ul { margin: 0; padding-left: 1.1rem; color: #475569; font-size: 0.9rem; }
-    .aviso, .vacio { margin: 0; padding: 1rem; border-radius: 0.75rem; background: #fff7ed; color: #9a3412; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    @media (max-width: 540px) {
-      .resumen { grid-template-columns: 1fr; }
-      .tarjeta-cobro { flex-direction: column; align-items: stretch; }
-      .boton-cobrar { width: 100%; }
-    }
-  `,
+  styleUrl: './jornada-cobro.component.scss',
 })
 export class JornadaCobroComponent implements OnInit {
   private readonly cobrosServicio = inject(CobrosServicio);
   private readonly formBuilder = inject(FormBuilder);
   private readonly ruta = inject(ActivatedRoute);
+  private readonly translate = inject(TranslateService);
 
   readonly metodosPago = METODOS_PAGO;
-  readonly etiquetasMetodo = ETIQUETAS_METODO_PAGO;
+  claveMetodoPago(metodo: MetodoPago): string {
+    return `comun.metodos_pago.${metodo}`;
+  }
 
   readonly fechaConsulta = signal(this.fechaHoyIso());
   readonly infoFechaConsulta = signal(infoDiaCalendario(this.fechaHoyIso()));
@@ -302,7 +283,7 @@ export class JornadaCobroComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los cobros del día.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.cobros.carga_jornada'));
       },
     });
 
@@ -341,7 +322,7 @@ export class JornadaCobroComponent implements OnInit {
     const saldo = Number(this.cobroSeleccionado()?.saldo_pendiente ?? 0);
 
     if (monto > saldo) {
-      this.error.set('El monto no puede superar el saldo pendiente.');
+      this.error.set('cobros.jornada.error_monto_saldo');
       return;
     }
 
@@ -375,7 +356,7 @@ export class JornadaCobroComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.guardando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudo registrar el cobro.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.cobros.registrar'));
         },
       });
   }
@@ -403,7 +384,14 @@ export class JornadaCobroComponent implements OnInit {
   }
 
   etiquetaDia(fechaIso: string): string {
-    return infoDiaCalendario(fechaIso).etiqueta ?? 'Día inhábil';
+    const info = infoDiaCalendario(fechaIso);
+    if (info.motivo === 'domingo') {
+      return this.translate.instant('comun.calendario.domingo');
+    }
+    if (info.motivo === 'festivo') {
+      return this.translate.instant('comun.calendario.festivo');
+    }
+    return this.translate.instant('comun.calendario.dia_inhabil');
   }
 
   esVencimientoTrasladado(cobro: CobroDelDia): boolean {

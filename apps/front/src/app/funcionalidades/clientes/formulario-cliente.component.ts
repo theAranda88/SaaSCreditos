@@ -1,29 +1,35 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { TipoDocumento } from '@creditos/shared-types';
 import { TIPOS_DOCUMENTO } from '../../nucleo/constantes/documentos.constantes';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from './clientes.servicio';
 
 @Component({
   selector: 'app-formulario-cliente',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <h2>{{ clienteId() ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
-        <a routerLink="/app/clientes">Volver al listado</a>
+        <h2>
+          {{
+            (clienteId() ? 'clientes.formulario.titulo_editar' : 'clientes.formulario.titulo_nuevo')
+              | translate
+          }}
+        </h2>
+        <a routerLink="/app/clientes">{{ 'comun.acciones.volver_listado' | translate }}</a>
       </header>
 
       <form [formGroup]="formulario" (ngSubmit)="enviar()">
         <label>
-          Nombre completo
+          {{ 'clientes.formulario.nombre_completo' | translate }}
           <input type="text" formControlName="nombreCompleto" />
         </label>
 
         <label>
-          Tipo de documento
+          {{ 'clientes.formulario.tipo_documento' | translate }}
           <select formControlName="tipoDocumento">
             @for (tipo of tiposDocumento; track tipo) {
               <option [value]="tipo">{{ tipo }}</option>
@@ -32,48 +38,36 @@ import { ClientesServicio } from './clientes.servicio';
         </label>
 
         <label>
-          Número de documento
+          {{ 'clientes.formulario.numero_documento' | translate }}
           <input type="text" formControlName="numeroDocumento" />
         </label>
 
         <label>
-          Teléfono
+          {{ 'comun.filtros.telefono' | translate }}
           <input type="tel" formControlName="telefono" />
         </label>
 
         <label>
-          Dirección (opcional)
+          {{ 'clientes.formulario.direccion_opcional' | translate }}
           <input type="text" formControlName="direccion" />
         </label>
 
         <label>
-          Referencia de ubicación (opcional)
+          {{ 'clientes.formulario.referencia_opcional' | translate }}
           <input type="text" formControlName="referenciaUbicacion" />
         </label>
 
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
+        @if (error(); as claveError) {
+          <p class="error">{{ claveError | translate }}</p>
         }
 
         <button type="submit" [disabled]="cargando() || formulario.invalid">
-          {{ cargando() ? 'Guardando…' : 'Guardar' }}
+          {{ (cargando() ? 'comun.acciones.guardando' : 'comun.acciones.guardar') | translate }}
         </button>
       </form>
     </section>
   `,
-  styles: `
-    .pagina { max-width: 560px; display: grid; gap: 1.25rem; }
-    header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
-    h2 { margin: 0; }
-    a { color: #1d4ed8; }
-    form { display: grid; gap: 1rem; padding: 1.25rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
-    input, select, button { padding: 0.75rem 0.9rem; border-radius: 0.5rem; font-size: 1rem; }
-    input, select { border: 1px solid #d1d5db; }
-    button { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; font-size: 0.9rem; }
-  `,
+  styleUrl: './formulario-cliente.component.scss',
 })
 export class FormularioClienteComponent implements OnInit {
   private readonly clientesServicio = inject(ClientesServicio);
@@ -119,7 +113,7 @@ export class FormularioClienteComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cargar el cliente.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.clientes.carga_formulario'));
       },
     });
   }
@@ -157,7 +151,7 @@ export class FormularioClienteComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo guardar el cliente.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.clientes.guardar'));
       },
     });
   }

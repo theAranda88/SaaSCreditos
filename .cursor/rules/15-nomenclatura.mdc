@@ -29,6 +29,12 @@ El dominio se nombra en **español**. El inglés queda reservado al ecosistema (
 
 Prisma: `model Cliente { ... @@map("clientes") }` — el modelo sigue el español.
 
+## i18n (frontend)
+
+- Archivos: `apps/front/public/i18n/es.json` (y otros idiomas con la misma forma).
+- Claves en español, segmentadas por módulo: `clientes.listado.titulo`, `comun.acciones.guardar`, `errores.http.sin_conexion`.
+- Prohibido copy de producto en templates o TS; solo claves del diccionario (skill `frontend-arquitectura`).
+
 ## Qué SÍ puede quedar en inglés
 
 - APIs del framework: `Component`, `Injectable`, `Module`, `inject`, `signal`, `describe`, `it`, `expect`

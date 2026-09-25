@@ -1,66 +1,67 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { ClientePerfil, CreditoPerfil, EstadoCredito } from '@creditos/shared-types';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from '../clientes/clientes.servicio';
 import { CreditosServicio } from './creditos.servicio';
 
 @Component({
   selector: 'app-listado-creditos',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header class="encabezado">
         <div>
-          <h2>Créditos</h2>
-          <p>Alta de crédito y consulta del plan de cuotas. Las condiciones no se editan.</p>
+          <h2>{{ 'creditos.listado.titulo' | translate }}</h2>
+          <p>{{ 'creditos.listado.subtitulo' | translate }}</p>
         </div>
-        <a routerLink="/app/creditos/nuevo" class="boton-primario">Nuevo crédito</a>
+        <a routerLink="/app/creditos/nuevo" class="boton-primario">{{ 'creditos.listado.nuevo' | translate }}</a>
       </header>
 
       <form class="filtros" [formGroup]="filtros" (ngSubmit)="cargar()">
         <label>
-          Cliente
+          {{ 'comun.filtros.cliente' | translate }}
           <select formControlName="clienteId">
-            <option value="">Todos</option>
+            <option value="">{{ 'comun.filtros.todos' | translate }}</option>
             @for (cliente of clientes(); track cliente.id) {
               <option [value]="cliente.id">{{ cliente.nombre_completo }}</option>
             }
           </select>
         </label>
         <label>
-          Estado
+          {{ 'comun.filtros.estado' | translate }}
           <select formControlName="estado">
-            <option value="">Todos</option>
-            <option value="activo">Activo</option>
-            <option value="pagado">Pagado</option>
-            <option value="mora">Mora</option>
-            <option value="anulado">Anulado</option>
-            <option value="refinanciado">Refinanciado</option>
+            <option value="">{{ 'comun.filtros.todos' | translate }}</option>
+            <option value="activo">{{ 'comun.estados.activo' | translate }}</option>
+            <option value="pagado">{{ 'comun.estados.pagado' | translate }}</option>
+            <option value="mora">{{ 'comun.estados.mora' | translate }}</option>
+            <option value="anulado">{{ 'comun.estados.anulado' | translate }}</option>
+            <option value="refinanciado">{{ 'comun.estados.refinanciado' | translate }}</option>
           </select>
         </label>
-        <button type="submit" [disabled]="cargando()">Buscar</button>
+        <button type="submit" [disabled]="cargando()">{{ 'comun.acciones.buscar' | translate }}</button>
       </form>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (cargando()) {
-        <p>Cargando créditos…</p>
+        <p>{{ 'comun.carga.creditos' | translate }}</p>
       } @else if (creditos().length === 0) {
-        <p class="vacio">No hay créditos para mostrar.</p>
+        <p class="vacio">{{ 'creditos.listado.vacio' | translate }}</p>
       } @else {
         <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
-                <th>Cliente</th>
-                <th>Principal</th>
-                <th>Cuotas</th>
-                <th>Desembolso</th>
-                <th>Estado</th>
+                <th>{{ 'comun.filtros.cliente' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_principal' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_cuotas' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_desembolso' | translate }}</th>
+                <th>{{ 'comun.filtros.estado' | translate }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -72,10 +73,10 @@ import { CreditosServicio } from './creditos.servicio';
                   <td>{{ credito.numero_cuotas }} · {{ credito.periodicidad }}</td>
                   <td>{{ credito.fecha_desembolso }}</td>
                   <td>
-                    <span class="estado">{{ credito.estado }}</span>
+                    <span class="estado">{{ ('comun.estados.' + credito.estado) | translate }}</span>
                   </td>
                   <td class="acciones">
-                    <a [routerLink]="['/app/creditos', credito.id]">Ver plan</a>
+                    <a [routerLink]="['/app/creditos', credito.id]">{{ 'creditos.listado.ver_plan' | translate }}</a>
                   </td>
                 </tr>
               }
@@ -84,24 +85,6 @@ import { CreditosServicio } from './creditos.servicio';
         </div>
       }
     </section>
-  `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; }
-    .encabezado { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-    h2 { margin: 0; }
-    .encabezado p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
-    .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
-    input, select { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; text-decoration: none; cursor: pointer; }
-    .boton-primario { display: inline-flex; align-items: center; }
-    .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .estado { text-transform: capitalize; color: #166534; }
-    .acciones a { color: #1d4ed8; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
   `,
 })
 export class ListadoCreditosComponent implements OnInit {
@@ -123,7 +106,7 @@ export class ListadoCreditosComponent implements OnInit {
     this.clientesServicio.listar().subscribe({
       next: (clientes) => this.clientes.set(clientes),
       error: (error: unknown) => {
-        this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los clientes.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.carga_clientes_filtro'));
       },
     });
     this.cargar();
@@ -147,7 +130,7 @@ export class ListadoCreditosComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.cargando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los créditos.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.carga_listado'));
         },
       });
   }

@@ -1,99 +1,87 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { CodigoPlan } from '@creditos/shared-types';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { PlataformaServicio } from './plataforma.servicio';
 
-const PLANES_INICIALES: { codigo: CodigoPlan; etiqueta: string }[] = [
-  { codigo: 'emprendedor', etiqueta: 'Emprendedor (hasta 3 cobradores)' },
-  { codigo: 'profesional', etiqueta: 'Profesional (hasta 10)' },
-  { codigo: 'empresarial', etiqueta: 'Empresarial (hasta 15)' },
+const PLANES_INICIALES: { codigo: CodigoPlan; clave: string }[] = [
+  { codigo: 'emprendedor', clave: 'plataforma.negocios.crear.plan_emprendedor' },
+  { codigo: 'profesional', clave: 'plataforma.negocios.crear.plan_profesional' },
+  { codigo: 'empresarial', clave: 'plataforma.negocios.crear.plan_empresarial' },
 ];
 
 @Component({
   selector: 'app-crear-negocio-plataforma',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <a routerLink="/plataforma/negocios" class="volver">← Negocios</a>
-        <h2>Nuevo negocio</h2>
-        <p>
-          Alta asistida: se crea el negocio, el usuario propietario y la suscripción activa. El
-          propietario inicia sesión por su cuenta (no comparte su sesión).
-        </p>
+        <a routerLink="/plataforma/negocios" class="volver">{{
+          'plataforma.negocios.crear.volver' | translate
+        }}</a>
+        <h2>{{ 'plataforma.negocios.crear.titulo' | translate }}</h2>
+        <p>{{ 'plataforma.negocios.crear.subtitulo' | translate }}</p>
       </header>
 
       <form [formGroup]="formulario" (ngSubmit)="enviar()">
         <fieldset>
-          <legend>Negocio</legend>
+          <legend>{{ 'plataforma.negocios.crear.seccion_negocio' | translate }}</legend>
           <label>
-            Nombre comercial
+            {{ 'app.configuracion.nombre_comercial' | translate }}
             <input type="text" formControlName="nombreComercial" autocomplete="organization" />
           </label>
           <label>
-            Moneda (ISO)
+            {{ 'plataforma.negocios.crear.moneda_iso' | translate }}
             <input type="text" formControlName="moneda" maxlength="3" />
           </label>
         </fieldset>
 
         <fieldset>
-          <legend>Propietario inicial</legend>
+          <legend>{{ 'plataforma.negocios.crear.seccion_propietario' | translate }}</legend>
           <label>
-            Nombre
+            {{ 'comun.filtros.nombre' | translate }}
             <input type="text" formControlName="nombre" autocomplete="name" />
           </label>
           <label>
-            Correo
+            {{ 'comun.filtros.correo' | translate }}
             <input type="email" formControlName="correo" autocomplete="email" />
           </label>
           <label>
-            Contraseña inicial
+            {{ 'plataforma.negocios.crear.contrasena_inicial' | translate }}
             <input type="password" formControlName="contrasena" autocomplete="new-password" />
           </label>
           <label>
-            Teléfono (opcional)
+            {{ 'cobradores.formulario.telefono_opcional' | translate }}
             <input type="tel" formControlName="telefono" />
           </label>
         </fieldset>
 
         <label>
-          Plan inicial
+          {{ 'plataforma.negocios.crear.plan_inicial' | translate }}
           <select formControlName="codigoPlan">
             @for (plan of planes; track plan.codigo) {
-              <option [value]="plan.codigo">{{ plan.etiqueta }}</option>
+              <option [value]="plan.codigo">{{ plan.clave | translate }}</option>
             }
           </select>
         </label>
 
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
+        @if (error(); as claveError) {
+          <p class="error">{{ claveError | translate }}</p>
         }
 
         <div class="acciones">
           <button type="submit" [disabled]="cargando() || formulario.invalid">
-            {{ cargando() ? 'Creando…' : 'Crear negocio' }}
+            {{
+              (cargando() ? 'comun.acciones.creando' : 'plataforma.negocios.crear.crear_negocio') | translate
+            }}
           </button>
         </div>
       </form>
     </section>
   `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; max-width: 640px; }
-    h2 { margin: 0.5rem 0 0; }
-    header p, .volver { margin: 0; color: #64748b; font-size: 0.95rem; }
-    .volver { display: inline-block; margin-bottom: 0.5rem; color: #1d4ed8; text-decoration: none; }
-    form { display: grid; gap: 1.25rem; padding: 1.25rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    fieldset { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 0; display: grid; gap: 0.75rem; }
-    legend { font-weight: 600; padding: 0 0.35rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
-    input, select { padding: 0.65rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; }
-    .acciones { display: flex; justify-content: flex-end; }
-    button { padding: 0.75rem 1.25rem; border: none; border-radius: 0.5rem; background: #1d4ed8; color: #fff; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; margin: 0; }
-  `,
+  styleUrl: './crear-negocio-plataforma.component.scss',
 })
 export class CrearNegocioPlataformaComponent {
   private readonly plataformaServicio = inject(PlataformaServicio);
@@ -141,7 +129,7 @@ export class CrearNegocioPlataformaComponent {
       },
       error: (err: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(err, 'No se pudo crear el negocio.'));
+        this.error.set(claveMensajeErrorHttp(err, 'errores.plataforma.crear'));
       },
     });
   }

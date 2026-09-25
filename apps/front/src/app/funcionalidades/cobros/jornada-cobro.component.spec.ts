@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { CobroDelDia, CobrosDelDiaRespuesta, PerfilUsuario } from '@creditos/shared-types';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { CobrosServicio } from './cobros.servicio';
 import { JornadaCobroComponent } from './jornada-cobro.component';
 
@@ -44,6 +45,7 @@ describe('JornadaCobroComponent', () => {
       imports: [JornadaCobroComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: CobrosServicio,
           useValue: {
@@ -74,8 +76,7 @@ describe('JornadaCobroComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('No hay cobro en domingos');
-    expect(fixture.nativeElement.textContent).toContain('Hoy no hay jornada de cobro');
-    expect(fixture.nativeElement.textContent).toContain('Domingo');
+    expect(fixture.nativeElement.textContent).toContain('comun.calendario.domingo');
   });
 
   it('debe marcar vencimiento trasladado cuando cae en domingo', async () => {
@@ -84,6 +85,7 @@ describe('JornadaCobroComponent', () => {
       imports: [JornadaCobroComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: CobrosServicio,
           useValue: {
@@ -121,8 +123,8 @@ describe('JornadaCobroComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Domingo');
-    expect(fixture.nativeElement.textContent).toContain('Trasladado');
+    expect(fixture.nativeElement.textContent).toContain('comun.calendario.domingo');
+    expect(fixture.nativeElement.textContent).toContain('cobros.jornada.trasladado_cobro');
   });
 
   it('debe confirmar antes de disparar un solo POST de cobro', () => {
@@ -145,7 +147,11 @@ describe('JornadaCobroComponent', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [JornadaCobroComponent],
-      providers: [provideRouter([]), { provide: CobrosServicio, useValue: cobrosServicio }],
+      providers: [
+        provideRouter([]),
+        proveedoresTraduccionPrueba(),
+        { provide: CobrosServicio, useValue: cobrosServicio },
+      ],
     });
 
     const fixture = TestBed.createComponent(JornadaCobroComponent);
@@ -178,7 +184,11 @@ describe('JornadaCobroComponent', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [JornadaCobroComponent],
-      providers: [provideRouter([]), { provide: CobrosServicio, useValue: cobrosServicio }],
+      providers: [
+        provideRouter([]),
+        proveedoresTraduccionPrueba(),
+        { provide: CobrosServicio, useValue: cobrosServicio },
+      ],
     });
 
     const fixture = TestBed.createComponent(JornadaCobroComponent);

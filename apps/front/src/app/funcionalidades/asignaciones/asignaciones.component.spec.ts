@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { ClientePerfil, CobradorPerfil, CreditoPerfil, PerfilUsuario } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { ClientesServicio } from '../clientes/clientes.servicio';
 import { CobradoresServicio } from '../cobradores/cobradores.servicio';
 import { CreditosServicio } from '../creditos/creditos.servicio';
@@ -53,6 +54,7 @@ describe('ListadoAsignacionesComponent', () => {
       imports: [ListadoAsignacionesComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AsignacionesServicio, useValue: { listar: () => of([]) } },
         { provide: CobradoresServicio, useValue: { listar: () => of([]) } },
         { provide: AuthServicio, useValue: { perfilActual: signal(perfilAdmin) } },
@@ -64,7 +66,7 @@ describe('ListadoAsignacionesComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('No hay asignaciones para mostrar.');
+    expect(fixture.nativeElement.textContent).toContain('asignaciones.listado.vacio');
   });
 
   it('no debe mostrar el botón de asignar al cobrador ni pedir cobradores', async () => {
@@ -92,6 +94,7 @@ describe('ListadoAsignacionesComponent', () => {
       imports: [ListadoAsignacionesComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AsignacionesServicio, useValue: { listar: () => of([asignacionCobrador]) } },
         { provide: CobradoresServicio, useValue: cobradoresServicio },
         { provide: AuthServicio, useValue: { perfilActual: signal(perfilCobrador) } },
@@ -103,10 +106,10 @@ describe('ListadoAsignacionesComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Mi cartera');
-    expect(fixture.nativeElement.textContent).not.toContain('Asignar cartera');
-    expect(fixture.nativeElement.textContent).toContain('Revisar cobro');
-    expect(fixture.nativeElement.textContent).toContain('Ir a cobros del día');
+    expect(fixture.nativeElement.textContent).toContain('asignaciones.listado.titulo_cobrador');
+    expect(fixture.nativeElement.textContent).not.toContain('asignaciones.listado.asignar');
+    expect(fixture.nativeElement.textContent).toContain('asignaciones.listado.revisar_cobro');
+    expect(fixture.nativeElement.textContent).toContain('asignaciones.listado.ir_cobros');
     expect(cobradoresServicio.listar).not.toHaveBeenCalled();
   });
 });
@@ -120,6 +123,7 @@ describe('FormularioAsignacionComponent', () => {
       imports: [FormularioAsignacionComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AsignacionesServicio, useValue: asignacionesServicio },
         { provide: CreditosServicio, useValue: { listar: () => of([]) } },
         { provide: ClientesServicio, useValue: { listar: () => of([]) } },
@@ -150,6 +154,7 @@ describe('FormularioAsignacionComponent', () => {
       imports: [FormularioAsignacionComponent],
       providers: [
         provideRouter([{ path: 'app/asignaciones', children: [] }]),
+        proveedoresTraduccionPrueba(),
         { provide: AsignacionesServicio, useValue: asignacionesServicio },
         { provide: CreditosServicio, useValue: { listar: () => of([creditoActivo]) } },
         { provide: ClientesServicio, useValue: { listar: () => of([clienteActivo]) } },

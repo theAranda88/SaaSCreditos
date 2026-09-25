@@ -1,30 +1,31 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { ClientePerfil, PeriodicidadCredito } from '@creditos/shared-types';
 import {
   fechaHoyIso,
   PERIODICIDADES_CREDITO,
 } from '../../nucleo/constantes/creditos.constantes';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from '../clientes/clientes.servicio';
 import { CreditosServicio } from './creditos.servicio';
 
 @Component({
   selector: 'app-formulario-credito',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <h2>Nuevo crédito</h2>
-        <a routerLink="/app/creditos">Volver al listado</a>
+        <h2>{{ 'creditos.formulario.titulo' | translate }}</h2>
+        <a routerLink="/app/creditos">{{ 'comun.acciones.volver_listado' | translate }}</a>
       </header>
 
       <form [formGroup]="formulario" (ngSubmit)="enviar()">
         <label>
-          Cliente
+          {{ 'comun.filtros.cliente' | translate }}
           <select formControlName="clienteId">
-            <option value="">Seleccione un cliente activo</option>
+            <option value="">{{ 'creditos.formulario.cliente_placeholder' | translate }}</option>
             @for (cliente of clientes(); track cliente.id) {
               <option [value]="cliente.id">{{ cliente.nombre_completo }}</option>
             }
@@ -32,29 +33,29 @@ import { CreditosServicio } from './creditos.servicio';
         </label>
 
         <label>
-          Monto principal (COP)
+          {{ 'creditos.formulario.monto_principal' | translate }}
           <input type="number" min="0.01" step="0.01" formControlName="montoPrincipal" />
         </label>
 
         <label>
-          Tasa de interés (%)
+          {{ 'creditos.formulario.tasa_interes' | translate }}
           <input type="number" min="0" step="0.0001" formControlName="tasaInteres" />
         </label>
 
         <label class="casilla">
           <input type="checkbox" formControlName="cobraMora" />
-          Cobrar mora en este crédito
+          {{ 'creditos.formulario.cobra_mora' | translate }}
         </label>
 
         @if (formulario.controls.cobraMora.value) {
           <label>
-            Valor de mora (COP, una vez por cuota vencida)
+            {{ 'creditos.formulario.valor_mora' | translate }}
             <input type="number" min="0.01" step="0.01" formControlName="valorMora" />
           </label>
         }
 
         <label>
-          Periodicidad
+          {{ 'creditos.formulario.periodicidad' | translate }}
           <select formControlName="periodicidad">
             @for (periodicidad of periodicidades; track periodicidad) {
               <option [value]="periodicidad">{{ periodicidad }}</option>
@@ -63,40 +64,28 @@ import { CreditosServicio } from './creditos.servicio';
         </label>
 
         <label>
-          Número de cuotas
+          {{ 'creditos.formulario.numero_cuotas' | translate }}
           <input type="number" min="1" step="1" formControlName="numeroCuotas" />
         </label>
 
         <label>
-          Fecha de desembolso
+          {{ 'creditos.formulario.fecha_desembolso' | translate }}
           <input type="date" formControlName="fechaDesembolso" />
         </label>
 
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
+        @if (error(); as claveError) {
+          <p class="error">{{ claveError | translate }}</p>
         }
 
         <button type="submit" [disabled]="cargando() || formulario.invalid">
-          {{ cargando() ? 'Creando…' : 'Crear crédito y generar cuotas' }}
+          {{
+            (cargando() ? 'comun.acciones.creando' : 'creditos.formulario.crear_y_cuotas') | translate
+          }}
         </button>
       </form>
     </section>
   `,
-  styles: `
-    .pagina { max-width: 560px; display: grid; gap: 1.25rem; }
-    header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
-    h2 { margin: 0; }
-    a { color: #1d4ed8; }
-    form { display: grid; gap: 1rem; padding: 1.25rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
-    .casilla { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
-    .casilla input { width: auto; }
-    input, select, button { padding: 0.75rem 0.9rem; border-radius: 0.5rem; font-size: 1rem; }
-    input, select { border: 1px solid #d1d5db; }
-    button { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; font-size: 0.9rem; }
-  `,
+  styleUrl: './formulario-credito.component.scss',
 })
 export class FormularioCreditoComponent implements OnInit {
   private readonly creditosServicio = inject(CreditosServicio);
@@ -132,7 +121,7 @@ export class FormularioCreditoComponent implements OnInit {
     this.clientesServicio.listar({ estado: 'activo' }).subscribe({
       next: (clientes) => this.clientes.set(clientes),
       error: (error: unknown) => {
-        this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los clientes.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.carga_clientes_filtro'));
       },
     });
   }
@@ -165,7 +154,7 @@ export class FormularioCreditoComponent implements OnInit {
     if (valores.cobraMora) {
       const mora = Number(valores.valorMora);
       if (!Number.isFinite(mora) || mora <= 0) {
-        this.error.set('Indique un valor de mora mayor a 0 o desactive el cobro de mora.');
+        this.error.set('creditos.formulario.error_valor_mora');
         return;
       }
       valorMora = mora;
@@ -191,7 +180,7 @@ export class FormularioCreditoComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.cargando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudo crear el crédito.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.crear'));
         },
       });
   }

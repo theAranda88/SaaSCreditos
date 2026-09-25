@@ -1,60 +1,61 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { ClientePerfil, EstadoCliente } from '@creditos/shared-types';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from './clientes.servicio';
 
 @Component({
   selector: 'app-listado-clientes',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header class="encabezado">
         <div>
-          <h2>Clientes</h2>
-          <p>Cartera humana del negocio. El cobrador no gestiona este módulo.</p>
+          <h2>{{ 'clientes.listado.titulo' | translate }}</h2>
+          <p>{{ 'clientes.listado.subtitulo' | translate }}</p>
         </div>
-        <a routerLink="/app/clientes/nuevo" class="boton-primario">Nuevo cliente</a>
+        <a routerLink="/app/clientes/nuevo" class="boton-primario">{{ 'clientes.listado.nuevo' | translate }}</a>
       </header>
 
       <form class="filtros" [formGroup]="filtros" (ngSubmit)="cargar()">
         <label>
-          Nombre
+          {{ 'comun.filtros.nombre' | translate }}
           <input type="search" formControlName="nombre" />
         </label>
         <label>
-          Documento
+          {{ 'comun.filtros.documento' | translate }}
           <input type="search" formControlName="numeroDocumento" />
         </label>
         <label>
-          Estado
+          {{ 'comun.filtros.estado' | translate }}
           <select formControlName="estado">
-            <option value="">Todos</option>
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
+            <option value="">{{ 'comun.filtros.todos' | translate }}</option>
+            <option value="activo">{{ 'comun.estados.activo' | translate }}</option>
+            <option value="inactivo">{{ 'comun.estados.inactivo' | translate }}</option>
           </select>
         </label>
-        <button type="submit" [disabled]="cargando()">Buscar</button>
+        <button type="submit" [disabled]="cargando()">{{ 'comun.acciones.buscar' | translate }}</button>
       </form>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (cargando()) {
-        <p>Cargando clientes…</p>
+        <p>{{ 'comun.carga.clientes' | translate }}</p>
       } @else if (clientes().length === 0) {
-        <p class="vacio">No hay clientes para mostrar.</p>
+        <p class="vacio">{{ 'clientes.listado.vacio' | translate }}</p>
       } @else {
         <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Documento</th>
-                <th>Teléfono</th>
-                <th>Estado</th>
+                <th>{{ 'clientes.listado.columna_nombre' | translate }}</th>
+                <th>{{ 'clientes.listado.columna_documento' | translate }}</th>
+                <th>{{ 'clientes.listado.columna_telefono' | translate }}</th>
+                <th>{{ 'comun.filtros.estado' | translate }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -66,13 +67,16 @@ import { ClientesServicio } from './clientes.servicio';
                   <td>{{ cliente.telefono }}</td>
                   <td>
                     <span class="estado" [class.inactivo]="cliente.estado === 'inactivo'">
-                      {{ cliente.estado }}
+                      {{ ('comun.estados.' + cliente.estado) | translate }}
                     </span>
                   </td>
                   <td class="acciones">
-                    <a [routerLink]="['/app/clientes', cliente.id]">Editar</a>
+                    <a [routerLink]="['/app/clientes', cliente.id]">{{ 'comun.acciones.editar' | translate }}</a>
                     <button type="button" (click)="cambiarEstado(cliente)">
-                      {{ cliente.estado === 'activo' ? 'Inactivar' : 'Activar' }}
+                      {{
+                        (cliente.estado === 'activo' ? 'comun.acciones.inactivar' : 'comun.acciones.activar')
+                          | translate
+                      }}
                     </button>
                   </td>
                 </tr>
@@ -82,27 +86,6 @@ import { ClientesServicio } from './clientes.servicio';
         </div>
       }
     </section>
-  `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; }
-    .encabezado { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-    h2 { margin: 0; }
-    .encabezado p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
-    .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
-    input, select { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; text-decoration: none; cursor: pointer; }
-    .boton-primario { display: inline-flex; align-items: center; }
-    .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .estado { text-transform: capitalize; color: #166534; }
-    .estado.inactivo { color: #b45309; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .acciones a { color: #1d4ed8; }
-    .acciones button { background: #ffffff; color: #1f2937; border: 1px solid #d1d5db; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
   `,
 })
 export class ListadoClientesComponent implements OnInit {
@@ -142,7 +125,7 @@ export class ListadoClientesComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.cargando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los clientes.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.clientes.carga_listado'));
         },
       });
   }
@@ -157,7 +140,7 @@ export class ListadoClientesComponent implements OnInit {
         );
       },
       error: (error: unknown) => {
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cambiar el estado del cliente.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.clientes.cambio_estado'));
       },
     });
   }

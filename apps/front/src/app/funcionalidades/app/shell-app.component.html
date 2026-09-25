@@ -1,41 +1,43 @@
 <div class="layout">
   <header class="barra">
     <div>
-      <p class="marca">Creditos SaaS</p>
-      <h1>{{ tituloPanel() }}</h1>
+      <p class="marca">{{ 'comun.marca.nombre_producto' | translate }}</p>
+      <h1>{{ tituloPanel() | translate }}</h1>
     </div>
 
     @if (perfil(); as usuario) {
       <div class="usuario">
         <p>{{ usuario.nombre }}</p>
         <span class="rol">{{ usuario.rol }}</span>
-        <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+        <button type="button" (click)="cerrarSesion()">
+          {{ 'comun.navegacion.cerrar_sesion' | translate }}
+        </button>
       </div>
     }
   </header>
 
   <nav class="menu">
-    <a routerLink="/app/inicio" routerLinkActive="activo">Inicio</a>
+    <a routerLink="/app/inicio" routerLinkActive="activo">{{ 'comun.navegacion.inicio' | translate }}</a>
     @if (puedeAdministrar()) {
-      <a routerLink="/app/clientes" routerLinkActive="activo">Clientes</a>
-      <a routerLink="/app/creditos" routerLinkActive="activo">Créditos</a>
-      <a routerLink="/app/cobradores" routerLinkActive="activo">Cobradores</a>
-      <a routerLink="/app/asignaciones" routerLinkActive="activo">Asignaciones</a>
-      <a routerLink="/app/cartera" routerLinkActive="activo">Cartera</a>
-      <a routerLink="/app/suscripcion" routerLinkActive="activo">Suscripción</a>
-      <a routerLink="/app/configuracion" routerLinkActive="activo">Configuración</a>
+      <a routerLink="/app/clientes" routerLinkActive="activo">{{ 'comun.navegacion.clientes' | translate }}</a>
+      <a routerLink="/app/creditos" routerLinkActive="activo">{{ 'comun.navegacion.creditos' | translate }}</a>
+      <a routerLink="/app/cobradores" routerLinkActive="activo">{{ 'comun.navegacion.cobradores' | translate }}</a>
+      <a routerLink="/app/asignaciones" routerLinkActive="activo">{{ 'comun.navegacion.asignaciones' | translate }}</a>
+      <a routerLink="/app/cartera" routerLinkActive="activo">{{ 'comun.navegacion.cartera' | translate }}</a>
+      <a routerLink="/app/suscripcion" routerLinkActive="activo">{{ 'comun.navegacion.suscripcion' | translate }}</a>
+      <a routerLink="/app/configuracion" routerLinkActive="activo">{{ 'comun.navegacion.configuracion' | translate }}</a>
     }
     @if (esCobrador()) {
-      <a routerLink="/app/cobros" routerLinkActive="activo">Cobros del día</a>
-      <a routerLink="/app/asignaciones" routerLinkActive="activo">Mis asignaciones</a>
-      <a routerLink="/app/cartera" routerLinkActive="activo">Mi cartera</a>
+      <a routerLink="/app/cobros" routerLinkActive="activo">{{ 'comun.navegacion.cobros_del_dia' | translate }}</a>
+      <a routerLink="/app/asignaciones" routerLinkActive="activo">{{ 'comun.navegacion.mis_asignaciones' | translate }}</a>
+      <a routerLink="/app/cartera" routerLinkActive="activo">{{ 'comun.navegacion.mi_cartera' | translate }}</a>
     }
   </nav>
 
   @if (servicioNoOperativo()) {
     <p class="aviso-suscripcion">
-      El servicio de este negocio no está activo.
-      <a routerLink="/app/suscripcion">Ver suscripción</a>
+      {{ 'app.shell.servicio_no_activo' | translate }}
+      <a routerLink="/app/suscripcion">{{ 'comun.navegacion.ver_suscripcion' | translate }}</a>
     </p>
   }
 

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { DashboardServicio } from './dashboard.servicio';
 import { PanelIndicadoresNegocioComponent } from './panel-indicadores-negocio.component';
 
@@ -11,6 +12,7 @@ describe('PanelIndicadoresNegocioComponent', () => {
       imports: [PanelIndicadoresNegocioComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: DashboardServicio,
           useValue: {
@@ -34,8 +36,7 @@ describe('PanelIndicadoresNegocioComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Domingo');
-    expect(fixture.nativeElement.textContent).toContain('no hay jornada de cobro');
-    expect(fixture.nativeElement.textContent).toContain('Composición de cartera');
+    expect(fixture.nativeElement.textContent).toContain('comun.calendario.aviso_dia_inhabil');
+    expect(fixture.nativeElement.textContent).toContain('dashboard.indicadores.composicion_cartera');
   });
 });

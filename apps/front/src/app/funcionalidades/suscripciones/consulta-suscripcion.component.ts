@@ -1,73 +1,84 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { PlanPerfil, SuscripcionPerfil } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { SuscripcionesServicio } from './suscripciones.servicio';
 
 @Component({
   selector: 'app-consulta-suscripcion',
+  imports: [TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <h2>Suscripción</h2>
-        <p>Plan contratado, límites y estado del servicio.</p>
+        <h2>{{ 'suscripciones.consulta.titulo' | translate }}</h2>
+        <p>{{ 'suscripciones.consulta.subtitulo' | translate }}</p>
       </header>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (cargando()) {
-        <p>Cargando suscripción…</p>
+        <p>{{ 'comun.carga.suscripcion' | translate }}</p>
       } @else {
         @if (suscripcion(); as actual) {
           @if (actual.estado !== 'activa') {
             <p class="aviso">
-              El servicio está <strong>{{ actual.estado }}</strong>. Las operaciones de cartera
-              quedan bloqueadas hasta reactivar la cuenta.
+              {{
+                'suscripciones.consulta.servicio_inactivo' | translate: { estado: actual.estado }
+              }}
             </p>
           }
 
           <div class="tarjetas">
             <article>
-              <span>Plan</span>
+              <span>{{ 'suscripciones.consulta.plan' | translate }}</span>
               <strong>{{ actual.plan.nombre }}</strong>
               <small>{{ actual.plan.codigo }}</small>
             </article>
             <article>
-              <span>Cobradores</span>
+              <span>{{ 'suscripciones.consulta.cobradores' | translate }}</span>
               <strong>{{ actual.cobradores_activos }} / {{ actual.limite_cobradores }}</strong>
-              <small>Cupo del plan</small>
+              <small>{{ 'suscripciones.consulta.cupo_plan' | translate }}</small>
             </article>
             <article>
-              <span>Estado</span>
+              <span>{{ 'comun.filtros.estado' | translate }}</span>
               <strong class="estado">{{ actual.estado }}</strong>
-              <small>Renovación {{ actual.fecha_renovacion }}</small>
+              <small>{{
+                'suscripciones.consulta.renovacion' | translate: { fecha: actual.fecha_renovacion }
+              }}</small>
             </article>
             <article>
-              <span>Mensualidad</span>
+              <span>{{ 'suscripciones.consulta.mensualidad' | translate }}</span>
               <strong>{{ actual.plan.precio_mensual }}</strong>
-              <small>Implementación {{ actual.plan.precio_implementacion }}</small>
+              <small>{{
+                'suscripciones.consulta.implementacion'
+                  | translate: { monto: actual.plan.precio_implementacion }
+              }}</small>
             </article>
           </div>
 
           @if (esPropietario()) {
             <section class="cambio">
-              <h3>Cambiar de plan</h3>
-              <p>Checkout stub: no hay pasarela. El cupo actual debe caber en el plan destino.</p>
+              <h3>{{ 'suscripciones.consulta.cambiar_plan' | translate }}</h3>
+              <p>{{ 'suscripciones.consulta.checkout_stub' | translate }}</p>
 
               @if (planesDisponibles().length === 0) {
-                <p class="vacio">No hay otros planes activos para cambiar.</p>
+                <p class="vacio">{{ 'suscripciones.consulta.sin_planes' | translate }}</p>
               } @else {
                 <ul>
                   @for (plan of planesDisponibles(); track plan.id) {
                     <li>
                       <div>
                         <strong>{{ plan.nombre }}</strong>
-                        <small>Hasta {{ plan.limite_cobradores }} cobradores · {{ plan.precio_mensual }}/mes</small>
+                        <small>{{
+                          'suscripciones.consulta.plan_detalle'
+                            | translate: { limite: plan.limite_cobradores, precio: plan.precio_mensual }
+                        }}</small>
                       </div>
                       <button type="button" (click)="pedirCambio(plan)" [disabled]="guardando()">
-                        Elegir
+                        {{ 'comun.acciones.elegir' | translate }}
                       </button>
                     </li>
                   }
@@ -77,14 +88,21 @@ import { SuscripcionesServicio } from './suscripciones.servicio';
               @if (planPendiente(); as plan) {
                 <div class="confirmacion">
                   <p>
-                    Va a cambiar al plan <strong>{{ plan.nombre }}</strong> (hasta
-                    {{ plan.limite_cobradores }} cobradores).
+                    {{
+                      'suscripciones.consulta.confirmar_cambio_texto'
+                        | translate: { nombre: plan.nombre, limite: plan.limite_cobradores }
+                    }}
                   </p>
                   <div class="acciones">
                     <button type="button" class="primario" (click)="confirmarCambio()" [disabled]="guardando()">
-                      {{ guardando() ? 'Cambiando…' : 'Confirmar cambio' }}
+                      {{
+                        (guardando() ? 'comun.acciones.cambiando' : 'suscripciones.consulta.confirmar_cambio')
+                          | translate
+                      }}
                     </button>
-                    <button type="button" (click)="cancelarCambio()" [disabled]="guardando()">Cancelar</button>
+                    <button type="button" (click)="cancelarCambio()" [disabled]="guardando()">
+                      {{ 'comun.acciones.cancelar' | translate }}
+                    </button>
                   </div>
                 </div>
               }
@@ -94,26 +112,7 @@ import { SuscripcionesServicio } from './suscripciones.servicio';
       }
     </section>
   `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; max-width: 820px; }
-    h2, h3 { margin: 0; }
-    header p, .vacio, .cambio p { margin: 0.35rem 0 0; color: #64748b; }
-    .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.85rem; }
-    article { padding: 1rem; border-radius: 0.85rem; background: #ffffff; border: 1px solid #e5e7eb; display: grid; gap: 0.35rem; }
-    article span, article small { color: #64748b; font-size: 0.85rem; }
-    .estado { text-transform: capitalize; }
-    .aviso { margin: 0; padding: 0.75rem 1rem; border-radius: 0.65rem; background: #fff7ed; color: #9a3412; }
-    .cambio { padding: 1rem; border-radius: 0.85rem; background: #ffffff; border: 1px solid #e5e7eb; display: grid; gap: 0.85rem; }
-    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
-    li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; align-items: center; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.65rem; }
-    li small { display: block; color: #64748b; }
-    button { padding: 0.65rem 0.9rem; border-radius: 0.5rem; border: 1px solid #d1d5db; background: #ffffff; cursor: pointer; }
-    .primario, li button { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; }
-    .confirmacion { padding: 1rem; border-radius: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; display: grid; gap: 0.75rem; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-  `,
+  styleUrl: './consulta-suscripcion.component.scss',
 })
 export class ConsultaSuscripcionComponent implements OnInit {
   private readonly suscripcionesServicio = inject(SuscripcionesServicio);
@@ -148,7 +147,7 @@ export class ConsultaSuscripcionComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cargar la suscripción.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.suscripciones.carga'));
       },
     });
 
@@ -191,7 +190,7 @@ export class ConsultaSuscripcionComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.guardando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cambiar el plan.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.suscripciones.cambio_plan'));
       },
     });
   }

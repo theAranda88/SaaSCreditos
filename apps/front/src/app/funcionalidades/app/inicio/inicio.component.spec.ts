@@ -7,6 +7,7 @@ import type { PerfilUsuario } from '@creditos/shared-types';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
 import { DashboardServicio } from '../../dashboard/dashboard.servicio';
 import { NegociosServicio } from '../../negocios/negocios.servicio';
+import { proveedoresTraduccionPrueba } from '../../../nucleo/i18n/proveedores-traduccion-prueba';
 import { InicioComponent } from './inicio.component';
 
 describe('InicioComponent', () => {
@@ -23,6 +24,7 @@ describe('InicioComponent', () => {
       imports: [InicioComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AuthServicio, useValue: { perfilActual: perfil } },
         {
           provide: NegociosServicio,
@@ -68,6 +70,7 @@ describe('InicioComponent', () => {
       imports: [InicioComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AuthServicio, useValue: { perfilActual: perfil } },
         { provide: NegociosServicio, useValue: { obtenerMiNegocio: vi.fn() } },
       ],
@@ -77,6 +80,6 @@ describe('InicioComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('app-panel-indicadores-negocio')).toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Ir a cobros del día');
+    expect(fixture.nativeElement.textContent).toContain('app.inicio.ir_cobros');
   });
 });

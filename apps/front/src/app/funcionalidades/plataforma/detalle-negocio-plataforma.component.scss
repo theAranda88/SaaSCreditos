@@ -1,0 +1,19 @@
+@use '../../nucleo/ui/tokens';
+
+.pagina { display: grid; gap: var(--espaciado-l); max-width: var(--ancho-contenido-plataforma-detalle); }
+    h2, h3 { margin: 0; }
+    header p, .vacio { margin: var(--espaciado-gap-etiqueta) 0 0; color: var(--color-texto-secundario); }
+    .volver { color: var(--color-texto-enlace); width: fit-content; text-decoration: none; }
+    .acciones { display: flex; flex-wrap: wrap; gap: var(--espaciado-s); }
+    button { padding: var(--radio-borde-medio) var(--padding-boton-secundario-x); border-radius: var(--radio-borde); border: var(--grosor-borde) solid var(--color-borde-input); background: var(--color-fondo-superficie); cursor: pointer; }
+    .primario { border: none; background: var(--color-primario); color: var(--color-texto-on-primario); font-weight: 600; }
+    .peligro { border-color: var(--color-error-borde); color: var(--color-error); }
+    .confirmacion { padding: var(--espaciado-l); border-radius: var(--radio-borde-grande); background: var(--color-primario-fondo-suave); border: var(--grosor-borde) solid var(--color-primario-borde-suave); display: grid; gap: var(--espaciado-m); }
+    .tabla-contenedor { overflow-x: auto; background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-grande); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: var(--espaciado-m) var(--espaciado-l); text-align: left; border-bottom: var(--grosor-borde) solid var(--color-borde); }
+    .auditorias { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--espaciado-s); }
+    .auditorias li { padding: var(--espaciado-m) var(--espaciado-l); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-medio); display: grid; gap: var(--espaciado-gap-auditoria); }
+    .auditorias span { color: var(--color-texto-secundario); font-size: var(--fuente-xs); }
+    .error { color: var(--color-error); }
+    button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }

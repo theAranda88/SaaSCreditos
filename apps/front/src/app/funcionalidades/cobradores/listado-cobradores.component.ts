@@ -1,60 +1,61 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { CobradorPerfil, EstadoUsuario } from '@creditos/shared-types';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { CobradoresServicio } from './cobradores.servicio';
 
 @Component({
   selector: 'app-listado-cobradores',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header class="encabezado">
         <div>
-          <h2>Cobradores</h2>
-          <p>Usuarios con rol cobrador. Inactivar no borra el histórico.</p>
+          <h2>{{ 'cobradores.listado.titulo' | translate }}</h2>
+          <p>{{ 'cobradores.listado.subtitulo' | translate }}</p>
         </div>
-        <a routerLink="/app/cobradores/nuevo" class="boton-primario">Nuevo cobrador</a>
+        <a routerLink="/app/cobradores/nuevo" class="boton-primario">{{ 'cobradores.listado.nuevo' | translate }}</a>
       </header>
 
       <form class="filtros" [formGroup]="filtros" (ngSubmit)="cargar()">
         <label>
-          Nombre
+          {{ 'comun.filtros.nombre' | translate }}
           <input type="search" formControlName="nombre" />
         </label>
         <label>
-          Correo
+          {{ 'comun.filtros.correo' | translate }}
           <input type="search" formControlName="correo" />
         </label>
         <label>
-          Estado
+          {{ 'comun.filtros.estado' | translate }}
           <select formControlName="estado">
-            <option value="">Todos</option>
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
+            <option value="">{{ 'comun.filtros.todos' | translate }}</option>
+            <option value="activo">{{ 'comun.estados.activo' | translate }}</option>
+            <option value="inactivo">{{ 'comun.estados.inactivo' | translate }}</option>
           </select>
         </label>
-        <button type="submit" [disabled]="cargando()">Buscar</button>
+        <button type="submit" [disabled]="cargando()">{{ 'comun.acciones.buscar' | translate }}</button>
       </form>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (cargando()) {
-        <p>Cargando cobradores…</p>
+        <p>{{ 'comun.carga.cobradores' | translate }}</p>
       } @else if (cobradores().length === 0) {
-        <p class="vacio">No hay cobradores para mostrar.</p>
+        <p class="vacio">{{ 'cobradores.listado.vacio' | translate }}</p>
       } @else {
         <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Teléfono</th>
-                <th>Estado</th>
+                <th>{{ 'comun.filtros.nombre' | translate }}</th>
+                <th>{{ 'comun.filtros.correo' | translate }}</th>
+                <th>{{ 'comun.filtros.telefono' | translate }}</th>
+                <th>{{ 'comun.filtros.estado' | translate }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -63,16 +64,19 @@ import { CobradoresServicio } from './cobradores.servicio';
                 <tr>
                   <td>{{ cobrador.nombre }}</td>
                   <td>{{ cobrador.correo }}</td>
-                  <td>{{ cobrador.telefono ?? '—' }}</td>
+                  <td>{{ cobrador.telefono ?? ('comun.vacio.guion' | translate) }}</td>
                   <td>
                     <span class="estado" [class.inactivo]="cobrador.estado === 'inactivo'">
-                      {{ cobrador.estado }}
+                      {{ ('comun.estados.' + cobrador.estado) | translate }}
                     </span>
                   </td>
                   <td class="acciones">
-                    <a [routerLink]="['/app/cobradores', cobrador.id]">Editar</a>
+                    <a [routerLink]="['/app/cobradores', cobrador.id]">{{ 'comun.acciones.editar' | translate }}</a>
                     <button type="button" (click)="cambiarEstado(cobrador)">
-                      {{ cobrador.estado === 'activo' ? 'Inactivar' : 'Activar' }}
+                      {{
+                        (cobrador.estado === 'activo' ? 'comun.acciones.inactivar' : 'comun.acciones.activar')
+                          | translate
+                      }}
                     </button>
                   </td>
                 </tr>
@@ -82,27 +86,6 @@ import { CobradoresServicio } from './cobradores.servicio';
         </div>
       }
     </section>
-  `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; }
-    .encabezado { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-    h2 { margin: 0; }
-    .encabezado p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
-    .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
-    input, select { padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.875rem; border: 1px solid #d1d5db; }
-    .filtros button, .boton-primario { border: none; background: #1d4ed8; color: #ffffff; text-decoration: none; cursor: pointer; }
-    .boton-primario { display: inline-flex; align-items: center; }
-    .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .estado { text-transform: capitalize; color: #166534; }
-    .estado.inactivo { color: #b45309; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .acciones a { color: #1d4ed8; }
-    .acciones button { background: #ffffff; color: #1f2937; border: 1px solid #d1d5db; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
   `,
 })
 export class ListadoCobradoresComponent implements OnInit {
@@ -142,7 +125,7 @@ export class ListadoCobradoresComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.cargando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar los cobradores.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.cobradores.carga_listado'));
         },
       });
   }
@@ -157,7 +140,7 @@ export class ListadoCobradoresComponent implements OnInit {
         );
       },
       error: (error: unknown) => {
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cambiar el estado del cobrador.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.cobradores.cambio_estado'));
       },
     });
   }

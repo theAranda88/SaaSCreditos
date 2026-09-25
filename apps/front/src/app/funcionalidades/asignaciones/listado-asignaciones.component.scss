@@ -1,0 +1,15 @@
+@use '../../nucleo/ui/tokens';
+
+.boton-tabla {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--padding-campo-y) var(--espaciado-m);
+      border-radius: var(--radio-borde);
+      font-size: var(--fuente-xs);
+      white-space: nowrap;
+      border: none;
+      background: var(--color-primario); color: var(--color-texto-on-primario);
+      text-decoration: none;
+      cursor: pointer;
+    }

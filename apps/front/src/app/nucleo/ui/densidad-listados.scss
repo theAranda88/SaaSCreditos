@@ -4,10 +4,10 @@
 .boton-secundario,
 .filtros button,
 .boton-tabla {
-  min-height: 2.25rem;
-  padding: 0.45rem 0.85rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  min-height: var(--altura-boton-compacto);
+  padding: var(--padding-campo-y) var(--padding-campo-x-ancho);
+  border-radius: var(--radio-borde);
+  font-size: var(--fuente-sm);
   font-weight: 600;
 }
 
@@ -18,5 +18,5 @@
 .filtros button[type='submit'] {
   justify-self: start;
   width: auto;
-  min-width: 5.5rem;
+  min-width: var(--ancho-boton-tabla-min);
 }

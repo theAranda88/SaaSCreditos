@@ -1,0 +1,128 @@
+/* Patrones compartidos de listados y formularios de administración */
+
+.pagina {
+  display: grid;
+  gap: var(--espaciado-lg);
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espaciado-l);
+  align-items: flex-start;
+}
+
+.encabezado h2 {
+  margin: 0;
+}
+
+.encabezado p,
+.vacio {
+  margin: var(--espaciado-gap-etiqueta) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--ancho-grid-min-columna), 1fr));
+  gap: var(--espaciado-m);
+  padding: var(--espaciado-l);
+  background: var(--color-fondo-superficie);
+  border: var(--grosor-borde) solid var(--color-borde);
+  border-radius: var(--radio-borde-grande);
+}
+
+.filtros label {
+  display: grid;
+  gap: var(--espaciado-gap-etiqueta);
+  font-size: var(--fuente-xs);
+  font-weight: 600;
+}
+
+.filtros input,
+.filtros select {
+  padding: var(--padding-campo-y) var(--padding-campo-x);
+  border-radius: var(--radio-borde);
+  font-size: var(--fuente-sm);
+  border: var(--grosor-borde) solid var(--color-borde-input);
+}
+
+.filtros button[type='submit'],
+.boton-primario {
+  border: none;
+  background: var(--color-primario); color: var(--color-texto-on-primario);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton-primario {
+  display: inline-flex;
+  align-items: center;
+}
+
+.boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--padding-campo-y) var(--padding-campo-x-ancho);
+  border-radius: var(--radio-borde);
+  border: var(--grosor-borde) solid var(--color-borde-input);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-enlace);
+  text-decoration: none;
+  font-size: var(--fuente-sm);
+  font-weight: 600;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  background: var(--color-fondo-superficie);
+  border: var(--grosor-borde) solid var(--color-borde);
+  border-radius: var(--radio-borde-grande);
+}
+
+.tabla-contenedor table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-contenedor th,
+.tabla-contenedor td {
+  padding: var(--espaciado-m) var(--espaciado-l);
+  text-align: left;
+  border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.estado {
+  text-transform: capitalize;
+  color: var(--color-exito);
+}
+
+.estado.inactivo {
+  color: var(--color-advertencia);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaciado-s);
+}
+
+.acciones a {
+  color: var(--color-texto-enlace);
+}
+
+.acciones button {
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-principal);
+  border: var(--grosor-borde) solid var(--color-borde-input);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+button:disabled {
+  opacity: var(--opacidad-deshabilitado);
+  cursor: not-allowed;
+}

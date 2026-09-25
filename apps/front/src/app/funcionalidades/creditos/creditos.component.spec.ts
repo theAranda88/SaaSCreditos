@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { ClientesServicio } from '../clientes/clientes.servicio';
 import { CreditosServicio } from './creditos.servicio';
 import { FormularioCreditoComponent } from './formulario-credito.component';
@@ -14,6 +15,7 @@ describe('ListadoCreditosComponent', () => {
       imports: [ListadoCreditosComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: CreditosServicio,
           useValue: { listar: () => of([]) },
@@ -30,7 +32,7 @@ describe('ListadoCreditosComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('No hay créditos para mostrar.');
+    expect(fixture.nativeElement.textContent).toContain('creditos.listado.vacio');
   });
 });
 
@@ -42,6 +44,7 @@ describe('FormularioCreditoComponent', () => {
     TestBed.configureTestingModule({
       imports: [FormularioCreditoComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         { provide: CreditosServicio, useValue: creditosServicio },
         {
           provide: ClientesServicio,

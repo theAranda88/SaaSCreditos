@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { PerfilUsuario, PlanPerfil, SuscripcionPerfil } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { ConsultaSuscripcionComponent } from './consulta-suscripcion.component';
 import { SuscripcionesServicio } from './suscripciones.servicio';
 
@@ -54,6 +55,7 @@ describe('ConsultaSuscripcionComponent', () => {
     TestBed.configureTestingModule({
       imports: [ConsultaSuscripcionComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         {
           provide: SuscripcionesServicio,
           useValue: {
@@ -82,6 +84,7 @@ describe('ConsultaSuscripcionComponent', () => {
     TestBed.configureTestingModule({
       imports: [ConsultaSuscripcionComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         {
           provide: SuscripcionesServicio,
           useValue: {
@@ -113,6 +116,7 @@ describe('ConsultaSuscripcionComponent', () => {
     TestBed.configureTestingModule({
       imports: [ConsultaSuscripcionComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         {
           provide: SuscripcionesServicio,
           useValue: {
@@ -136,6 +140,6 @@ describe('ConsultaSuscripcionComponent', () => {
     fixture.detectChanges();
 
     expect(listarPlanes).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).not.toContain('Cambiar de plan');
+    expect(fixture.nativeElement.textContent).not.toContain('suscripciones.consulta.cambiar_plan');
   });
 });

@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type {
   AuditoriaPlataforma,
   EstadoNegocio,
@@ -7,124 +8,129 @@ import type {
   UsuarioPlataforma,
 } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { PlataformaServicio } from './plataforma.servicio';
 
 @Component({
   selector: 'app-detalle-negocio-plataforma',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
-      <a routerLink="/plataforma/negocios" class="volver">← Negocios</a>
+      <a routerLink="/plataforma/negocios" class="volver">{{
+        'plataforma.negocios.detalle.volver' | translate
+      }}</a>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       @if (cargando()) {
-        <p>Cargando negocio…</p>
+        <p>{{ 'comun.carga.negocio' | translate }}</p>
       } @else {
         @if (negocio(); as actual) {
-        <header>
-          <h2>{{ actual.nombre_comercial }}</h2>
-          <p>
-            Estado <strong>{{ actual.estado }}</strong>
+          <header>
+            <h2>{{ actual.nombre_comercial }}</h2>
             @if (actual.suscripcion) {
-              · Plan {{ actual.suscripcion.plan_nombre }} (hasta {{ actual.suscripcion.limite_cobradores }} cobradores)
+              <p>
+                {{
+                  'plataforma.negocios.detalle.estado_plan'
+                    | translate
+                      : {
+                          estado: actual.estado,
+                          plan: actual.suscripcion.plan_nombre,
+                          limite: actual.suscripcion.limite_cobradores,
+                        }
+                }}
+              </p>
             }
-          </p>
-        </header>
+          </header>
 
-        @if (esAdminPlataforma()) {
-          <div class="acciones">
-            @if (actual.estado !== 'suspendido') {
-              <button type="button" (click)="pedirCambioEstado('suspendido')">Suspender</button>
-            }
-            @if (actual.estado !== 'activo') {
-              <button type="button" class="primario" (click)="pedirCambioEstado('activo')">Activar</button>
-            }
-            @if (actual.estado !== 'cancelado') {
-              <button type="button" class="peligro" (click)="pedirCambioEstado('cancelado')">Cancelar cuenta</button>
-            }
-          </div>
-        }
-
-        @if (estadoPendiente(); as estado) {
-          <div class="confirmacion">
-            <p>Confirme el cambio de estado a <strong>{{ estado }}</strong>.</p>
+          @if (esAdminPlataforma()) {
             <div class="acciones">
-              <button type="button" class="primario" (click)="confirmarCambioEstado()" [disabled]="guardando()">
-                {{ guardando() ? 'Aplicando…' : 'Confirmar' }}
-              </button>
-              <button type="button" (click)="cancelarCambioEstado()" [disabled]="guardando()">Cancelar</button>
+              @if (actual.estado !== 'suspendido') {
+                <button type="button" (click)="pedirCambioEstado('suspendido')">
+                  {{ 'plataforma.negocios.detalle.suspender' | translate }}
+                </button>
+              }
+              @if (actual.estado !== 'activo') {
+                <button type="button" class="primario" (click)="pedirCambioEstado('activo')">
+                  {{ 'plataforma.negocios.detalle.activar' | translate }}
+                </button>
+              }
+              @if (actual.estado !== 'cancelado') {
+                <button type="button" class="peligro" (click)="pedirCambioEstado('cancelado')">
+                  {{ 'plataforma.negocios.detalle.cancelar_cuenta' | translate }}
+                </button>
+              }
             </div>
-          </div>
-        }
+          }
 
-        <h3>Usuarios</h3>
-        @if (usuarios().length === 0) {
-          <p class="vacio">No hay usuarios en este negocio.</p>
-        } @else {
-          <div class="tabla-contenedor">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Correo</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (usuario of usuarios(); track usuario.id) {
+          @if (estadoPendiente(); as estado) {
+            <div class="confirmacion">
+              <p>
+                {{
+                  'plataforma.negocios.detalle.confirmar_estado' | translate: { estado: estado }
+                }}
+              </p>
+              <div class="acciones">
+                <button type="button" class="primario" (click)="confirmarCambioEstado()" [disabled]="guardando()">
+                  {{
+                    (guardando() ? 'comun.acciones.aplicando' : 'comun.acciones.confirmar') | translate
+                  }}
+                </button>
+                <button type="button" (click)="cancelarCambioEstado()" [disabled]="guardando()">
+                  {{ 'comun.acciones.cancelar' | translate }}
+                </button>
+              </div>
+            </div>
+          }
+
+          <h3>{{ 'plataforma.negocios.detalle.usuarios' | translate }}</h3>
+          @if (usuarios().length === 0) {
+            <p class="vacio">{{ 'plataforma.negocios.detalle.usuarios_vacio' | translate }}</p>
+          } @else {
+            <div class="tabla-contenedor">
+              <table>
+                <thead>
                   <tr>
-                    <td>{{ usuario.nombre }}</td>
-                    <td>{{ usuario.correo }}</td>
-                    <td>{{ usuario.rol }}</td>
-                    <td>{{ usuario.estado }}</td>
+                    <th>{{ 'comun.filtros.nombre' | translate }}</th>
+                    <th>{{ 'comun.filtros.correo' | translate }}</th>
+                    <th>Rol</th>
+                    <th>{{ 'comun.filtros.estado' | translate }}</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
+                </thead>
+                <tbody>
+                  @for (usuario of usuarios(); track usuario.id) {
+                    <tr>
+                      <td>{{ usuario.nombre }}</td>
+                      <td>{{ usuario.correo }}</td>
+                      <td>{{ usuario.rol }}</td>
+                      <td>{{ usuario.estado }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
 
-        <h3>Auditoría reciente</h3>
-        @if (auditorias().length === 0) {
-          <p class="vacio">Sin eventos administrativos.</p>
-        } @else {
-          <ul class="auditorias">
-            @for (evento of auditorias(); track evento.id) {
-              <li>
-                <strong>{{ evento.accion }}</strong>
-                <span>{{ evento.entidad }} · {{ evento.fecha }}</span>
-              </li>
-            }
-          </ul>
-        }
+          <h3>{{ 'plataforma.negocios.detalle.auditoria' | translate }}</h3>
+          @if (auditorias().length === 0) {
+            <p class="vacio">{{ 'plataforma.negocios.detalle.auditoria_vacio' | translate }}</p>
+          } @else {
+            <ul class="auditorias">
+              @for (evento of auditorias(); track evento.id) {
+                <li>
+                  <strong>{{ evento.accion }}</strong>
+                  <span>{{ evento.entidad }} · {{ evento.fecha }}</span>
+                </li>
+              }
+            </ul>
+          }
         }
       }
     </section>
   `,
-  styles: `
-    .pagina { display: grid; gap: 1rem; max-width: 860px; }
-    h2, h3 { margin: 0; }
-    header p, .vacio { margin: 0.35rem 0 0; color: #64748b; }
-    .volver { color: #1d4ed8; width: fit-content; text-decoration: none; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    button { padding: 0.65rem 0.9rem; border-radius: 0.5rem; border: 1px solid #d1d5db; background: #ffffff; cursor: pointer; }
-    .primario { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; }
-    .peligro { border-color: #fecaca; color: #b91c1c; }
-    .confirmacion { padding: 1rem; border-radius: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; display: grid; gap: 0.75rem; }
-    .tabla-contenedor { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .auditorias { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-    .auditorias li { padding: 0.75rem 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.65rem; display: grid; gap: 0.2rem; }
-    .auditorias span { color: #64748b; font-size: 0.85rem; }
-    .error { color: #b91c1c; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-  `,
+  styleUrl: './detalle-negocio-plataforma.component.scss',
 })
 export class DetalleNegocioPlataformaComponent implements OnInit {
   private readonly plataformaServicio = inject(PlataformaServicio);
@@ -147,7 +153,7 @@ export class DetalleNegocioPlataformaComponent implements OnInit {
     const id = this.ruta.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.error.set('Negocio no encontrado.');
+      this.error.set('plataforma.negocios.detalle.no_encontrado');
       return;
     }
 
@@ -187,7 +193,7 @@ export class DetalleNegocioPlataformaComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.guardando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cambiar el estado del negocio.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.plataforma.cambio_estado'));
       },
     });
   }
@@ -203,7 +209,7 @@ export class DetalleNegocioPlataformaComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cargar el negocio.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.plataforma.carga_detalle'));
       },
     });
 

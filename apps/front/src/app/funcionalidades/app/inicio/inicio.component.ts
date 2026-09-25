@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
 import { ROLES_ADMINISTRACION_NEGOCIO } from '../../../nucleo/auth/roles-negocio';
 import { PanelIndicadoresNegocioComponent } from '../../dashboard/panel-indicadores-negocio.component';
@@ -7,22 +8,29 @@ import { NegociosServicio } from '../../negocios/negocios.servicio';
 
 @Component({
   selector: 'app-inicio',
-  imports: [RouterLink, PanelIndicadoresNegocioComponent],
+  imports: [RouterLink, PanelIndicadoresNegocioComponent, TranslatePipe],
   template: `
     <div class="pagina-inicio">
       <section class="bienvenida">
-        <h2>Bienvenido, {{ authServicio.perfilActual()?.nombre }}</h2>
+        <h2>
+          {{
+            'app.inicio.bienvenida'
+              | translate: { nombre: authServicio.perfilActual()?.nombre ?? '' }
+          }}
+        </h2>
         @if (puedeVerNegocio()) {
-          <p>
-            Sesión activa en
-            <strong>{{ nombreNegocio() ?? 'su negocio' }}</strong>.
-          </p>
+          <p
+            [innerHTML]="
+              'app.inicio.sesion_en_negocio'
+                | translate: { nombreNegocio: etiquetaNegocio() }
+            "
+          ></p>
         }
         @if (esCobrador()) {
-          <p>Consulte sus cobros del día y registre recaudos desde la jornada de cobro.</p>
-          <a routerLink="/app/cobros" class="boton-primario">Ir a cobros del día</a>
+          <p>{{ 'app.inicio.texto_cobrador' | translate }}</p>
+          <a routerLink="/app/cobros" class="boton-primario">{{ 'app.inicio.ir_cobros' | translate }}</a>
         } @else if (!puedeVerIndicadores()) {
-          <p>Gestione clientes, créditos, cobradores y la asignación de cartera desde el menú.</p>
+          <p>{{ 'app.inicio.texto_admin' | translate }}</p>
         }
       </section>
 
@@ -31,34 +39,12 @@ import { NegociosServicio } from '../../negocios/negocios.servicio';
       }
     </div>
   `,
-  styles: `
-    .pagina-inicio { display: grid; gap: 1rem; max-width: 960px; }
-    .bienvenida {
-      padding: 1rem;
-      border-radius: 0.75rem;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      display: grid;
-      gap: 0.5rem;
-    }
-    h2 { margin: 0; font-size: 1.15rem; }
-    .bienvenida p { margin: 0; color: #64748b; font-size: 0.9rem; }
-    .boton-primario {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      border: none;
-      background: #1d4ed8;
-      color: #ffffff;
-      text-decoration: none;
-      width: fit-content;
-      cursor: pointer;
-    }
-  `,
+  styleUrl: './inicio.component.scss',
 })
 export class InicioComponent implements OnInit {
   readonly authServicio = inject(AuthServicio);
   private readonly negociosServicio = inject(NegociosServicio);
+  private readonly translate = inject(TranslateService);
 
   readonly nombreNegocio = signal<string | null>(null);
 
@@ -70,6 +56,10 @@ export class InicioComponent implements OnInit {
   });
 
   readonly puedeVerIndicadores = computed(() => this.puedeVerNegocio());
+
+  etiquetaNegocio(): string {
+    return this.nombreNegocio() ?? this.translate.instant('app.inicio.negocio_fallback');
+  }
 
   ngOnInit(): void {
     if (!this.puedeVerNegocio()) {

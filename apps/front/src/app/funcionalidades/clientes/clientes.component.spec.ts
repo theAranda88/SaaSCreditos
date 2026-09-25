@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ClientesServicio } from './clientes.servicio';
 import { FormularioClienteComponent } from './formulario-cliente.component';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { ListadoClientesComponent } from './listado-clientes.component';
 
 describe('ListadoClientesComponent', () => {
@@ -13,6 +14,7 @@ describe('ListadoClientesComponent', () => {
       imports: [ListadoClientesComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: ClientesServicio,
           useValue: { listar: () => of([]), cambiarEstado: vi.fn() },
@@ -25,7 +27,7 @@ describe('ListadoClientesComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('No hay clientes para mostrar.');
+    expect(fixture.nativeElement.textContent).toContain('clientes.listado.vacio');
   });
 });
 
@@ -41,6 +43,7 @@ describe('FormularioClienteComponent', () => {
     TestBed.configureTestingModule({
       imports: [FormularioClienteComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         { provide: ClientesServicio, useValue: clientesServicio },
         provideRouter([]),
         {

@@ -20,7 +20,7 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 
 ## Preguntas para ubicarte
 
-1. ¿Todavía no existe el monorepo dockerizado (Compose + `apps/web` Angular + `apps/api`)?
+1. ¿Todavía no existe el monorepo dockerizado (Compose + `apps/front` Angular + `apps/backend`)?
    → **bootstrap**. No empieces por un CRUD.
 2. ¿El problema es **regla/datos/API** o **pantalla Angular**?
    → API/datos = **backend** · pantalla = **front**.
@@ -40,11 +40,11 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 | Lógica de negocio compleja (mora, límites de plan, estados) | `backend-feature.md` + skill `backend-feature` | servicio + transacción + tests | frontend |
 | **Registrar / anular cobro** (flujo crítico) | `registrar-pago.md` | `pagos`, `cuotas`, `creditos`, `auditorias` | CRUD genérico, UI primero |
 | Auth, JWT, roles, negocio, 2FA | `auth-flow.md` + skill `auth-flow` | auth API + guards Angular | rediseñar el dominio |
-| UI CRUD Angular (listado + form) | `frontend-crud.md` + skill `frontend-crud` | `apps/web/.../funcionalidades/<x>` | backend |
-| UI compleja (jornada del cobrador, dashboard) | `frontend-feature.md` + skill `frontend-feature` | feature Angular | schema BD |
-| Backend listo → **cablear Angular** con permisos por rol | `backend-to-frontend.md` | `apps/web` + `packages/shared-types` | reescribir la API |
+| UI CRUD Angular (listado + form) | `frontend-crud.md` + skills `frontend-arquitectura` + `frontend-crud` | `apps/front/.../funcionalidades/<x>`, `public/i18n/` | backend |
+| UI compleja (jornada del cobrador, dashboard) | `frontend-feature.md` + skills `frontend-arquitectura` + `frontend-feature` | feature Angular + tokens + i18n | schema BD |
+| Backend listo → **cablear Angular** con permisos por rol | `backend-to-frontend.md` + `frontend-arquitectura` | `apps/front` + `packages/shared-types` | reescribir la API |
 | Falta o está viejo **Swagger / Postman** | `documentar-api.md` | swagger + `tests/postman/` | lógica de negocio |
-| La **pantalla se ve mal** / rota en móvil | `corregir-front.md` | componente Angular afectado | backend |
+| La **pantalla se ve mal** / rota en móvil | `corregir-front.md` + `frontend-arquitectura` | componente Angular afectado | backend |
 | Bug (saldo, 403, no compila, Compose) | `debug-fix.md` | zona del síntoma + test de regresión | todo el repo |
 | Mejorar código **sin** cambiar comportamiento | `refactor.md` | área acotada + suite verde | “aprovechar” para features |
 | **Cerrar entrega** / tests del cambio / suite en rojo | `calidad-tests.md` + skill `calidad-tests` | specs del módulo tocado | reescribir la feature |
@@ -59,13 +59,14 @@ Después del workflow de la tabla, **encadená** `calidad-tests.md`.
 - Endpoint nuevo → **Swagger + Postman + tests**: `docs/DOCUMENTACION.md` + `calidad-tests`.
 - Consultas de negocio → **`negocio_id`**.
 - Identificadores de dominio en **español**: `rules/15-nomenclatura.mdc`.
-- Frontend es **Angular**. Entorno es **Docker Compose**.
+- Frontend es **Angular** (`apps/front`): capas contenedor/presentación, tokens SCSS, i18n en `public/i18n/`. Skill `frontend-arquitectura`. Entorno **Docker Compose**.
 
 ## Para qué sirve cada especialista
 
 - `control-versiones.md` — sugerencia de rama Git (`creditos-prepro` → `tipo/creditos_*`) antes de codificar.
 - `bootstrap-monorepo.md` — esqueleto dockerizado + runner de tests.
 - `schema-bd.md` — modelo canónico (tablas en español).
+- `frontend-arquitectura` — capas, paleta/tokens, i18n (base de todo UI).
 - `backend-crud` / `frontend-crud` — alta, listado, edición, inactivación.
 - `backend-feature` / `frontend-feature` — flujos con estados y reglas.
 - `registrar-pago.md` — corazón del producto (RF-008 / RC-005).

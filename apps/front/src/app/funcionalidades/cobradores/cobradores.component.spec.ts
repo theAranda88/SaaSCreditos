@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { convertToParamMap, ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { CobradoresServicio } from './cobradores.servicio';
 import { FormularioCobradorComponent } from './formulario-cobrador.component';
 import { ListadoCobradoresComponent } from './listado-cobradores.component';
@@ -13,6 +14,7 @@ describe('ListadoCobradoresComponent', () => {
       imports: [ListadoCobradoresComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: CobradoresServicio,
           useValue: { listar: () => of([]), cambiarEstado: vi.fn() },
@@ -25,7 +27,7 @@ describe('ListadoCobradoresComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('No hay cobradores para mostrar.');
+    expect(fixture.nativeElement.textContent).toContain('cobradores.listado.vacio');
   });
 });
 
@@ -41,6 +43,7 @@ describe('FormularioCobradorComponent', () => {
     TestBed.configureTestingModule({
       imports: [FormularioCobradorComponent],
       providers: [
+        proveedoresTraduccionPrueba(),
         { provide: CobradoresServicio, useValue: cobradoresServicio },
         provideRouter([]),
         {

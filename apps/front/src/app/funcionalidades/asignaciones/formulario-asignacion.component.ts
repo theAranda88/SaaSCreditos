@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import type {
   AsignacionPerfil,
   ClientePerfil,
@@ -9,7 +10,7 @@ import type {
 } from '@creditos/shared-types';
 import { forkJoin } from 'rxjs';
 import { ESTADOS_CREDITO_ASIGNABLES } from '../../nucleo/constantes/asignaciones.constantes';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from '../clientes/clientes.servicio';
 import { CobradoresServicio } from '../cobradores/cobradores.servicio';
 import { CreditosServicio } from '../creditos/creditos.servicio';
@@ -25,19 +26,19 @@ type ConfirmacionAsignacion = {
 
 @Component({
   selector: 'app-formulario-asignacion',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <h2>Asignar cartera</h2>
-        <a routerLink="/app/asignaciones">Volver al listado</a>
+        <h2>{{ 'asignaciones.formulario.titulo' | translate }}</h2>
+        <a routerLink="/app/asignaciones">{{ 'comun.acciones.volver_listado' | translate }}</a>
       </header>
 
       <form [formGroup]="formulario" (ngSubmit)="revisar()">
         <label>
-          Crédito
+          {{ 'creditos.listado.titulo' | translate }}
           <select formControlName="creditoId">
-            <option value="">Seleccione un crédito activo o en mora</option>
+            <option value="">{{ 'asignaciones.formulario.credito_placeholder' | translate }}</option>
             @for (credito of creditosAsignables(); track credito.id) {
               <option [value]="credito.id">
                 {{ etiquetaCredito(credito) }}
@@ -47,66 +48,56 @@ type ConfirmacionAsignacion = {
         </label>
 
         <label>
-          Cobrador
+          {{ 'comun.filtros.cobrador' | translate }}
           <select formControlName="cobradorId">
-            <option value="">Seleccione un cobrador activo</option>
+            <option value="">{{ 'asignaciones.formulario.cobrador_placeholder' | translate }}</option>
             @for (cobrador of cobradores(); track cobrador.id) {
               <option [value]="cobrador.id">{{ cobrador.nombre }}</option>
             }
           </select>
         </label>
 
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
+        @if (error(); as claveError) {
+          <p class="error">{{ claveError | translate }}</p>
         }
 
         @if (confirmacion(); as pendiente) {
           <article class="confirmacion">
             <p>
-              ¿Asignar el crédito de <strong>{{ pendiente.clienteNombre }}</strong>
-              a <strong>{{ pendiente.cobradorNombre }}</strong>?
+              {{
+                'asignaciones.formulario.confirmar_pregunta'
+                  | translate: { cliente: pendiente.clienteNombre, cobrador: pendiente.cobradorNombre }
+              }}
             </p>
             @if (pendiente.cobradorActual) {
               <p class="aviso">
-                Hoy lo tiene {{ pendiente.cobradorActual }}. Se cerrará esa asignación y quedará
-                una sola activa.
+                {{
+                  'asignaciones.formulario.aviso_reasignacion'
+                    | translate: { cobradorActual: pendiente.cobradorActual }
+                }}
               </p>
             }
             <div class="acciones">
               <button type="button" class="secundario" (click)="cancelarConfirmacion()" [disabled]="cargando()">
-                Cancelar
+                {{ 'comun.acciones.cancelar' | translate }}
               </button>
               <button type="button" (click)="confirmar()" [disabled]="cargando()">
-                {{ cargando() ? 'Asignando…' : 'Confirmar asignación' }}
+                {{
+                  (cargando() ? 'comun.acciones.asignando' : 'asignaciones.formulario.confirmar_asignacion')
+                    | translate
+                }}
               </button>
             </div>
           </article>
         } @else {
           <button type="submit" [disabled]="cargando() || formulario.invalid">
-            Revisar asignación
+            {{ 'asignaciones.formulario.revisar' | translate }}
           </button>
         }
       </form>
     </section>
   `,
-  styles: `
-    .pagina { display: grid; gap: 1.25rem; max-width: 560px; }
-    header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
-    h2 { margin: 0; }
-    a { color: #1d4ed8; }
-    form { display: grid; gap: 0.9rem; padding: 1.25rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
-    select, button { padding: 0.7rem 0.85rem; border-radius: 0.5rem; font-size: 1rem; }
-    select { border: 1px solid #d1d5db; }
-    button { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; cursor: pointer; }
-    button.secundario { background: #ffffff; color: #334155; border: 1px solid #d1d5db; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; margin: 0; }
-    .confirmacion { display: grid; gap: 0.6rem; padding: 0.9rem; background: #eff6ff; border-radius: 0.5rem; }
-    .confirmacion p { margin: 0; }
-    .aviso { color: #1e40af; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  `,
+  styleUrl: './formulario-asignacion.component.scss',
 })
 export class FormularioAsignacionComponent implements OnInit {
   private readonly asignacionesServicio = inject(AsignacionesServicio);
@@ -116,6 +107,7 @@ export class FormularioAsignacionComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
+  private readonly translate = inject(TranslateService);
 
   readonly creditos = signal<CreditoPerfil[]>([]);
   readonly clientes = signal<ClientePerfil[]>([]);
@@ -149,7 +141,7 @@ export class FormularioAsignacionComponent implements OnInit {
         }
       },
       error: (error: unknown) => {
-        this.error.set(mensajeErrorHttp(error, 'No se pudieron cargar créditos y cobradores.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.asignaciones.carga_formulario'));
       },
     });
   }
@@ -162,7 +154,9 @@ export class FormularioAsignacionComponent implements OnInit {
 
   etiquetaCredito(credito: CreditoPerfil): string {
     const activa = this.asignacionActiva(credito.id);
-    const cobrador = activa ? this.nombreCobrador(activa.cobrador_id) : 'sin cobrador';
+    const cobrador = activa
+      ? this.nombreCobrador(activa.cobrador_id)
+      : this.translate.instant('asignaciones.formulario.sin_cobrador');
     return `${this.nombreCliente(credito)} · ${credito.monto_principal} · ${credito.estado} · ${cobrador}`;
   }
 
@@ -180,7 +174,7 @@ export class FormularioAsignacionComponent implements OnInit {
     const activa = this.asignacionActiva(creditoId);
 
     if (!credito || !cobrador) {
-      this.error.set('Seleccione un crédito y un cobrador válidos.');
+      this.error.set('asignaciones.formulario.error_seleccion');
       return;
     }
 
@@ -215,7 +209,7 @@ export class FormularioAsignacionComponent implements OnInit {
         },
         error: (error: unknown) => {
           this.cargando.set(false);
-          this.error.set(mensajeErrorHttp(error, 'No se pudo asignar la cartera.'));
+          this.error.set(claveMensajeErrorHttp(error, 'errores.asignaciones.asignar'));
         },
       });
   }

@@ -1,0 +1,150 @@
+/* Paleta y espaciado unificados — Creditos SaaS (único lugar con literales hex/rgb/rem sueltos) */
+
+:root {
+  --color-fondo-app: #f8fafc;
+  --color-fondo-superficie: #ffffff;
+  --color-fondo-elevado: #f1f5f9;
+  --color-texto-principal: #1f2937;
+  --color-texto-secundario: #64748b;
+  --color-texto-muted: #475569;
+  --color-texto-nav: #334155;
+  --color-texto-tenue: #94a3b8;
+  --color-texto-intenso: #0f172a;
+  --color-texto-enlace: #1d4ed8;
+  --color-texto-on-primario: #ffffff;
+  --color-borde: #e5e7eb;
+  --color-borde-input: #d1d5db;
+  --grosor-borde: 1px;
+
+  --color-primario: #1d4ed8;
+  --color-primario-enfasis: #2563eb;
+  --color-primario-medio: #1e40af;
+  --color-primario-oscuro: #1e3a8a;
+  --color-primario-suave: #eef2ff;
+  --color-primario-rol: #dbeafe;
+  --color-primario-fondo-suave: #eff6ff;
+  --color-primario-borde-suave: #bfdbfe;
+
+  --color-exito: #166534;
+  --color-exito-fondo: #ecfdf5;
+  --color-exito-texto-alt: #047857;
+
+  --color-advertencia: #b45309;
+  --color-advertencia-texto-alt: #92400e;
+  --color-advertencia-fondo-claro: #fffbeb;
+
+  --color-error: #b91c1c;
+  --color-error-fondo: #fef2f2;
+  --color-error-fondo-suave: #fee2e2;
+  --color-error-fondo-rosado: #fff1f2;
+  --color-error-borde: #fecaca;
+
+  --color-mora-grafico: #e11d48;
+
+  --color-alerta-fondo: #fff7ed;
+  --color-alerta-texto: #9a3412;
+  --color-alerta-borde: #fed7aa;
+
+  --color-trasladado-fondo: #f5f3ff;
+  --color-trasladado-texto: #5b21b6;
+
+  --degradado-pantalla: linear-gradient(
+    180deg,
+    var(--color-fondo-app) 0%,
+    var(--color-primario-suave) 100%
+  );
+  --degradado-kpi-destacado: linear-gradient(
+    135deg,
+    var(--color-primario-fondo-suave) 0%,
+    var(--color-primario-rol) 100%
+  );
+
+  --espaciado-2xs: 0.1rem;
+  --espaciado-xxs: 0.15rem;
+  --espaciado-xs: 0.25rem;
+  --espaciado-s: 0.5rem;
+  --espaciado-m: 0.75rem;
+  --espaciado-l: 1rem;
+  --espaciado-lg: 1.25rem;
+  --espaciado-xl: 1.5rem;
+  --espaciado-2xl: 2rem;
+  --espaciado-3xl: 3rem;
+
+  --espaciado-gap-etiqueta: 0.35rem;
+  --espaciado-gap-formulario: 0.85rem;
+  --espaciado-gap-seccion: 0.9rem;
+  --espaciado-gap-confirmacion: 0.6rem;
+  --espaciado-gap-rejilla: 0.65rem;
+  --espaciado-gap-auditoria: 0.2rem;
+
+  --padding-campo-y: 0.45rem;
+  --padding-campo-x: 0.65rem;
+  --padding-campo-x-ancho: 0.85rem;
+  --padding-input-y: 0.7rem;
+  --padding-input-lg: 0.85rem;
+  --padding-input-xl: 0.9rem;
+  --padding-boton-secundario-x: 0.9rem;
+  --padding-boton-primario-x: 1.25rem;
+  --padding-badge-y: 0.2rem;
+  --padding-badge-x: 0.6rem;
+  --padding-etiqueta-y: 0.15rem;
+  --padding-etiqueta-x: 0.5rem;
+  --padding-etiqueta-micro-y: 0.1rem;
+  --padding-etiqueta-micro-x: 0.45rem;
+  --padding-tarjeta-kpi-x: 1.1rem;
+  --padding-lista-indent: 1.1rem;
+  --padding-shell-estado-x: 1.25rem;
+
+  --radio-borde: 0.5rem;
+  --radio-borde-medio: 0.65rem;
+  --radio-borde-grande: 0.75rem;
+  --radio-borde-tarjeta: 0.85rem;
+  --radio-borde-barra: 0.35rem;
+  --radio-pill: 999px;
+
+  --ancho-contenido-shell: 720px;
+  --ancho-contenido-inicio: 960px;
+  --ancho-formulario: 560px;
+  --ancho-formulario-plataforma: 640px;
+  --ancho-login-tarjeta: 420px;
+  --ancho-boton-tabla-min: 5.5rem;
+  --ancho-boton-cobrador-min: 6.5rem;
+  --ancho-barra-grafico: 2.5rem;
+  --ancho-muestra-grafico: 0.65rem;
+  --ancho-grid-min-columna: 160px;
+  --ancho-grafico-min-columna: 240px;
+  --ancho-contenido-suscripcion: 820px;
+  --ancho-contenido-plataforma-detalle: 860px;
+  --ancho-segmento-grafico-min: 2px;
+  --padding-legend-horizontal: 0.35rem;
+
+  --altura-boton-compacto: 2.25rem;
+  --altura-boton-cobrador: 3rem;
+  --altura-barra-grafico-min: 4px;
+  --altura-barra-apilada: 1.25rem;
+  --altura-grafico-barras: 8rem;
+
+  --fuente-micro: 0.72rem;
+  --fuente-xxs: 0.75rem;
+  --fuente-xs: 0.85rem;
+  --fuente-sm: 0.875rem;
+  --fuente-base: 0.9rem;
+  --fuente-subtitulo: 0.95rem;
+  --fuente-md: 1rem;
+  --fuente-titulo-sm: 1.05rem;
+  --fuente-titulo: 1.15rem;
+  --fuente-titulo-lg: 1.5rem;
+  --fuente-kpi: 1.75rem;
+  --fuente-display: 2rem;
+  --fuente-login-titulo: 1.75rem;
+
+  --sombra-tarjeta-elevada: 0 10px 30px rgb(15 23 42 / 8%);
+  --opacidad-deshabilitado: 0.6;
+  --opacidad-resumen-inhabil: 0.7;
+  --duracion-transicion-corta: 0.2s;
+  --letter-spacing-marca: 0.04em;
+  --line-height-parrafo: 1.6;
+
+  /* Referencia para @media; en consultas usar el mismo px (var() no es fiable en media queries). */
+  --breakpoint-cobrador-estrecho: 540px;
+}

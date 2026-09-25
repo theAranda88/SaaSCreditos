@@ -1,0 +1,425 @@
+{
+  "comun": {
+    "marca": { "nombre_producto": "Creditos SaaS" },
+    "navegacion": {
+      "inicio": "Inicio",
+      "clientes": "Clientes",
+      "creditos": "Créditos",
+      "cobradores": "Cobradores",
+      "asignaciones": "Asignaciones",
+      "cartera": "Cartera",
+      "suscripcion": "Suscripción",
+      "configuracion": "Configuración",
+      "cobros_del_dia": "Cobros del día",
+      "mis_asignaciones": "Mis asignaciones",
+      "mi_cartera": "Mi cartera",
+      "negocios": "Negocios",
+      "cerrar_sesion": "Cerrar sesión",
+      "ver_suscripcion": "Ver suscripción"
+    },
+    "acciones": {
+      "buscar": "Buscar",
+      "guardar": "Guardar",
+      "guardando": "Guardando…",
+      "creando": "Creando…",
+      "asignando": "Asignando…",
+      "aplicando": "Aplicando…",
+      "cambiando": "Cambiando…",
+      "confirmar": "Confirmar",
+      "cancelar": "Cancelar",
+      "editar": "Editar",
+      "activar": "Activar",
+      "inactivar": "Inactivar",
+      "actualizar": "Actualizar",
+      "volver_listado": "Volver al listado",
+      "ver": "Ver",
+      "elegir": "Elegir",
+      "corregir": "Corregir"
+    },
+    "filtros": {
+      "todos": "Todos",
+      "nombre": "Nombre",
+      "documento": "Documento",
+      "correo": "Correo",
+      "telefono": "Teléfono",
+      "estado": "Estado",
+      "cliente": "Cliente",
+      "cobrador": "Cobrador",
+      "segmento": "Segmento"
+    },
+    "estados": {
+      "activo": "Activo",
+      "inactivo": "Inactivo",
+      "activa": "Activa",
+      "finalizada": "Finalizada",
+      "pagado": "Pagado",
+      "mora": "Mora",
+      "anulado": "Anulado",
+      "refinanciado": "Refinanciado"
+    },
+    "carga": {
+      "clientes": "Cargando clientes…",
+      "cobradores": "Cargando cobradores…",
+      "creditos": "Cargando créditos…",
+      "cartera": "Cargando cartera…",
+      "configuracion": "Cargando configuración…",
+      "suscripcion": "Cargando suscripción…",
+      "negocios": "Cargando negocios…",
+      "negocio": "Cargando negocio…",
+      "credito": "Cargando crédito…",
+      "indicadores": "Cargando indicadores…",
+      "obligaciones": "Cargando obligaciones…"
+    },
+    "vacio": { "sin_datos": "No hay datos para mostrar.", "guion": "—" },
+    "calendario": {
+      "dia_inhabil": "Día inhábil",
+      "domingo": "Domingo",
+      "festivo": "Festivo",
+      "aviso_dia_inhabil": "Hoy es <strong>{{etiqueta}}</strong>: no hay jornada de cobro en campo."
+    },
+    "metodos_pago": {
+      "efectivo": "Efectivo",
+      "transferencia": "Transferencia",
+      "nequi": "Nequi",
+      "daviplata": "Daviplata",
+      "otro": "Otro"
+    }
+  },
+  "auth": {
+    "login": {
+      "fase": "Fase 1",
+      "titulo": "Iniciar sesión",
+      "subtitulo": "Acceda al panel de su negocio o al de la plataforma.",
+      "correo": "Correo",
+      "contrasena": "Contraseña",
+      "ingresar": "Ingresar",
+      "ingresando": "Ingresando…",
+      "error_credenciales": "Credenciales inválidas. Verifique correo y contraseña."
+    }
+  },
+  "app": {
+    "shell": {
+      "panel_propietario": "Panel del propietario",
+      "panel_administrador": "Panel del administrador",
+      "panel_cobrador": "Panel del cobrador",
+      "panel_operativo": "Panel operativo",
+      "servicio_no_activo": "El servicio de este negocio no está activo."
+    },
+    "inicio": {
+      "bienvenida": "Bienvenido, {{nombre}}",
+      "sesion_en_negocio": "Sesión activa en <strong>{{nombreNegocio}}</strong>.",
+      "negocio_fallback": "su negocio",
+      "texto_cobrador": "Consulte sus cobros del día y registre recaudos desde la jornada de cobro.",
+      "ir_cobros": "Ir a cobros del día",
+      "texto_admin": "Gestione clientes, créditos, cobradores y la asignación de cartera desde el menú."
+    },
+    "configuracion": {
+      "titulo": "Configuración del negocio",
+      "subtitulo": "Datos básicos de su empresa en el sistema.",
+      "nombre_comercial": "Nombre comercial",
+      "moneda": "Moneda",
+      "solo_propietario": "Solo el propietario puede guardar cambios.",
+      "guardar_cambios": "Guardar cambios",
+      "exito_guardado": "Configuración guardada correctamente."
+    }
+  },
+  "clientes": {
+    "listado": {
+      "titulo": "Clientes",
+      "subtitulo": "Cartera humana del negocio. El cobrador no gestiona este módulo.",
+      "nuevo": "Nuevo cliente",
+      "columna_nombre": "Nombre",
+      "columna_documento": "Documento",
+      "columna_telefono": "Teléfono",
+      "vacio": "No hay clientes para mostrar."
+    },
+    "formulario": {
+      "titulo_nuevo": "Nuevo cliente",
+      "titulo_editar": "Editar cliente",
+      "nombre_completo": "Nombre completo",
+      "tipo_documento": "Tipo de documento",
+      "numero_documento": "Número de documento",
+      "direccion_opcional": "Dirección (opcional)",
+      "referencia_opcional": "Referencia de ubicación (opcional)"
+    }
+  },
+  "cobradores": {
+    "listado": {
+      "titulo": "Cobradores",
+      "subtitulo": "Usuarios con rol cobrador. Inactivar no borra el histórico.",
+      "nuevo": "Nuevo cobrador",
+      "vacio": "No hay cobradores para mostrar."
+    },
+    "formulario": {
+      "titulo_nuevo": "Nuevo cobrador",
+      "titulo_editar": "Editar cobrador",
+      "contrasena": "Contraseña",
+      "contrasena_opcional": "Nueva contraseña (opcional)",
+      "telefono_opcional": "Teléfono (opcional)"
+    }
+  },
+  "creditos": {
+    "listado": {
+      "titulo": "Créditos",
+      "subtitulo": "Alta de crédito y consulta del plan de cuotas. Las condiciones no se editan.",
+      "nuevo": "Nuevo crédito",
+      "columna_principal": "Principal",
+      "columna_cuotas": "Cuotas",
+      "columna_desembolso": "Desembolso",
+      "ver_plan": "Ver plan",
+      "vacio": "No hay créditos para mostrar."
+    },
+    "formulario": {
+      "titulo": "Nuevo crédito",
+      "cliente_placeholder": "Seleccione un cliente activo",
+      "monto_principal": "Monto principal (COP)",
+      "tasa_interes": "Tasa de interés (%)",
+      "cobra_mora": "Cobrar mora en este crédito",
+      "valor_mora": "Valor de mora (COP, una vez por cuota vencida)",
+      "periodicidad": "Periodicidad",
+      "numero_cuotas": "Número de cuotas",
+      "fecha_desembolso": "Fecha de desembolso",
+      "crear_y_cuotas": "Crear crédito y generar cuotas",
+      "error_valor_mora": "Indique un valor de mora mayor a 0 o desactive el cobro de mora."
+    },
+    "detalle": {
+      "titulo": "Plan de cuotas",
+      "etiqueta_estado": "Estado:",
+      "etiqueta_principal": "Principal:",
+      "etiqueta_tasa": "Tasa:",
+      "etiqueta_mora": "Mora:",
+      "mora_no_cobra": "No cobra",
+      "etiqueta_plan": "Plan:",
+      "plan_texto": "{{cuotas}} cuotas {{periodicidad}} desde {{fecha}}",
+      "etiqueta_total": "Total a pagar (snapshot):",
+      "aviso_inmutable": "Las condiciones originales no se modifican después del alta.",
+      "asignar_cartera": "Asignar cartera",
+      "sin_cuotas": "Este crédito no tiene cuotas.",
+      "columna_vencimiento": "Vencimiento",
+      "columna_cobro_efectivo": "Cobro efectivo",
+      "columna_esperado": "Esperado",
+      "columna_saldo": "Saldo",
+      "no_encontrado": "Crédito no encontrado."
+    }
+  },
+  "asignaciones": {
+    "listado": {
+      "titulo_admin": "Asignación de cartera",
+      "titulo_cobrador": "Mi cartera",
+      "subtitulo_admin": "Un crédito activo o en mora tiene un cobrador responsable. Reasignar cierra la previa.",
+      "subtitulo_cobrador": "Revise y confirme cada cobro desde Cobros del día o use el botón de cada fila.",
+      "asignar": "Asignar cartera",
+      "ir_cobros": "Ir a cobros del día",
+      "columna_estado_credito": "Estado crédito",
+      "columna_asignacion": "Asignación",
+      "columna_desde": "Desde",
+      "columna_accion": "Acción",
+      "revisar_cobro": "Revisar cobro",
+      "vacio": "No hay asignaciones para mostrar."
+    },
+    "formulario": {
+      "titulo": "Asignar cartera",
+      "credito_placeholder": "Seleccione un crédito activo o en mora",
+      "cobrador_placeholder": "Seleccione un cobrador activo",
+      "revisar": "Revisar asignación",
+      "confirmar_pregunta": "¿Asignar el crédito de {{cliente}} a {{cobrador}}?",
+      "aviso_reasignacion": "Hoy lo tiene {{cobradorActual}}. Se cerrará esa asignación y quedará una sola activa.",
+      "confirmar_asignacion": "Confirmar asignación",
+      "error_seleccion": "Seleccione un crédito y un cobrador válidos.",
+      "sin_cobrador": "sin cobrador"
+    }
+  },
+  "cartera": {
+    "listado": {
+      "titulo": "Control de cartera",
+      "subtitulo": "Consulte cartera vigente, en mora y pagada sin recalcular en el cliente.",
+      "aplicar_mora": "Aplicar mora",
+      "segmento_vigente": "Vigente",
+      "segmento_mora": "En mora",
+      "segmento_pagada": "Pagada",
+      "columna_saldo_pendiente": "Saldo pendiente",
+      "columna_cuotas_mora": "Cuotas mora",
+      "columna_acciones": "Acciones",
+      "sin_asignar": "Sin asignar",
+      "ver_credito": "Ver crédito",
+      "vacio": "No hay créditos en este segmento.",
+      "mora_aplicada": "Mora aplicada: {{cuotas}} cuota(s), {{creditos}} crédito(s)."
+    }
+  },
+  "cobros": {
+    "jornada": {
+      "titulo": "Cobros del día",
+      "resumen_esperado": "Esperado",
+      "resumen_cobrado": "Cobrado",
+      "resumen_pendiente": "Pendiente",
+      "vacio_con_cartera": "No hay cuotas pendientes en su cartera. Verifique asignaciones en Mi cartera.",
+      "cuota_linea": "Cuota {{numero}} · Vence {{fecha}}",
+      "trasladado_cobro": "Trasladado · cobro {{fecha}}",
+      "saldo": "Saldo {{monto}}",
+      "etiqueta_atrasado": "Atrasado",
+      "etiqueta_proximo": "Próximo",
+      "revisar_cobro": "Revisar cobro",
+      "ficha_rapida": "Ficha rápida",
+      "campo_cuota": "Cuota",
+      "campo_vencimiento": "Vencimiento",
+      "campo_cobro_efectivo": "Cobro efectivo",
+      "campo_saldo_pendiente": "Saldo pendiente",
+      "historial_reciente": "Historial reciente",
+      "monto_a_cobrar": "Monto a cobrar",
+      "metodo": "Método",
+      "volver": "Volver",
+      "confirmar_pregunta": "¿Confirma registrar {{monto}} por {{metodo}}?",
+      "confirmar_cobro": "Confirmar cobro",
+      "exito_titulo": "Cobro registrado",
+      "exito_monto": "Monto:",
+      "exito_estado": "Estado:",
+      "volver_jornada": "Volver a la jornada",
+      "error_monto_saldo": "El monto no puede superar el saldo pendiente."
+    }
+  },
+  "dashboard": {
+    "indicadores": {
+      "titulo": "Resumen del negocio",
+      "subtitulo": "Recaudo, cartera y operación en campo.",
+      "ver_mora": "Ver cartera en mora",
+      "recaudo_dia": "Recaudo del día",
+      "fecha_kpi": "Fecha {{fecha}}",
+      "cartera_activa": "Cartera activa",
+      "cartera_mora": "Cartera en mora",
+      "cobradores_activos": "Cobradores activos",
+      "creditos_count": "{{count}} crédito(s)",
+      "en_operacion": "En operación",
+      "composicion_cartera": "Composición de cartera",
+      "aria_composicion": "Activa {{activa}} por ciento, mora {{mora}} por ciento",
+      "title_activa": "Cartera activa {{porcentaje}}%",
+      "title_mora": "Cartera en mora {{porcentaje}}%",
+      "leyenda_activa": "Activa ({{porcentaje}}%)",
+      "leyenda_mora": "Mora ({{porcentaje}}%)",
+      "creditos_estado": "Créditos por estado",
+      "activos": "Activos",
+      "en_mora": "En mora"
+    },
+    "operativo": {
+      "titulo": "Dashboard operativo",
+      "subtitulo": "Indicadores de recaudo y cartera del negocio."
+    }
+  },
+  "suscripciones": {
+    "consulta": {
+      "titulo": "Suscripción",
+      "subtitulo": "Plan contratado, límites y estado del servicio.",
+      "servicio_inactivo": "El servicio está {{estado}}. Las operaciones de cartera quedan bloqueadas hasta reactivar la cuenta.",
+      "plan": "Plan",
+      "cobradores": "Cobradores",
+      "cupo_plan": "Cupo del plan",
+      "renovacion": "Renovación {{fecha}}",
+      "mensualidad": "Mensualidad",
+      "implementacion": "Implementación {{monto}}",
+      "cambiar_plan": "Cambiar de plan",
+      "checkout_stub": "Checkout stub: no hay pasarela. El cupo actual debe caber en el plan destino.",
+      "sin_planes": "No hay otros planes activos para cambiar.",
+      "plan_detalle": "Hasta {{limite}} cobradores · {{precio}}/mes",
+      "confirmar_cambio_texto": "Va a cambiar al plan {{nombre}} (hasta {{limite}} cobradores).",
+      "confirmar_cambio": "Confirmar cambio"
+    }
+  },
+  "plataforma": {
+    "shell": { "titulo": "Panel de plataforma" },
+    "negocios": {
+      "listado": {
+        "titulo": "Negocios",
+        "subtitulo": "Cuentas de la plataforma, su plan y estado de servicio.",
+        "nuevo": "Nuevo negocio",
+        "columna_negocio": "Negocio",
+        "columna_plan": "Plan",
+        "columna_renovacion": "Renovación",
+        "vacio": "No hay negocios para mostrar."
+      },
+      "crear": {
+        "volver": "← Negocios",
+        "titulo": "Nuevo negocio",
+        "subtitulo": "Alta asistida: se crea el negocio, el usuario propietario y la suscripción activa. El propietario inicia sesión por su cuenta (no comparte su sesión).",
+        "seccion_negocio": "Negocio",
+        "seccion_propietario": "Propietario inicial",
+        "moneda_iso": "Moneda (ISO)",
+        "contrasena_inicial": "Contraseña inicial",
+        "plan_inicial": "Plan inicial",
+        "plan_emprendedor": "Emprendedor (hasta 3 cobradores)",
+        "plan_profesional": "Profesional (hasta 10)",
+        "plan_empresarial": "Empresarial (hasta 15)",
+        "crear_negocio": "Crear negocio"
+      },
+      "detalle": {
+        "volver": "← Negocios",
+        "estado_plan": "Estado {{estado}} · Plan {{plan}} (hasta {{limite}} cobradores)",
+        "suspender": "Suspender",
+        "activar": "Activar",
+        "cancelar_cuenta": "Cancelar cuenta",
+        "confirmar_estado": "Confirme el cambio de estado a {{estado}}.",
+        "usuarios": "Usuarios",
+        "usuarios_vacio": "No hay usuarios en este negocio.",
+        "auditoria": "Auditoría reciente",
+        "auditoria_vacio": "Sin eventos administrativos.",
+        "no_encontrado": "Negocio no encontrado."
+      }
+    }
+  },
+  "errores": {
+    "http": {
+      "sin_conexion": "Sin conexión. Verifique su red e intente de nuevo.",
+      "no_autorizado": "Sesión expirada o no autorizado.",
+      "prohibido": "No tiene permiso para esta acción.",
+      "no_encontrado": "Recurso no encontrado."
+    },
+    "clientes": {
+      "carga_listado": "No se pudieron cargar los clientes.",
+      "cambio_estado": "No se pudo cambiar el estado del cliente.",
+      "carga_formulario": "No se pudo cargar el cliente.",
+      "guardar": "No se pudo guardar el cliente."
+    },
+    "cobradores": {
+      "carga_listado": "No se pudieron cargar los cobradores.",
+      "cambio_estado": "No se pudo cambiar el estado del cobrador.",
+      "carga_formulario": "No se pudo cargar el cobrador.",
+      "guardar": "No se pudo guardar el cobrador."
+    },
+    "creditos": {
+      "carga_clientes_filtro": "No se pudieron cargar los clientes.",
+      "carga_listado": "No se pudieron cargar los créditos.",
+      "carga_detalle": "No se pudo cargar el crédito.",
+      "crear": "No se pudo crear el crédito."
+    },
+    "asignaciones": {
+      "carga_cobradores": "No se pudieron cargar los cobradores.",
+      "carga_listado": "No se pudo cargar la cartera.",
+      "carga_formulario": "No se pudieron cargar créditos y cobradores.",
+      "asignar": "No se pudo asignar la cartera."
+    },
+    "cartera": {
+      "carga": "No se pudo cargar la cartera.",
+      "aplicar_mora": "No se pudo aplicar la mora."
+    },
+    "cobros": {
+      "carga_jornada": "No se pudieron cargar los cobros del día.",
+      "registrar": "No se pudo registrar el cobro."
+    },
+    "dashboard": {
+      "carga": "No se pudo cargar el dashboard.",
+      "resumen_operativo": "No se pudo cargar el resumen operativo."
+    },
+    "configuracion": {
+      "carga": "No se pudo cargar la configuración del negocio.",
+      "guardar": "No se pudo guardar la configuración."
+    },
+    "suscripciones": {
+      "carga": "No se pudo cargar la suscripción.",
+      "cambio_plan": "No se pudo cambiar el plan."
+    },
+    "plataforma": {
+      "carga_listado": "No se pudieron cargar los negocios.",
+      "crear": "No se pudo crear el negocio.",
+      "carga_detalle": "No se pudo cargar el negocio.",
+      "cambio_estado": "No se pudo cambiar el estado del negocio."
+    }
+  }
+}

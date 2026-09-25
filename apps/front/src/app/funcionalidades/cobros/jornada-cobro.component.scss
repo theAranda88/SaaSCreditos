@@ -1,0 +1,45 @@
+@use '../../nucleo/ui/tokens';
+
+.pagina { display: grid; gap: var(--espaciado-l); max-width: var(--ancho-contenido-shell); margin: 0 auto; }
+    .encabezado { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--espaciado-l); }
+    h2 { margin: 0; font-size: var(--fuente-titulo-lg); }
+    .fecha { margin: var(--espaciado-xs) 0 0; color: var(--color-texto-secundario); display: flex; flex-wrap: wrap; gap: var(--espaciado-gap-etiqueta); align-items: center; }
+    .saldo { margin: var(--espaciado-xxs) 0 0; color: var(--color-texto-muted); font-size: var(--fuente-base); }
+    .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--espaciado-m); }
+    .resumen article { padding: var(--padding-input-xl); border-radius: var(--radio-borde-grande); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); text-align: center; }
+    .resumen.inhabil { opacity: var(--opacidad-resumen-inhabil); }
+    .resumen span { display: block; font-size: var(--fuente-xs); color: var(--color-texto-secundario); }
+    .resumen strong { font-size: var(--fuente-titulo-sm); }
+    .lista-cobros { display: grid; gap: var(--espaciado-m); }
+    .tarjeta-cobro { display: flex; gap: var(--espaciado-m); align-items: center; justify-content: space-between; padding: var(--espaciado-l); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-tarjeta); }
+    .info h3 { margin: 0 0 var(--espaciado-xs); font-size: var(--fuente-titulo-sm); }
+    .info p { margin: 0; color: var(--color-texto-secundario); font-size: var(--fuente-base); }
+    .etiqueta { display: inline-block; margin-top: var(--espaciado-gap-etiqueta); margin-right: var(--espaciado-gap-etiqueta); padding: var(--padding-etiqueta-y) var(--padding-etiqueta-x); border-radius: var(--radio-pill); font-size: var(--fuente-xxs); text-transform: capitalize; }
+    .atraso { background: var(--color-error-fondo-suave); color: var(--color-error); }
+    .programado { background: var(--color-primario-rol); color: var(--color-primario); }
+    .estado { background: var(--color-exito-fondo); color: var(--color-exito); }
+    .inhabil { background: var(--color-alerta-fondo); color: var(--color-alerta-texto); border: var(--grosor-borde) solid var(--color-alerta-borde); }
+    .trasladado { background: var(--color-trasladado-fondo); color: var(--color-trasladado-texto); }
+    .vacio a { color: var(--color-primario); font-weight: 600; }
+    .boton-cobrar, .boton-primario { min-height: var(--altura-boton-cobrador); min-width: var(--ancho-boton-cobrador-min); padding: var(--espaciado-m) var(--espaciado-l); border: none; border-radius: var(--radio-borde-grande); background: var(--color-primario); color: var(--color-texto-on-primario); font-size: var(--fuente-md); font-weight: 700; cursor: pointer; }
+    .boton-secundario { min-height: var(--altura-boton-cobrador); padding: var(--espaciado-m) var(--espaciado-l); border: var(--grosor-borde) solid var(--color-borde-input); border-radius: var(--radio-borde-grande); background: var(--color-fondo-superficie); cursor: pointer; }
+    .panel-cobro, .exito { padding: var(--espaciado-l); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-tarjeta); display: grid; gap: var(--espaciado-l); }
+    dl { display: grid; gap: var(--espaciado-s); margin: 0; }
+    dl div { display: flex; justify-content: space-between; gap: var(--espaciado-l); }
+    dt { color: var(--color-texto-secundario); }
+    dd { margin: 0; font-weight: 600; text-align: right; }
+    form { display: grid; gap: var(--espaciado-gap-formulario); }
+    label { display: grid; gap: var(--espaciado-gap-etiqueta); font-weight: 600; font-size: var(--fuente-base); }
+    input, select { padding: var(--padding-input-lg); border: var(--grosor-borde) solid var(--color-borde-input); border-radius: var(--radio-borde-medio); font-size: var(--fuente-md); }
+    .acciones { display: flex; flex-wrap: wrap; gap: var(--espaciado-m); }
+    .confirmacion { padding: var(--espaciado-l); border-radius: var(--radio-borde-grande); background: var(--color-primario-fondo-suave); border: var(--grosor-borde) solid var(--color-primario-borde-suave); }
+    .historial ul { margin: 0; padding-left: var(--padding-lista-indent); color: var(--color-texto-muted); font-size: var(--fuente-base); }
+    .aviso, .vacio { margin: 0; padding: var(--espaciado-l); border-radius: var(--radio-borde-grande); background: var(--color-alerta-fondo); color: var(--color-alerta-texto); }
+    .error { color: var(--color-error); }
+    button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }
+    /* 540px = --breakpoint-cobrador-estrecho */
+    @media (max-width: 540px) {
+      .resumen { grid-template-columns: 1fr; }
+      .tarjeta-cobro { flex-direction: column; align-items: stretch; }
+      .boton-cobrar { width: 100%; }
+    }

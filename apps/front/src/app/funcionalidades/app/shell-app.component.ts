@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import type { SuscripcionPerfil } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
 import { ROLES_ADMINISTRACION_NEGOCIO } from '../../nucleo/auth/roles-negocio';
@@ -7,7 +8,7 @@ import { SuscripcionesServicio } from '../suscripciones/suscripciones.servicio';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './shell-app.component.html',
   styleUrl: './shell-app.component.scss',
 })
@@ -31,13 +32,13 @@ export class ShellAppComponent implements OnInit {
 
     switch (rol) {
       case 'propietario':
-        return 'Panel del propietario';
+        return 'app.shell.panel_propietario';
       case 'administrador':
-        return 'Panel del administrador';
+        return 'app.shell.panel_administrador';
       case 'cobrador':
-        return 'Panel del cobrador';
+        return 'app.shell.panel_cobrador';
       default:
-        return 'Panel operativo';
+        return 'app.shell.panel_operativo';
     }
   });
 

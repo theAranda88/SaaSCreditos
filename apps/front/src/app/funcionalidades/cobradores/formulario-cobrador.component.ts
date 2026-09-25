@@ -1,63 +1,60 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { mensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
+import { TranslatePipe } from '@ngx-translate/core';
+import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { CobradoresServicio } from './cobradores.servicio';
 
 @Component({
   selector: 'app-formulario-cobrador',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
     <section class="pagina">
       <header>
-        <h2>{{ cobradorId() ? 'Editar cobrador' : 'Nuevo cobrador' }}</h2>
-        <a routerLink="/app/cobradores">Volver al listado</a>
+        <h2>
+          {{
+            (cobradorId() ? 'cobradores.formulario.titulo_editar' : 'cobradores.formulario.titulo_nuevo')
+              | translate
+          }}
+        </h2>
+        <a routerLink="/app/cobradores">{{ 'comun.acciones.volver_listado' | translate }}</a>
       </header>
 
       <form [formGroup]="formulario" (ngSubmit)="enviar()">
         <label>
-          Nombre
+          {{ 'comun.filtros.nombre' | translate }}
           <input type="text" formControlName="nombre" />
         </label>
 
         <label>
-          Correo
+          {{ 'comun.filtros.correo' | translate }}
           <input type="email" formControlName="correo" autocomplete="username" />
         </label>
 
         <label>
-          {{ cobradorId() ? 'Nueva contraseña (opcional)' : 'Contraseña' }}
+          {{
+            (cobradorId() ? 'cobradores.formulario.contrasena_opcional' : 'cobradores.formulario.contrasena')
+              | translate
+          }}
           <input type="password" formControlName="contrasena" autocomplete="new-password" />
         </label>
 
         <label>
-          Teléfono (opcional)
+          {{ 'cobradores.formulario.telefono_opcional' | translate }}
           <input type="tel" formControlName="telefono" />
         </label>
 
-        @if (error()) {
-          <p class="error">{{ error() }}</p>
+        @if (error(); as claveError) {
+          <p class="error">{{ claveError | translate }}</p>
         }
 
         <button type="submit" [disabled]="cargando() || formulario.invalid">
-          {{ cargando() ? 'Guardando…' : 'Guardar' }}
+          {{ (cargando() ? 'comun.acciones.guardando' : 'comun.acciones.guardar') | translate }}
         </button>
       </form>
     </section>
   `,
-  styles: `
-    .pagina { max-width: 560px; display: grid; gap: 1.25rem; }
-    header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
-    h2 { margin: 0; }
-    a { color: #1d4ed8; }
-    form { display: grid; gap: 1rem; padding: 1.25rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem; }
-    label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
-    input, select, button { padding: 0.75rem 0.9rem; border-radius: 0.5rem; font-size: 1rem; }
-    input, select { border: 1px solid #d1d5db; }
-    button { border: none; background: #1d4ed8; color: #ffffff; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; font-size: 0.9rem; }
-  `,
+  styleUrl: './formulario-cobrador.component.scss',
 })
 export class FormularioCobradorComponent implements OnInit {
   private readonly cobradoresServicio = inject(CobradoresServicio);
@@ -104,7 +101,7 @@ export class FormularioCobradorComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.cargando.set(false);
-        this.error.set(mensajeErrorHttp(error, 'No se pudo cargar el cobrador.'));
+        this.error.set(claveMensajeErrorHttp(error, 'errores.cobradores.carga_formulario'));
       },
     });
   }
@@ -156,6 +153,6 @@ export class FormularioCobradorComponent implements OnInit {
 
   private fallar(error: unknown): void {
     this.cargando.set(false);
-    this.error.set(mensajeErrorHttp(error, 'No se pudo guardar el cobrador.'));
+    this.error.set(claveMensajeErrorHttp(error, 'errores.cobradores.guardar'));
   }
 }

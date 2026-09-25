@@ -1,0 +1,20 @@
+@use '../../nucleo/ui/tokens';
+
+.fila-mora { background: var(--color-alerta-fondo); }
+    .etiqueta {
+      display: inline-block;
+      padding: var(--padding-etiqueta-y) var(--padding-etiqueta-x);
+      border-radius: var(--radio-pill);
+      font-size: var(--fuente-xs);
+      text-transform: capitalize;
+    }
+    .estado-activo { background: var(--color-exito-fondo); color: var(--color-exito); }
+    .estado-mora { background: var(--color-error-fondo-suave); color: var(--color-error); }
+    .estado-pagado { background: var(--color-primario-rol); color: var(--color-texto-enlace); }
+    .aviso {
+      margin: 0;
+      padding: var(--espaciado-l);
+      border-radius: var(--radio-borde-grande);
+      background: var(--color-primario-fondo-suave);
+      color: var(--color-texto-enlace);
+    }

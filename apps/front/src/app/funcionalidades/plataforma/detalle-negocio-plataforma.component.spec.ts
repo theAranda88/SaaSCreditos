@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { NegocioPlataforma, PerfilUsuario } from '@creditos/shared-types';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { DetalleNegocioPlataformaComponent } from './detalle-negocio-plataforma.component';
 import { PlataformaServicio } from './plataforma.servicio';
 
@@ -42,6 +43,7 @@ describe('DetalleNegocioPlataformaComponent', () => {
       imports: [DetalleNegocioPlataformaComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         { provide: AuthServicio, useValue: { perfilActual: signal(admin) } },
         {
           provide: ActivatedRoute,

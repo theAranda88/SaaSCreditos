@@ -77,6 +77,14 @@ Orden al hacer `docker compose up`:
 3. `backend` — arranca cuando `db-init` terminó OK
 4. `front` — arranca cuando el backend responde en `/api/salud`
 
+El frontend se construye con **nginx** (imagen de producción). Los diccionarios `@ngx-translate` viven en `apps/front/public/i18n/` y se copian al bundle en el build; **no hace falta configuración extra en Docker/nginx** más que `npm ci` + `ng build` (ya en `apps/front/Dockerfile`). Tras cambiar dependencias del front:
+
+```bash
+npm install
+docker compose build front --no-cache
+docker compose up -d front
+```
+
 ### Comandos manuales (dentro de Docker)
 
 Re-aplicar migraciones y semilla (por ejemplo, tras pull con migraciones nuevas):
@@ -139,7 +147,7 @@ npm run db:seed           # semilla desde el host
 ## Estructura
 
 ```
-apps/front       Angular (login + shell por rol)
+apps/front       Angular (login + shell por rol, i18n `public/i18n/`, tokens SCSS en `nucleo/ui/`)
 apps/backend     NestJS (capas: bd → entidades → servicios → controladores → routes)
   prisma/        Esquema, migraciones y semilla
 packages/shared-types

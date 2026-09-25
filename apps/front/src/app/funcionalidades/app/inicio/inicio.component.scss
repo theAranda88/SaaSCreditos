@@ -1,0 +1,23 @@
+@use '../../../nucleo/ui/tokens';
+
+.pagina-inicio { display: grid; gap: var(--espaciado-l); max-width: var(--ancho-contenido-inicio); }
+    .bienvenida {
+      padding: var(--espaciado-l);
+      border-radius: var(--radio-borde-grande);
+      background: var(--color-fondo-superficie);
+      border: var(--grosor-borde) solid var(--color-borde);
+      display: grid;
+      gap: var(--espaciado-s);
+    }
+    h2 { margin: 0; font-size: var(--fuente-titulo); }
+    .bienvenida p { margin: 0; color: var(--color-texto-secundario); font-size: var(--fuente-base); }
+    .boton-primario {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background: var(--color-primario); color: var(--color-texto-on-primario);
+      text-decoration: none;
+      width: fit-content;
+      cursor: pointer;
+    }

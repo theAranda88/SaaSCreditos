@@ -1,0 +1,15 @@
+@use '../../nucleo/ui/tokens';
+
+.pagina { max-width: var(--ancho-formulario); display: grid; gap: var(--espaciado-lg); }
+    header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--espaciado-m); align-items: baseline; }
+    h2 { margin: 0; }
+    a { color: var(--color-texto-enlace); }
+    form { display: grid; gap: var(--espaciado-l); padding: var(--espaciado-lg); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-grande); }
+    label { display: grid; gap: var(--espaciado-gap-etiqueta); font-size: var(--fuente-base); font-weight: 600; }
+    .casilla { display: flex; align-items: center; gap: var(--espaciado-s); font-weight: 600; }
+    .casilla input { width: auto; }
+    input, select, button { padding: var(--espaciado-m) var(--padding-boton-secundario-x); border-radius: var(--radio-borde); font-size: var(--fuente-md); }
+    input, select { border: var(--grosor-borde) solid var(--color-borde-input); }
+    button { border: none; background: var(--color-primario); color: var(--color-texto-on-primario); font-weight: 600; cursor: pointer; }
+    button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }
+    .error { color: var(--color-error); font-size: var(--fuente-base); }

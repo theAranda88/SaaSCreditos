@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
 import { rutaInicioPorRol } from '../../../nucleo/auth/roles-negocio';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -41,7 +42,7 @@ export class LoginComponent {
       },
       error: () => {
         this.cargando.set(false);
-        this.error.set('Credenciales inválidas. Verifique correo y contraseña.');
+        this.error.set('auth.login.error_credenciales');
       },
     });
   }

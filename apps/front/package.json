@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "retokenizar-scss": "node scripts/retokenizar-scss.mjs && node scripts/retokenizar-scss-fase2.mjs"
   },
   "dependencies": {
     "@angular/animations": "^19.2.14",
@@ -17,6 +18,8 @@
     "@angular/platform-browser-dynamic": "^19.2.14",
     "@angular/router": "^19.2.14",
     "@creditos/shared-types": "*",
+    "@ngx-translate/core": "^16.0.4",
+    "@ngx-translate/http-loader": "^16.0.1",
     "rxjs": "^7.8.2",
     "tslib": "^2.8.1",
     "zone.js": "^0.15.1"

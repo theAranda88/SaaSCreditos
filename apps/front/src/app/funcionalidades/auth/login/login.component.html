@@ -1,26 +1,26 @@
 <section class="login">
   <div class="tarjeta">
-    <span class="badge">Fase 1</span>
-    <h1>Iniciar sesión</h1>
-    <p>Acceda al panel de su negocio o al de la plataforma.</p>
+    <span class="badge">{{ 'auth.login.fase' | translate }}</span>
+    <h1>{{ 'auth.login.titulo' | translate }}</h1>
+    <p>{{ 'auth.login.subtitulo' | translate }}</p>
 
     <form [formGroup]="formulario" (ngSubmit)="enviar()">
       <label>
-        Correo
+        {{ 'auth.login.correo' | translate }}
         <input type="email" formControlName="correo" autocomplete="email" />
       </label>
 
       <label>
-        Contraseña
+        {{ 'auth.login.contrasena' | translate }}
         <input type="password" formControlName="contrasena" autocomplete="current-password" />
       </label>
 
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      @if (error(); as claveError) {
+        <p class="error">{{ claveError | translate }}</p>
       }
 
       <button type="submit" [disabled]="cargando() || formulario.invalid">
-        {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+        {{ (cargando() ? 'auth.login.ingresando' : 'auth.login.ingresar') | translate }}
       </button>
     </form>
   </div>

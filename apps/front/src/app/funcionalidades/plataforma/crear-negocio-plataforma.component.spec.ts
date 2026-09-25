@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { CrearNegocioPlataformaComponent } from './crear-negocio-plataforma.component';
 
 describe('CrearNegocioPlataformaComponent', () => {
@@ -11,7 +12,12 @@ describe('CrearNegocioPlataformaComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CrearNegocioPlataformaComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([{ path: 'plataforma/negocios/:id', redirectTo: '' }])],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([{ path: 'plataforma/negocios/:id', redirectTo: '' }]),
+        proveedoresTraduccionPrueba(),
+      ],
     }).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);

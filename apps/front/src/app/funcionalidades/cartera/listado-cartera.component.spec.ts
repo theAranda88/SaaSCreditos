@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { CobradoresServicio } from '../cobradores/cobradores.servicio';
 import { CarteraServicio } from './cartera.servicio';
 import { ListadoCarteraComponent } from './listado-cartera.component';
@@ -13,6 +14,7 @@ describe('ListadoCarteraComponent', () => {
       imports: [ListadoCarteraComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         {
           provide: AuthServicio,
           useValue: {
@@ -64,6 +66,6 @@ describe('ListadoCarteraComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('María Pérez');
-    expect(fixture.nativeElement.textContent).toContain('Aplicar mora');
+    expect(fixture.nativeElement.textContent).toContain('cartera.listado.aplicar_mora');
   });
 });

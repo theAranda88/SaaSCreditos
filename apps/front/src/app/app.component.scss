@@ -1,50 +1,52 @@
+@use 'nucleo/ui/tokens';
+
 :host {
   display: block;
   min-height: 100vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #1f2937;
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  color: var(--color-texto-principal);
+  background: var(--degradado-pantalla);
 }
 
 .shell {
-  max-width: 720px;
+  max-width: var(--ancho-contenido-shell);
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: var(--espaciado-3xl) var(--espaciado-xl);
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: 0.875rem;
+  padding: var(--espaciado-xs) var(--espaciado-m);
+  border-radius: var(--radio-pill);
+  background: var(--color-primario-rol);
+  color: var(--color-primario);
+  font-size: var(--fuente-sm);
   font-weight: 600;
 }
 
 h1 {
-  margin: 1rem 0 0.5rem;
-  font-size: 2rem;
+  margin: var(--espaciado-l) 0 var(--espaciado-s);
+  font-size: var(--fuente-display);
 }
 
 p {
-  margin: 0.5rem 0;
-  line-height: 1.6;
+  margin: var(--espaciado-s) 0;
+  line-height: var(--line-height-parrafo);
 }
 
 .estado {
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  border-radius: 0.75rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  margin-top: var(--espaciado-xl);
+  padding: var(--espaciado-l) var(--padding-shell-estado-x);
+  border-radius: var(--radio-borde-grande);
+  background: var(--color-fondo-superficie);
+  border: var(--grosor-borde) solid var(--color-borde);
 }
 
 .estado-ok {
-  color: #047857;
+  color: var(--color-exito-texto-alt);
   font-weight: 600;
 }
 
 .estado-pendiente {
-  color: #92400e;
+  color: var(--color-advertencia-texto-alt);
 }

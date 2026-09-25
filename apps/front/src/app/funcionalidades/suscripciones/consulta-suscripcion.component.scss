@@ -1,0 +1,20 @@
+@use '../../nucleo/ui/tokens';
+
+.pagina { display: grid; gap: var(--espaciado-lg); max-width: var(--ancho-contenido-suscripcion); }
+    h2, h3 { margin: 0; }
+    header p, .vacio, .cambio p { margin: var(--espaciado-gap-etiqueta) 0 0; color: var(--color-texto-secundario); }
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--ancho-grid-min-columna), 1fr)); gap: var(--espaciado-gap-formulario); }
+    article { padding: var(--espaciado-l); border-radius: var(--radio-borde-tarjeta); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); display: grid; gap: var(--espaciado-gap-etiqueta); }
+    article span, article small { color: var(--color-texto-secundario); font-size: var(--fuente-xs); }
+    .estado { text-transform: capitalize; }
+    .aviso { margin: 0; padding: var(--espaciado-m) var(--espaciado-l); border-radius: var(--radio-borde-medio); background: var(--color-alerta-fondo); color: var(--color-alerta-texto); }
+    .cambio { padding: var(--espaciado-l); border-radius: var(--radio-borde-tarjeta); background: var(--color-fondo-superficie); border: var(--grosor-borde) solid var(--color-borde); display: grid; gap: var(--espaciado-gap-formulario); }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--espaciado-gap-rejilla); }
+    li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--espaciado-m); align-items: center; padding: var(--espaciado-m); border: var(--grosor-borde) solid var(--color-borde); border-radius: var(--radio-borde-medio); }
+    li small { display: block; color: var(--color-texto-secundario); }
+    button { padding: var(--radio-borde-medio) var(--padding-boton-secundario-x); border-radius: var(--radio-borde); border: var(--grosor-borde) solid var(--color-borde-input); background: var(--color-fondo-superficie); cursor: pointer; }
+    .primario, li button { border: none; background: var(--color-primario); color: var(--color-texto-on-primario); font-weight: 600; }
+    .confirmacion { padding: var(--espaciado-l); border-radius: var(--radio-borde-grande); background: var(--color-primario-fondo-suave); border: var(--grosor-borde) solid var(--color-primario-borde-suave); display: grid; gap: var(--espaciado-m); }
+    .acciones { display: flex; flex-wrap: wrap; gap: var(--espaciado-s); }
+    .error { color: var(--color-error); }
+    button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }

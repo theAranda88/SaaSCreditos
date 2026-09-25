@@ -30,7 +30,7 @@ Base de datos de test: PostgreSQL del Compose (perfil `test` o schema aislado). 
 
 1. **Unitarias de servicio** — reglas, 422, cálculos, transacción mockeada o con BD de test.
 2. **HTTP** — un feliz y los de seguridad (401, 403 negocio ajeno).
-3. **UI** — formulario/guard/flujo corto, no capturas de todo el CSS.
+3. **UI** — formulario/guard/flujo corto; stub de traducción en specs; no capturas de todo el CSS ni asserts de copy en español hardcodeado.
 4. **Postman** — humo manual/CI; no es la única red.
 
 No hace falta 100% de líneas. Sí hace falta cubrir **el comportamiento nuevo** y los **casos P0** (dinero, `negocio_id`, rol).
@@ -43,8 +43,9 @@ No hace falta 100% de líneas. Sí hace falta cubrir **el comportamiento nuevo**
 | `backend-feature` | regla nueva (positivo + 422); no regresiona la regla vieja documentada |
 | `registrar-pago` | transacción feliz; rollback si falla un paso; 403 cartera no asignada; 403 otro negocio; anulación con motivo; saldo nunca negativo; doble submit |
 | `auth-flow` | login ok; 401; 403 rol; claim `negocio_id`; plataforma sin `negocio_id` |
-| `frontend-crud` | crea el form inválido no emite POST; listado muestra vacío; servicio llama la URL correcta |
-| `frontend-feature` | confirmación de cobro (RC-006) antes del POST; guard redirige sin sesión |
+| `frontend-crud` | form inválido no emite POST; listado vacío (clave i18n o stub); servicio URL correcta; sin literales nuevos de UI en template |
+| `frontend-feature` | confirmación de cobro (RC-006) antes del POST; guard redirige sin sesión; tests con módulo fake de i18n |
+| `corregir-front` | regresión del síntoma; si tocó copy → clave en `public/i18n/es.json` |
 | `debug-fix` | test de regresión que fallaba con el bug |
 | `refactor` | suite previa verde; mismos asserts de negocio |
 | `bootstrap-monorepo` | `GET /salud` o `/health` de arranque + `npm test` corre (aunque sea un spec placeholder) y la pipeline queda cableada |
@@ -76,7 +77,7 @@ describe('PagosServicio', () => {
 npm test --workspace=apps/api
 
 # Angular
-npm test --workspace=apps/web -- --watch=false
+npm test --workspace=apps/front
 
 # Raíz (entrega)
 npm test

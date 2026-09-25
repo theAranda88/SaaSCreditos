@@ -25,4 +25,4 @@ Monorepo dockerizado: Angular + NestJS + PostgreSQL. Swagger UI + Postman + test
 
 ## Leyes cortas
 
-Multiempresa (`negocio_id`), dinero en transacción, condiciones de crédito inmutables, nombres en español, nada de secretos, backend verde antes que front, git manual (sugerir rama `tipo/creditos_*` desde `creditos-prepro`; commits solo si el usuario los pide).
+Multiempresa (`negocio_id`), dinero en transacción, condiciones de crédito inmutables, nombres en español, nada de secretos, backend verde antes que front, UI con skill `frontend-arquitectura` (capas, tokens SCSS, i18n), git manual (sugerir rama `tipo/creditos_*` desde `creditos-prepro`; commits solo si el usuario los pide).

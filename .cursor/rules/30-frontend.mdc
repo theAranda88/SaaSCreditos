@@ -1,34 +1,45 @@
 ---
-description: Patrones frontend — Angular standalone, Signals, nombres en español, tests de componente
-globs: ["apps/web/**", "packages/ui/**"]
+description: Patrones frontend — Angular standalone, capas, tokens SCSS, i18n, tests
+globs: ["apps/front/**"]
 alwaysApply: false
 ---
 
-# Frontend — Angular (standalone)
+# Frontend — Angular (`apps/front`)
+
+Cargar skill **`frontend-arquitectura`** en cualquier tarea de UI. Detalle en `.cursor/skills/frontend-arquitectura/reference.md`.
 
 ## Stack
 
 - Standalone, Signals, `@if` / `@for` / `@switch`
-- Reactive Forms, HttpClient tipado
-- Tests: `*.spec.ts` del componente/servicio (`ng test` / Vitest)
-- Material y/o Tailwind; cobrador en teléfono
+- Reactive Forms, HttpClient tipado, Vitest en `*.spec.ts`
+- Estilos: SCSS + **tokens** en `nucleo/ui/_tokens.scss` (variables CSS)
+- Texto de UI: **solo i18n** (`public/i18n/es.json` + pipe/servicio de traducción)
 
 ## Carpetas
 
 ```
-apps/web/src/app/
-  nucleo/             auth, interceptors, guards, modelos
-  funcionalidades/    clientes, creditos, cobros, cartera, admin
-  compartido/ui/
+apps/front/src/app/
+  nucleo/             auth, http, guards, ui/tokens, bootstrap i18n
+  funcionalidades/    un módulo por dominio (clientes, creditos, cobros…)
+  compartido/ui/      componentes presentacionales reutilizables
+public/i18n/          diccionarios (es.json, …)
 ```
+
+## Capas por pantalla
+
+- **Servicio** — HTTP y tipos; sin estado de vista.
+- **Contenedor** — orquestación, signals, forms, rutas.
+- **Presentación** — inputs/outputs; OnPush; sin HttpClient.
 
 ## Nombres
 
-`ClientesServicio`, `ListadoClientesComponent`, `saldoPendiente`. Sin `CustomerService`.
+`ClientesServicio`, `ListadoClientesContenedor`, `saldoPendiente`. Sin `CustomerService`. Claves i18n en español: `clientes.listado.titulo`.
 
 ## Reglas
 
-- Sin `any`. Front no es autorización real.
+- Sin `any`. Front no sustituye autorización del API.
+- Sin literales de UI en templates/TS (usar diccionario).
+- Sin colores/espaciados quemados en SCSS de componente (usar `var(--*)` desde tokens).
 - Confirmación visible al registrar pago (RC-006).
-- Interceptor Bearer + errores en español.
+- Interceptor Bearer; errores de usuario vía claves i18n, no texto crudo del API.
 - Cambio de comportamiento → spec + `calidad-tests`.

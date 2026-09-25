@@ -1,75 +1,76 @@
+@use '../../../nucleo/ui/tokens';
+
 .login {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  padding: var(--espaciado-xl);
+  background: var(--degradado-pantalla);
 }
 
 .tarjeta {
   width: 100%;
-  max-width: 420px;
-  padding: 2rem 1.5rem;
-  border-radius: 1rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  max-width: var(--ancho-login-tarjeta);
+  padding: var(--espaciado-2xl) var(--espaciado-xl);
+  border-radius: var(--radio-borde);
+  background: var(--color-fondo-superficie);
+  border: var(--grosor-borde) solid var(--color-borde);
+  box-shadow: var(--sombra-tarjeta-elevada);
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: 0.875rem;
+  padding: var(--espaciado-xs) var(--espaciado-m);
+  border-radius: var(--radio-pill);
+  background: var(--color-primario-rol);
+  color: var(--color-primario);
+  font-size: var(--fuente-sm);
   font-weight: 600;
 }
 
 h1 {
-  margin: 1rem 0 0.5rem;
-  font-size: 1.75rem;
+  margin: var(--espaciado-l) 0 var(--espaciado-s);
+  font-size: var(--fuente-kpi);
 }
 
 form {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--espaciado-l);
+  margin-top: var(--espaciado-xl);
 }
 
 label {
   display: grid;
-  gap: 0.35rem;
-  font-size: 0.9rem;
+  gap: var(--espaciado-gap-etiqueta);
+  font-size: var(--fuente-base);
   font-weight: 600;
 }
 
 input {
-  padding: 0.75rem 0.9rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  padding: var(--espaciado-m) var(--padding-boton-secundario-x);
+  border: var(--grosor-borde) solid var(--color-borde-input);
+  border-radius: var(--radio-borde);
+  font-size: var(--fuente-md);
 }
 
 button {
-  margin-top: 0.5rem;
-  padding: 0.85rem 1rem;
+  margin-top: var(--espaciado-s);
+  padding: var(--padding-input-lg) var(--espaciado-l);
   border: none;
-  border-radius: 0.5rem;
-  background: #1d4ed8;
-  color: #ffffff;
-  font-size: 1rem;
+  border-radius: var(--radio-borde);
+  background: var(--color-primario); color: var(--color-texto-on-primario);
+  font-size: var(--fuente-md);
   font-weight: 600;
   cursor: pointer;
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: var(--opacidad-deshabilitado);
   cursor: not-allowed;
 }
 
 .error {
-  color: #b91c1c;
-  font-size: 0.9rem;
+  color: var(--color-error);
+  font-size: var(--fuente-base);
 }

@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AuthServicio } from '../../nucleo/auth/auth.servicio';
+import { proveedoresTraduccionPrueba } from '../../nucleo/i18n/proveedores-traduccion-prueba';
 import { PlataformaServicio } from './plataforma.servicio';
 import { ListadoNegociosPlataformaComponent } from './listado-negocios-plataforma.component';
 
@@ -17,6 +18,7 @@ describe('ListadoNegociosPlataformaComponent', () => {
       imports: [ListadoNegociosPlataformaComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         proveedorAuthAdmin,
         { provide: PlataformaServicio, useValue: { listarNegocios: () => of([]) } },
       ],
@@ -27,7 +29,7 @@ describe('ListadoNegociosPlataformaComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('No hay negocios para mostrar.');
+    expect(fixture.nativeElement.textContent).toContain('plataforma.negocios.listado.vacio');
   });
 
   it('debe listar negocios de la plataforma', async () => {
@@ -36,6 +38,7 @@ describe('ListadoNegociosPlataformaComponent', () => {
       imports: [ListadoNegociosPlataformaComponent],
       providers: [
         provideRouter([]),
+        proveedoresTraduccionPrueba(),
         proveedorAuthAdmin,
         {
           provide: PlataformaServicio,
@@ -71,6 +74,6 @@ describe('ListadoNegociosPlataformaComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Préstamos Alfa (prueba)');
     expect(fixture.nativeElement.textContent).toContain('Emprendedor');
-    expect(fixture.nativeElement.textContent).toContain('Nuevo negocio');
+    expect(fixture.nativeElement.textContent).toContain('plataforma.negocios.listado.nuevo');
   });
 });
