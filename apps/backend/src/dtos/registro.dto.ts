@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, Length, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString, Length, MinLength } from 'class-validator';
+import { CODIGOS_MONEDA } from '../nucleo/constantes/monedas.constantes';
 
 export class RegistroDto {
   @ApiProperty({ example: 'Mi Préstamos SAS' })
@@ -23,10 +24,9 @@ export class RegistroDto {
   @Length(8, 72)
   contrasena!: string;
 
-  @ApiPropertyOptional({ example: 'COP', default: 'COP' })
+  @ApiPropertyOptional({ example: 'COP', default: 'COP', enum: CODIGOS_MONEDA })
   @IsOptional()
-  @IsString()
-  @Matches(/^[A-Z]{3}$/)
+  @IsIn(CODIGOS_MONEDA)
   moneda?: string;
 
   @ApiPropertyOptional({ example: '3001234567' })

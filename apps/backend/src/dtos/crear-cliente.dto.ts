@@ -22,11 +22,15 @@ export class CrearClienteDto {
   @Length(7, 30)
   telefono!: string;
 
-  @ApiPropertyOptional({ example: 'Calle 10 # 5-20' })
-  @IsOptional()
+  @ApiProperty({ example: 'Calle 10 # 5-20' })
   @IsString()
   @Length(1, 220)
-  direccion?: string;
+  direccion!: string;
+
+  @ApiProperty({ example: 'Centro' })
+  @IsString()
+  @Length(1, 120)
+  barrio!: string;
 
   @ApiPropertyOptional({ example: 'Frente al parque principal' })
   @IsOptional()

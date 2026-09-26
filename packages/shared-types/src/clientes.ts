@@ -12,7 +12,8 @@ export interface ClientePerfil {
   tipo_documento: TipoDocumento;
   numero_documento: string;
   telefono: string;
-  direccion: string | null;
+  direccion: string;
+  barrio: string;
   referencia_ubicacion: string | null;
   estado: EstadoCliente;
   fecha_creacion: string;

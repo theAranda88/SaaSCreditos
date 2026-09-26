@@ -32,6 +32,7 @@ describe('ClientesServicio', () => {
     fechaCreacion: fechaFija,
     fechaActualizacion: fechaFija,
     creadoPor: 'usuario-1',
+    ...(true && { barrio: 'Centro' }),
   };
 
   beforeEach(() => {
@@ -56,12 +57,15 @@ describe('ClientesServicio', () => {
       numeroDocumento: '1234567890',
       telefono: '3001234567',
       direccion: 'Calle 10 # 5-20',
+      barrio: '  Centro  ',
     });
 
     expect(clienteRepositorio.crear).toHaveBeenCalledWith(
       expect.objectContaining({
         nombreCompleto: 'María Pérez',
         numeroDocumento: '1234567890',
+        direccion: 'Calle 10 # 5-20',
+        barrio: 'Centro',
         negocio: { connect: { id: 'negocio-a' } },
         creador: { connect: { id: 'usuario-1' } },
       }),
@@ -84,6 +88,8 @@ describe('ClientesServicio', () => {
         tipoDocumento: 'CC',
         numeroDocumento: '1234567890',
         telefono: '3009999999',
+        direccion: 'Otra dirección',
+        barrio: 'Otro barrio',
       }),
     ).rejects.toBeInstanceOf(ConflictException);
   });

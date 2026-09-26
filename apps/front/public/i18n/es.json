@@ -139,7 +139,8 @@
       "nombre_completo": "Nombre completo",
       "tipo_documento": "Tipo de documento",
       "numero_documento": "Número de documento",
-      "direccion_opcional": "Dirección (opcional)",
+      "direccion": "Dirección",
+      "barrio": "Barrio",
       "referencia_opcional": "Referencia de ubicación (opcional)"
     }
   },

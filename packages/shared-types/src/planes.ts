@@ -4,6 +4,9 @@ import type { EstadoUsuario } from './cobradores';
 /** Códigos de plan comercial del catálogo global. */
 export type CodigoPlan = 'emprendedor' | 'profesional' | 'empresarial';
 
+/** Códigos de moneda ISO soportadas (extensible). */
+export type CodigoMoneda = 'COP' | 'USD' | 'EUR';
+
 /** Estado comercial de un plan del catálogo global. */
 export type EstadoPlan = 'activo' | 'inactivo';
 

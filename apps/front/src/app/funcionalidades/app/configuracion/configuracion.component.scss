@@ -8,6 +8,8 @@
     input, button { padding: var(--espaciado-m) var(--padding-boton-secundario-x); border-radius: var(--radio-borde); font-size: var(--fuente-md); }
     input { border: var(--grosor-borde) solid var(--color-borde-input); }
     .moneda { text-transform: uppercase; }
+    select { padding: var(--espaciado-m) var(--padding-boton-secundario-x); border: var(--grosor-borde) solid var(--color-borde-input); border-radius: var(--radio-borde); font-size: var(--fuente-md); }
+    .select-moneda { width: 100%; max-width: 200px; }
     button { border: none; background: var(--color-primario); color: var(--color-texto-on-primario); font-weight: 600; cursor: pointer; }
     button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }
     .error { color: var(--color-error); margin: 0; }

@@ -48,8 +48,13 @@ import { ClientesServicio } from './clientes.servicio';
         </label>
 
         <label>
-          {{ 'clientes.formulario.direccion_opcional' | translate }}
+          {{ 'clientes.formulario.direccion' | translate }}
           <input type="text" formControlName="direccion" />
+        </label>
+
+        <label>
+          {{ 'clientes.formulario.barrio' | translate }}
+          <input type="text" formControlName="barrio" />
         </label>
 
         <label>
@@ -87,7 +92,8 @@ export class FormularioClienteComponent implements OnInit {
     }),
     numeroDocumento: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]],
     telefono: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(30)]],
-    direccion: [''],
+    direccion: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(220)]],
+    barrio: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(120)]],
     referenciaUbicacion: [''],
   });
 
@@ -107,6 +113,7 @@ export class FormularioClienteComponent implements OnInit {
           numeroDocumento: cliente.numero_documento,
           telefono: cliente.telefono,
           direccion: cliente.direccion ?? '',
+          barrio: cliente.barrio ?? '',
           referenciaUbicacion: cliente.referencia_ubicacion ?? '',
         });
         this.cargando.set(false);
@@ -133,7 +140,8 @@ export class FormularioClienteComponent implements OnInit {
       tipoDocumento: valores.tipoDocumento,
       numeroDocumento: valores.numeroDocumento.trim(),
       telefono: valores.telefono.trim(),
-      ...(valores.direccion.trim() && { direccion: valores.direccion.trim() }),
+      direccion: valores.direccion.trim(),
+      barrio: valores.barrio.trim(),
       ...(valores.referenciaUbicacion.trim() && {
         referenciaUbicacion: valores.referenciaUbicacion.trim(),
       }),

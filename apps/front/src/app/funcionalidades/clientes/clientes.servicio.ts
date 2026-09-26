@@ -15,7 +15,8 @@ export type CrearClientePayload = {
   tipoDocumento: TipoDocumento;
   numeroDocumento: string;
   telefono: string;
-  direccion?: string;
+  direccion: string;
+  barrio: string;
   referenciaUbicacion?: string;
 };
 

@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import type { CodigoPlan } from '@creditos/shared-types';
+import type { CodigoPlan, CodigoMoneda } from '@creditos/shared-types';
 import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { PlataformaServicio } from './plataforma.servicio';
 
@@ -11,6 +11,8 @@ const PLANES_INICIALES: { codigo: CodigoPlan; clave: string }[] = [
   { codigo: 'profesional', clave: 'plataforma.negocios.crear.plan_profesional' },
   { codigo: 'empresarial', clave: 'plataforma.negocios.crear.plan_empresarial' },
 ];
+
+const MONEDAS_CATLOGO: CodigoMoneda[] = ['COP', 'USD', 'EUR'];
 
 @Component({
   selector: 'app-crear-negocio-plataforma',
@@ -34,7 +36,11 @@ const PLANES_INICIALES: { codigo: CodigoPlan; clave: string }[] = [
           </label>
           <label>
             {{ 'plataforma.negocios.crear.moneda_iso' | translate }}
-            <input type="text" formControlName="moneda" maxlength="3" />
+            <select formControlName="moneda" class="select-moneda">
+              @for (moneda of monedasCatalogo; track moneda) {
+                <option [value]="moneda">{{ moneda }}</option>
+              }
+            </select>
           </label>
         </fieldset>
 
@@ -89,12 +95,13 @@ export class CrearNegocioPlataformaComponent {
   private readonly formBuilder = inject(FormBuilder);
 
   readonly planes = PLANES_INICIALES;
+  readonly monedasCatalogo = MONEDAS_CATLOGO;
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly formulario = this.formBuilder.nonNullable.group({
     nombreComercial: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(180)]],
-    moneda: ['COP', [Validators.required, Validators.pattern(/^[A-Z]{3}$/)]],
+    moneda: ['COP' as CodigoMoneda, [Validators.required]],
     nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(160)]],
     correo: ['', [Validators.required, Validators.email]],
     contrasena: ['', [Validators.required, Validators.minLength(8)]],

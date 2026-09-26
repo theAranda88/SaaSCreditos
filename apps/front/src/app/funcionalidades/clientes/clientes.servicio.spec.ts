@@ -36,6 +36,8 @@ describe('ClientesServicio', () => {
         tipoDocumento: 'CC',
         numeroDocumento: '1234567890',
         telefono: '3001234567',
+        direccion: 'Calle 10 # 5-20',
+        barrio: 'Centro',
       })
       .subscribe();
 
@@ -52,7 +54,8 @@ describe('ClientesServicio', () => {
       tipo_documento: 'CC',
       numero_documento: '1234567890',
       telefono: '3001234567',
-      direccion: null,
+      direccion: 'Calle 10 # 5-20',
+      barrio: 'Centro',
       referencia_ubicacion: null,
       estado: 'activo',
       fecha_creacion: '2026-09-15T00:00:00.000Z',

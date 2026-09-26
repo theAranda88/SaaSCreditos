@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsIn, IsOptional, IsString, Length, Matches, MinLength } from 'class-validator';
 import type { CodigoPlan } from '@creditos/shared-types';
+import { CODIGOS_MONEDA } from '../nucleo/constantes/monedas.constantes';
 
 const CODIGOS_PLAN: CodigoPlan[] = ['emprendedor', 'profesional', 'empresarial'];
 
@@ -29,10 +30,9 @@ export class CrearNegocioPlataformaDto {
   @Length(8, 72)
   contrasena!: string;
 
-  @ApiPropertyOptional({ example: 'COP', default: 'COP' })
+  @ApiPropertyOptional({ example: 'COP', default: 'COP', enum: CODIGOS_MONEDA })
   @IsOptional()
-  @IsString()
-  @Matches(/^[A-Z]{3}$/)
+  @IsIn(CODIGOS_MONEDA)
   moneda?: string;
 
   @ApiPropertyOptional({ example: '3001234567' })

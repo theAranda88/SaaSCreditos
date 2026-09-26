@@ -9,6 +9,7 @@
     legend { font-weight: 600; padding: 0 var(--padding-legend-horizontal); }
     label { display: grid; gap: var(--espaciado-gap-etiqueta); font-size: var(--fuente-base); font-weight: 600; }
     input, select { padding: var(--radio-borde-medio) var(--espaciado-m); border: var(--grosor-borde) solid var(--color-borde-input); border-radius: var(--radio-borde); font-size: var(--fuente-md); }
+    .select-moneda { width: 100%; max-width: 200px; }
     .acciones { display: flex; justify-content: flex-end; }
     button { padding: var(--espaciado-m) var(--padding-boton-primario-x); border: none; border-radius: var(--radio-borde); background: var(--color-primario); color: var(--color-texto-on-primario); font-weight: 600; cursor: pointer; }
     button:disabled { opacity: var(--opacidad-deshabilitado); cursor: not-allowed; }

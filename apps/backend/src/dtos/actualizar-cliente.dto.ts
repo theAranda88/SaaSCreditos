@@ -26,11 +26,17 @@ export class ActualizarClienteDto {
   @Length(7, 30)
   telefono?: string;
 
-  @ApiPropertyOptional({ example: 'Calle 10 # 5-20', nullable: true })
+  @ApiPropertyOptional({ example: 'Calle 10 # 5-20' })
   @IsOptional()
   @IsString()
   @Length(1, 220)
-  direccion?: string | null;
+  direccion?: string;
+
+  @ApiPropertyOptional({ example: 'Centro' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 120)
+  barrio?: string;
 
   @ApiPropertyOptional({ example: 'Frente al parque principal', nullable: true })
   @IsOptional()

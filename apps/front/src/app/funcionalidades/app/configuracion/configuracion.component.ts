@@ -1,9 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import type { CodigoMoneda } from '@creditos/shared-types';
 import { AuthServicio } from '../../../nucleo/auth/auth.servicio';
 import { claveMensajeErrorHttp } from '../../../nucleo/http/mensaje-error-http';
 import { NegociosServicio } from '../../negocios/negocios.servicio';
+
+const MONEDAS_CATLOGO: CodigoMoneda[] = ['COP', 'USD', 'EUR'];
 
 @Component({
   selector: 'app-configuracion',
@@ -26,7 +29,11 @@ import { NegociosServicio } from '../../negocios/negocios.servicio';
 
           <label>
             {{ 'app.configuracion.moneda' | translate }}
-            <input type="text" formControlName="moneda" maxlength="3" class="moneda" />
+            <select formControlName="moneda" class="select-moneda">
+              @for (moneda of monedasCatalogo; track moneda) {
+                <option [value]="moneda">{{ moneda }}</option>
+              }
+            </select>
           </label>
 
           @if (mensajeExito(); as claveExito) {
@@ -61,6 +68,7 @@ export class ConfiguracionComponent implements OnInit {
   readonly guardando = signal(false);
   readonly error = signal<string | null>(null);
   readonly mensajeExito = signal<string | null>(null);
+  readonly monedasCatalogo = MONEDAS_CATLOGO;
 
   readonly esPropietario = computed(
     () => this.authServicio.perfilActual()?.rol === 'propietario',
@@ -68,7 +76,7 @@ export class ConfiguracionComponent implements OnInit {
 
   readonly formulario = this.formBuilder.nonNullable.group({
     nombreComercial: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(180)]],
-    moneda: ['COP', [Validators.required, Validators.pattern(/^[A-Z]{3}$/)]],
+    moneda: ['COP', [Validators.required]],
   });
 
   ngOnInit(): void {
@@ -76,7 +84,7 @@ export class ConfiguracionComponent implements OnInit {
       next: (negocio) => {
         this.formulario.reset({
           nombreComercial: negocio.nombre_comercial,
-          moneda: negocio.moneda,
+          moneda: negocio.moneda as CodigoMoneda,
         });
         this.cargando.set(false);
       },
@@ -101,13 +109,13 @@ export class ConfiguracionComponent implements OnInit {
     this.negociosServicio
       .actualizarMiNegocio({
         nombreComercial: nombreComercial.trim(),
-        moneda: moneda.trim().toUpperCase(),
+        moneda: moneda.toUpperCase(),
       })
       .subscribe({
         next: (negocio) => {
           this.formulario.reset({
             nombreComercial: negocio.nombre_comercial,
-            moneda: negocio.moneda,
+            moneda: negocio.moneda as CodigoMoneda,
           });
           this.guardando.set(false);
           this.mensajeExito.set('app.configuracion.exito_guardado');

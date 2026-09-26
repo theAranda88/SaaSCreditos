@@ -32,7 +32,8 @@ export class ClientesServicio {
         tipoDocumento: dto.tipoDocumento,
         numeroDocumento,
         telefono: dto.telefono.trim(),
-        direccion: dto.direccion?.trim() ?? null,
+        direccion: dto.direccion.trim(),
+        barrio: dto.barrio.trim(),
         referenciaUbicacion: dto.referenciaUbicacion?.trim() ?? null,
         negocio: { connect: { id: negocioId } },
         creador: { connect: { id: usuario.id } },
@@ -81,9 +82,8 @@ export class ClientesServicio {
         ...(dto.tipoDocumento !== undefined && { tipoDocumento: dto.tipoDocumento }),
         ...(dto.numeroDocumento !== undefined && { numeroDocumento }),
         ...(dto.telefono !== undefined && { telefono: dto.telefono.trim() }),
-        ...(dto.direccion !== undefined && {
-          direccion: dto.direccion === null ? null : dto.direccion.trim(),
-        }),
+        ...(dto.direccion !== undefined && { direccion: dto.direccion.trim() }),
+        ...(dto.barrio !== undefined && { barrio: dto.barrio.trim() }),
         ...(dto.referenciaUbicacion !== undefined && {
           referenciaUbicacion:
             dto.referenciaUbicacion === null ? null : dto.referenciaUbicacion.trim(),
@@ -160,7 +160,8 @@ export class ClientesServicio {
       tipo_documento: cliente.tipoDocumento as TipoDocumento,
       numero_documento: cliente.numeroDocumento,
       telefono: cliente.telefono,
-      direccion: cliente.direccion,
+      direccion: cliente.direccion ?? '',
+      barrio: (cliente as any).barrio ?? '',
       referencia_ubicacion: cliente.referenciaUbicacion,
       estado: cliente.estado,
       fecha_creacion: cliente.fechaCreacion.toISOString(),

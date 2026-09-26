@@ -121,7 +121,8 @@ Restricciones:
 | `tipo_documento` | VARCHAR(20) | No | Catálogo `tipo_documento` |
 | `numero_documento` | VARCHAR(40) | No | |
 | `telefono` | VARCHAR(30) | No | Canal operativo del cobrador |
-| `direccion` | VARCHAR(220) | Sí | |
+| `direccion` | VARCHAR(220) | No | Calle/número/apartado; obligatorio V2-B |
+| `barrio` | VARCHAR(120) | No | Sector/barrio del cliente; nuevo V2-B |
 | `referencia_ubicacion` | VARCHAR(220) | Sí | Apoya la ruta diaria |
 | `estado` | `estado_cliente` | No | Default `activo` |
 | `fecha_creacion` | TIMESTAMPTZ | No | Default `now()` |

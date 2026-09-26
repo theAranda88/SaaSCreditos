@@ -8,6 +8,8 @@ export type {
 
 export type { ClientePerfil, EstadoCliente, TipoDocumento } from './clientes';
 
+export type { CodigoMoneda, CodigoPlan } from './planes';
+
 export type { CobradorPerfil, EstadoUsuario } from './cobradores';
 
 export type {
@@ -45,7 +47,6 @@ export type { DashboardNegocio } from './dashboard';
 
 export type {
   AuditoriaPlataforma,
-  CodigoPlan,
   EstadoNegocio,
   EstadoPlan,
   EstadoSuscripcion,
