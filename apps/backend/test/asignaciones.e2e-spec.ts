@@ -33,7 +33,7 @@ describe('Asignaciones (e2e)', () => {
     tasaInteres: 20,
     valorMora: 5000,
     periodicidad: 'diaria',
-    numeroCuotas: 10,
+    plazoMeses: 1,
     fechaDesembolso: '2026-09-16',
   };
 
@@ -121,6 +121,8 @@ describe('Asignaciones (e2e)', () => {
         tipoDocumento: 'CC',
         numeroDocumento: `AS-${sufijo}`,
         telefono: '3001234567',
+        direccion: 'Calle 10 # 5-20',
+        barrio: 'Centro',
       })
       .expect(201);
     clienteAId = clienteA.body.id;

@@ -202,6 +202,7 @@ model Credito {
   tasaInteres           Decimal              @map("tasa_interes") @db.Decimal(8, 4)
   valorMora             Decimal?             @map("valor_mora") @db.Decimal(18, 2)
   periodicidad          periodicidad_credito
+  plazoMeses            Int                  @map("plazo_meses")
   numeroCuotas          Int                  @map("numero_cuotas")
   fechaDesembolso       DateTime             @map("fecha_desembolso") @db.Date
   estado                estado_credito       @default(activo)

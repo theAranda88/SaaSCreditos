@@ -43,10 +43,14 @@ export class CrearCreditoDto {
   @IsIn(PERIODICIDADES_CREDITO)
   periodicidad!: (typeof PERIODICIDADES_CREDITO)[number];
 
-  @ApiProperty({ example: 20, description: 'Cantidad de cuotas (>= 1). No existe cuota 0.' })
+  @ApiPropertyOptional({
+    example: 6,
+    description: 'Plazo en meses (>= 1). Solo requerido si periodicidad es "mensual". Para otros períodos, default 1 mes.',
+  })
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
-  numeroCuotas!: number;
+  plazoMeses?: number;
 
   @ApiProperty({
     example: '2026-09-16',

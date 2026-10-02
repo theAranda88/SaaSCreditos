@@ -178,10 +178,11 @@
       "cobra_mora": "Cobrar mora en este crédito",
       "valor_mora": "Valor de mora (COP, una vez por cuota vencida)",
       "periodicidad": "Periodicidad",
-      "numero_cuotas": "Número de cuotas",
+      "plazo_meses": "Plazo (meses)",
       "fecha_desembolso": "Fecha de desembolso",
       "crear_y_cuotas": "Crear crédito y generar cuotas",
-      "error_valor_mora": "Indique un valor de mora mayor a 0 o desactive el cobro de mora."
+      "error_valor_mora": "Indique un valor de mora mayor a 0 o desactive el cobro de mora.",
+      "error_plazo_meses": "El plazo debe ser al menos 1 mes."
     },
     "detalle": {
       "titulo": "Plan de cuotas",

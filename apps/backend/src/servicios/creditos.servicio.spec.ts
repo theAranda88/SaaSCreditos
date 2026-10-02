@@ -48,14 +48,17 @@ describe('CreditosServicio', () => {
     montoPrincipal: new Prisma.Decimal('100000.00'),
     tasaInteres: new Prisma.Decimal('20.0000'),
     valorMora: new Prisma.Decimal('5000.00'),
-    periodicidad: 'diaria',
-    numeroCuotas: 20,
+    periodicidad: 'mensual',
+    plazoMeses: 2,
+    numeroCuotas: 2,
     fechaDesembolso: fechaFija,
     estado: 'activo',
     condicionesOriginales: {
       monto_principal: '100000.00',
       total_a_pagar: '120000.00',
       monto_cuota_base: '6000.00',
+      plazo_meses: 2,
+      numero_cuotas: 2,
     },
     fechaCreacion: fechaFija,
     fechaActualizacion: fechaFija,
@@ -78,8 +81,8 @@ describe('CreditosServicio', () => {
     montoPrincipal: 100000,
     tasaInteres: 20,
     valorMora: 5000,
-    periodicidad: 'diaria' as const,
-    numeroCuotas: 20,
+    periodicidad: 'mensual' as const,
+    plazoMeses: 2,
     fechaDesembolso: '2026-09-16',
   };
 
@@ -98,9 +101,9 @@ describe('CreditosServicio', () => {
     creditosServicio = new CreditosServicio(creditoRepositorio, clienteRepositorio);
   });
 
-  it('debe crear un crédito activo con tantas cuotas como numero_cuotas', async () => {
+  it('debe crear un crédito activo con plazo_meses = 2 meses, resultando en 2 cuotas mensuales', async () => {
     vi.mocked(clienteRepositorio.buscarPorIdYNegocio).mockResolvedValue(clienteActivo);
-    const cuotas = Array.from({ length: 20 }, (_, indice) => ({
+    const cuotas = Array.from({ length: 2 }, (_, indice) => ({
       ...cuotaBase,
       id: `cuota-${indice + 1}`,
       numeroCuota: indice + 1,
@@ -116,19 +119,23 @@ describe('CreditosServicio', () => {
       expect.objectContaining({
         negocioId: 'negocio-a',
         clienteId: 'cliente-1',
-        numeroCuotas: 20,
-        periodicidad: 'diaria',
+        plazoMeses: 2,
+        numeroCuotas: 2,
+        periodicidad: 'mensual',
         cuotas: expect.arrayContaining([
           expect.objectContaining({ numeroCuota: 1 }),
-          expect.objectContaining({ numeroCuota: 20 }),
+          expect.objectContaining({ numeroCuota: 2 }),
         ]),
       }),
     );
     expect(resultado.credito.estado).toBe('activo');
-    expect(resultado.cuotas).toHaveLength(20);
+    expect(resultado.cuotas).toHaveLength(2);
+    expect(resultado.credito.plazo_meses).toBe(2);
+    expect(resultado.credito.numero_cuotas).toBe(2);
     expect(resultado.credito.condiciones_originales).toMatchObject({
       total_a_pagar: '120000.00',
-      monto_cuota_base: '6000.00',
+      plazo_meses: 2,
+      numero_cuotas: 2,
     });
   });
 

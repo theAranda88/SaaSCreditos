@@ -25,7 +25,7 @@ export type ParametrosPlanCuotas = {
   tasaInteres: Prisma.Decimal;
   valorMora: Prisma.Decimal | null;
   periodicidad: PeriodicidadCredito;
-  numeroCuotas: number;
+  plazoMeses: number;
   fechaDesembolso: Date;
 };
 
@@ -92,18 +92,100 @@ export function sumarPeriodos(
   }
 }
 
+/**
+ * Calcula el número de cuotas según plazo en meses y periodicidad.
+ *
+ * **Diaria:** Contar días hábiles (excluyendo domingos) en el rango [desembolso + 1, desembolso + plazo_meses meses].
+ * **Semanal:** ceil(plazo_meses × 52 / 12) — una cuota por semana civil.
+ * **Quincenal:** plazo_meses × 2 — una cuota cada quincena.
+ * **Mensual:** plazo_meses — una cuota por mes.
+ */
+export function calcularNumeroCuotas(
+  plazoMeses: number,
+  periodicidad: PeriodicidadCredito,
+  fechaDesembolso: Date,
+): number {
+  switch (periodicidad) {
+    case 'diaria': {
+      // Contar días hábiles (no domingos) desde el desembolso hasta fin de plazo
+      const fechaFin = new Date(
+        Date.UTC(
+          fechaDesembolso.getUTCFullYear(),
+          fechaDesembolso.getUTCMonth() + plazoMeses,
+          fechaDesembolso.getUTCDate(),
+        ),
+      );
+
+      let contador = 0;
+      let fechaActual = new Date(
+        Date.UTC(
+          fechaDesembolso.getUTCFullYear(),
+          fechaDesembolso.getUTCMonth(),
+          fechaDesembolso.getUTCDate() + 1,
+        ),
+      );
+
+      while (fechaActual <= fechaFin) {
+        // Excluir domingos (día 0 en UTC es domingo)
+        if (fechaActual.getUTCDay() !== 0) {
+          contador += 1;
+        }
+        fechaActual = new Date(
+          Date.UTC(
+            fechaActual.getUTCFullYear(),
+            fechaActual.getUTCMonth(),
+            fechaActual.getUTCDate() + 1,
+          ),
+        );
+      }
+
+      return Math.max(1, contador);
+    }
+
+    case 'semanal': {
+      // Una cuota por semana: ceil(plazo_meses × 52 / 12)
+      return Math.ceil((plazoMeses * 52) / 12);
+    }
+
+    case 'quincenal': {
+      // Una cuota cada quincena: plazo_meses × 2
+      return plazoMeses * 2;
+    }
+
+    case 'mensual': {
+      // Una cuota por mes
+      return plazoMeses;
+    }
+
+    default: {
+      const _nunca: never = periodicidad;
+      return _nunca;
+    }
+  }
+}
+
 export function generarPlanCuotas(parametros: ParametrosPlanCuotas): PlanCuotasCalculado {
+  const numeroCuotas = calcularNumeroCuotas(
+    parametros.plazoMeses,
+    parametros.periodicidad,
+    parametros.fechaDesembolso,
+  );
+
+  if (numeroCuotas < 1) {
+    throw new Error('No se puede generar un plan con menos de 1 cuota');
+  }
+
   const interes = redondearDinero(
     parametros.montoPrincipal.mul(parametros.tasaInteres).div(100),
   );
   const totalAPagar = redondearDinero(parametros.montoPrincipal.add(interes));
-  const montoCuotaBase = redondearDinero(totalAPagar.div(parametros.numeroCuotas));
+  const montoCuotaBase = redondearDinero(totalAPagar.div(numeroCuotas));
 
   const cuotas: CuotaCalculada[] = [];
   let acumulado = new Prisma.Decimal(0);
 
-  for (let numeroCuota = 1; numeroCuota <= parametros.numeroCuotas; numeroCuota += 1) {
-    const esUltima = numeroCuota === parametros.numeroCuotas;
+  for (let numeroCuota = 1; numeroCuota <= numeroCuotas; numeroCuota += 1) {
+    const esUltima = numeroCuota === numeroCuotas;
     const montoEsperado = esUltima
       ? redondearDinero(totalAPagar.minus(acumulado))
       : montoCuotaBase;
@@ -128,7 +210,8 @@ export function generarPlanCuotas(parametros: ParametrosPlanCuotas): PlanCuotasC
     cobra_mora: parametros.valorMora !== null,
     valor_mora: parametros.valorMora === null ? null : formatearDinero(parametros.valorMora),
     periodicidad: parametros.periodicidad,
-    numero_cuotas: parametros.numeroCuotas,
+    plazo_meses: parametros.plazoMeses,
+    numero_cuotas: numeroCuotas,
     fecha_desembolso: formatearFechaIso(parametros.fechaDesembolso),
     formula_interes: FORMULA_INTERES,
     redondeo: REDONDEO,

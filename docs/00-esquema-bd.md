@@ -147,7 +147,8 @@ Restricciones:
 | `tasa_interes` | NUMERIC(8,4) | No | CHECK `>= 0`. **% sobre el principal de este crédito** (no es un fijo global). Ej.: `20.0000` sobre `100000.00` → interés `20000.00`, total `120000.00`. Validación legal/financiera pendiente de producción |
 | `valor_mora` | NUMERIC(18,2) | Sí | **Opcional.** Lo elige el dueño de la cartera (propietario/administrador) al crear el crédito: si no cobra mora → `NULL`; si cobra → COP `> 0`. Se aplica **una vez** a cada cuota que entre en mora. El cobrador no lo define |
 | `periodicidad` | `periodicidad_credito` | No | Default operativo: `diaria` |
-| `numero_cuotas` | INTEGER | No | CHECK `>= 1`. No existe cuota 0 |
+| `plazo_meses` | INTEGER | No | CHECK `>= 1`. Duración del compromiso en meses; VER §7.7 para cálculo de `numero_cuotas`. Nuevo V2-C |
+| `numero_cuotas` | INTEGER | No | CHECK `>= 1`. No existe cuota 0. Generado automáticamente según `plazo_meses` y `periodicidad` |
 | `fecha_desembolso` | DATE | No | La primera cuota vence al día siguiente (o +1 período si no es diaria) |
 | `estado` | `estado_credito` | No | Default `activo` |
 | `condiciones_originales` | JSONB | No | Snapshot **inmutable** (RF-005). Ver §7 |
@@ -439,7 +440,8 @@ Al insertar el crédito se persiste al menos:
   "cobra_mora": true,
   "valor_mora": "5000.00",
   "periodicidad": "diaria",
-  "numero_cuotas": 20,
+  "plazo_meses": 2,
+  "numero_cuotas": 43,
   "fecha_desembolso": "2026-09-16",
   "formula_interes": "flat_sobre_principal",
   "redondeo": "half_up_2",
@@ -450,7 +452,27 @@ Al insertar el crédito se persiste al menos:
 
 Cambiar configuración del negocio no reescribe créditos existentes. Si el dueño no cobra mora: `"cobra_mora": false, "valor_mora": null`.
 
-### 7.6 Aún abiertas (no bloquean Fase 3)
+### 7.6 Cálculo de `numero_cuotas` por `plazo_meses` (RV2-004 / RV2-005 — V2-C)
+
+**Entrada:** `plazo_meses` (entero ≥ 1), `periodicidad`, `fecha_desembolso`.
+
+**Salida:** `numero_cuotas` calculado e inmutable en `condiciones_originales`.
+
+**Reglas por periodicidad:**
+
+- **Diaria:** Contar días hábiles (excluyendo **domingos**) en el rango `[fecha_desembolso + 1, fecha_desembolso + plazo_meses meses]` inclusive.
+  - Ejemplo: desembolso lunes 1 de octubre de 2 meses (hasta 31 de noviembre) → contar Lu-Sa (no Do) en ese rango = `numero_cuotas`.
+  - Fórmula de ciclo: desde desembolso hasta fecha de fin del plazo, contar días no-domingo.
+
+- **Semanal:** `numero_cuotas = ceil(plazo_meses × 52 / 12)`. Una cuota por semana civil en el período.
+
+- **Quincenal:** `numero_cuotas = ceil(plazo_meses × 24 / 12)` = `plazo_meses × 2`.
+
+- **Mensual:** `numero_cuotas = plazo_meses`.
+
+En todos los casos, la suma de `monto_esperado` de todas las cuotas = `total_a_pagar` (con redondeo half-up a 2 decimales).
+
+### 7.7 Aún abiertas (no bloquean Fase 3)
 
 - Refinanciación / reestructuración (el estado `refinanciado` existe; el flujo no)
 - Campos adicionales de cliente

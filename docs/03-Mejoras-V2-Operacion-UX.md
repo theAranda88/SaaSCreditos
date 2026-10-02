@@ -35,7 +35,7 @@ Relacionado: `docs/01-SRS.md` (MVP), `.cursor/docs/PLAN_IMPLEMENTACION.md` (fase
 
 ## 1. Resumen ejecutivo
 
-Tras cerrar el MVP (flujo cliente → crédito → asignación → cobro → cartera), la **V2 operacional** corrige fricción de uso real: formularios más estrictos, cálculo de cuotas por **plazo en meses**, cartera sin créditos ya asignados, cobro móvil más claro (datos del cliente, historial del préstamo, métodos de pago acotados), **pagos mayores al saldo de una cuota** como abono que acelera el plan, **cierre de jornada del cobrador** y **cierre diario del dueño**, y **UI más compacta** con **Inicio = dashboard gráfico** (una pestaña menos).
+Tras cerrar el MVP (flujo cliente → crédito → asignación → cobro → cartera), la **V2 operacional** corrige fricción de uso real: formularios más estrictos, campo **"plazo en meses" para créditos mensuales** (automático), cartera sin créditos ya asignados, cobro móvil más claro (datos del cliente, historial del préstamo, métodos de pago acotados), **pagos mayores al saldo de una cuota** como abono que acelera el plan, **cierre de jornada del cobrador** y **cierre diario del dueño**, y **UI más compacta** con **Inicio = dashboard gráfico** (una pestaña menos).
 
 No sustituye la V1 del SRS (reportes avanzados, notificaciones masivas, observabilidad). Se ejecuta **por etapas independientes** en ramas `feature/creditos_v2_`*.
 
@@ -384,9 +384,9 @@ Rama sugerida: feature/creditos_v2_listado_asignacion
 
 | Etapa                   | Estado | Rama                                       | Fecha cierre | Notas |
 | ----------------------- | ------ | ------------------------------------------ | ------------ | ----- |
-| V2-A Inicio/UI          | ⬜ok    | fix/Ajuste_front                           | 25/09        |       |
-| V2-B Clientes/moneda    | ⬜ok    | feature/creditos_v2_clientes_barrio_moneda | 25/09        |       |
-| V2-C Plazo/cuotas       | ⬜      |                                            |              |       |
+| V2-A Inicio/UI          | ✅     | fix/Ajuste_front                           | 25/09        |       |
+| V2-B Clientes/moneda    | ✅     | feature/creditos_v2_clientes_barrio_moneda | 25/09        |       |
+| V2-C Plazo/cuotas       | ✅     | feature/creditos_v2_plazo_meses_cuotas     | 26/09        | Backend+frontend verde. Formulario, DTO, i18n, servicio actualizados |
 | V2-D Listado/asignación | ⬜      |                                            |              |       |
 | V2-E Jornada cobrador   | ⬜      |                                            |              |       |
 | V2-F Comprobante        | ⬜      |                                            |              |       |

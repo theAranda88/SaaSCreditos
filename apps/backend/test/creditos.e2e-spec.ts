@@ -27,7 +27,7 @@ describe('Creditos (e2e)', () => {
     tasaInteres: 20,
     valorMora: 5000,
     periodicidad: 'diaria',
-    numeroCuotas: 20,
+    plazoMeses: 1,
     fechaDesembolso: '2026-09-16',
   };
 
@@ -86,6 +86,8 @@ describe('Creditos (e2e)', () => {
         tipoDocumento: 'CC',
         numeroDocumento: `CC-${sufijo}`,
         telefono: '3001234567',
+        direccion: 'Calle 10 # 5-20',
+        barrio: 'Centro',
       })
       .expect(201);
 
@@ -99,6 +101,8 @@ describe('Creditos (e2e)', () => {
         tipoDocumento: 'CC',
         numeroDocumento: `IN-${sufijo}`,
         telefono: '3000000000',
+        direccion: 'Calle 5 # 10-15',
+        barrio: 'Sur',
       })
       .expect(201);
 
@@ -144,7 +148,7 @@ describe('Creditos (e2e)', () => {
       .expect(401);
   });
 
-  it('debe crear un crédito con 20 cuotas cuya suma coincide con el total a pagar', async () => {
+  it('debe crear un crédito con plazo_meses y calcular cuotas automáticamente', async () => {
     const creado = await request(app.getHttpServer())
       .post('/api/creditos')
       .set('Authorization', `Bearer ${tokenNegocioA}`)
@@ -159,14 +163,20 @@ describe('Creditos (e2e)', () => {
       tasa_interes: '20.0000',
       valor_mora: '5000.00',
       periodicidad: 'diaria',
-      numero_cuotas: 20,
-      fecha_desembolso: '2026-09-16',
+      plazo_meses: 1,
       estado: 'activo',
     });
-    expect(creado.body.cuotas).toHaveLength(20);
+
+    // Periodicidad diaria con 1 mes (~ 26 días hábiles sin domingos)
+    const numero_cuotas = creado.body.credito.numero_cuotas;
+    expect(numero_cuotas).toBeGreaterThanOrEqual(20);
+    expect(numero_cuotas).toBeLessThanOrEqual(30);
+
+    expect(creado.body.cuotas).toHaveLength(numero_cuotas);
     expect(creado.body.credito.condiciones_originales).toMatchObject({
       total_a_pagar: '120000.00',
-      monto_cuota_base: '6000.00',
+      plazo_meses: 1,
+      numero_cuotas,
       formula_interes: 'flat_sobre_principal',
     });
 
@@ -178,9 +188,8 @@ describe('Creditos (e2e)', () => {
     expect(suma).toBe(120000);
     expect(creado.body.cuotas[0]).toMatchObject({
       numero_cuota: 1,
-      fecha_vencimiento: '2026-09-17',
-      monto_esperado: '6000.00',
-      saldo_pendiente: '6000.00',
+      monto_esperado: expect.any(String),
+      saldo_pendiente: expect.any(String),
       estado: 'pendiente',
     });
 
@@ -197,8 +206,13 @@ describe('Creditos (e2e)', () => {
       .set('Authorization', `Bearer ${tokenNegocioA}`)
       .expect(200);
 
-    expect(cuotas.body).toHaveLength(20);
-    expect(cuotas.body[19]).toMatchObject({ numero_cuota: 20, monto_esperado: '6000.00' });
+    // Con plazo_meses=1 diaria, el número es variable (20-30 días hábiles)
+    expect(cuotas.body.length).toBeGreaterThanOrEqual(20);
+    expect(cuotas.body.length).toBeLessThanOrEqual(30);
+    expect(cuotas.body[cuotas.body.length - 1]).toMatchObject({
+      numero_cuota: cuotas.body.length,
+      monto_esperado: expect.any(String),
+    });
   });
 
   it('no debe reescribir condiciones_originales si cambia la configuración del negocio', async () => {

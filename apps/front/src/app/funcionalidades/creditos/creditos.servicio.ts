@@ -20,7 +20,7 @@ export type CrearCreditoPayload = {
   tasaInteres: number;
   valorMora?: number | null;
   periodicidad: PeriodicidadCredito;
-  numeroCuotas: number;
+  plazoMeses: number; // Siempre presente: user lo elige si mensual, 1 si es otro período
   fechaDesembolso: string;
 };
 

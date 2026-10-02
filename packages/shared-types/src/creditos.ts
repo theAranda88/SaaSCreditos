@@ -14,6 +14,7 @@ export interface CondicionesOriginalesCredito {
   cobra_mora: boolean;
   valor_mora: string | null;
   periodicidad: PeriodicidadCredito;
+  plazo_meses: number;
   numero_cuotas: number;
   fecha_desembolso: string;
   formula_interes: 'flat_sobre_principal';
@@ -31,6 +32,7 @@ export interface CreditoPerfil {
   tasa_interes: string;
   valor_mora: string | null;
   periodicidad: PeriodicidadCredito;
+  plazo_meses: number;
   numero_cuotas: number;
   fecha_desembolso: string;
   estado: EstadoCredito;

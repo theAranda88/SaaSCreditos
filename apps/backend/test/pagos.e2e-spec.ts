@@ -32,7 +32,7 @@ describe('Pagos (e2e)', () => {
     tasaInteres: 20,
     valorMora: 5000,
     periodicidad: 'diaria',
-    numeroCuotas: 10,
+    plazoMeses: 1,
     fechaDesembolso: '2026-09-16',
   };
 
@@ -108,6 +108,8 @@ describe('Pagos (e2e)', () => {
         tipoDocumento: 'CC',
         numeroDocumento: `PG-${sufijo}`,
         telefono: '3001234567',
+        direccion: 'Calle 20 # 12-40',
+        barrio: 'Occidente',
       })
       .expect(201);
     clienteAId = clienteA.body.id;

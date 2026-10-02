@@ -50,15 +50,27 @@ export class CreditosServicio {
     const montoPrincipal = this.parsearMontoPositivo(dto.montoPrincipal, 'El monto principal debe ser mayor a 0');
     const tasaInteres = this.parsearTasa(dto.tasaInteres);
     const valorMora = this.parsearValorMora(dto.valorMora);
-    const numeroCuotas = this.parsearNumeroCuotas(dto.numeroCuotas);
     const fechaDesembolso = this.parsearFechaDesembolso(dto.fechaDesembolso);
+
+    // Determinar plazoMeses
+    let plazoMeses: number;
+    if (dto.periodicidad === 'mensual') {
+      // Para mensual, el usuario debe proporcionar plazoMeses
+      if (dto.plazoMeses === undefined || dto.plazoMeses === null) {
+        throw new UnprocessableEntityException('plazoMeses es requerido para periodicidad mensual');
+      }
+      plazoMeses = this.parsearPlazoMeses(dto.plazoMeses);
+    } else {
+      // Para diaria/semanal/quincenal, siempre 1 mes
+      plazoMeses = 1;
+    }
 
     const plan = generarPlanCuotas({
       montoPrincipal,
       tasaInteres,
       valorMora,
       periodicidad: dto.periodicidad,
-      numeroCuotas,
+      plazoMeses,
       fechaDesembolso,
     });
 
@@ -69,7 +81,8 @@ export class CreditosServicio {
       tasaInteres,
       valorMora,
       periodicidad: dto.periodicidad,
-      numeroCuotas,
+      plazoMeses,
+      numeroCuotas: plan.condicionesOriginales.numero_cuotas,
       fechaDesembolso,
       condicionesOriginales: plan.condicionesOriginales as unknown as Prisma.InputJsonValue,
       creadoPor: usuario.id,
@@ -162,6 +175,14 @@ export class CreditosServicio {
     return valor;
   }
 
+  private parsearPlazoMeses(valor: number): number {
+    if (!Number.isInteger(valor) || valor < 1) {
+      throw new UnprocessableEntityException('El plazo debe ser al menos 1 mes');
+    }
+
+    return valor;
+  }
+
   private parsearFechaDesembolso(valor: string): Date {
     try {
       return parsearFechaIso(valor);
@@ -179,6 +200,7 @@ export class CreditosServicio {
       tasa_interes: formatearTasa(credito.tasaInteres),
       valor_mora: credito.valorMora === null ? null : formatearDinero(credito.valorMora),
       periodicidad: credito.periodicidad,
+      plazo_meses: credito.plazoMeses,
       numero_cuotas: credito.numeroCuotas,
       fecha_desembolso: formatearFechaIso(credito.fechaDesembolso),
       estado: credito.estado,

@@ -14,6 +14,7 @@ export type DatosAltaCredito = {
   tasaInteres: Prisma.Decimal;
   valorMora: Prisma.Decimal | null;
   periodicidad: Credito['periodicidad'];
+  plazoMeses: number;
   numeroCuotas: number;
   fechaDesembolso: Date;
   condicionesOriginales: Prisma.InputJsonValue;
@@ -67,6 +68,7 @@ export class CreditoRepositorio {
           tasaInteres: datos.tasaInteres,
           valorMora: datos.valorMora,
           periodicidad: datos.periodicidad,
+          plazoMeses: datos.plazoMeses,
           numeroCuotas: datos.numeroCuotas,
           fechaDesembolso: datos.fechaDesembolso,
           condicionesOriginales: datos.condicionesOriginales,
@@ -96,6 +98,7 @@ export class CreditoRepositorio {
           accion: 'crear',
           detalle: {
             cliente_id: datos.clienteId,
+            plazo_meses: datos.plazoMeses,
             numero_cuotas: datos.numeroCuotas,
             condiciones_originales: datos.condicionesOriginales,
           },

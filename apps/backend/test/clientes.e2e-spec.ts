@@ -26,6 +26,7 @@ describe('Clientes (e2e)', () => {
     numeroDocumento: `CC-${sufijo}`,
     telefono: '3001234567',
     direccion: 'Calle 10 # 5-20',
+    barrio: 'Centro',
     referenciaUbicacion: 'Frente al parque',
   };
 

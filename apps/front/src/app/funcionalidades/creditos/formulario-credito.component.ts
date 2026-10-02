@@ -63,10 +63,12 @@ import { CreditosServicio } from './creditos.servicio';
           </select>
         </label>
 
-        <label>
-          {{ 'creditos.formulario.numero_cuotas' | translate }}
-          <input type="number" min="1" step="1" formControlName="numeroCuotas" />
-        </label>
+        @if (formulario.controls.periodicidad.value === 'mensual') {
+          <label>
+            {{ 'creditos.formulario.plazo_meses' | translate }}
+            <input type="number" min="1" step="1" formControlName="plazoMeses" />
+          </label>
+        }
 
         <label>
           {{ 'creditos.formulario.fecha_desembolso' | translate }}
@@ -111,9 +113,7 @@ export class FormularioCreditoComponent implements OnInit {
     periodicidad: this.formBuilder.nonNullable.control<PeriodicidadCredito>('diaria', {
       validators: [Validators.required],
     }),
-    numeroCuotas: this.formBuilder.nonNullable.control<number | null>(null, {
-      validators: [Validators.required, Validators.min(1)],
-    }),
+    plazoMeses: this.formBuilder.nonNullable.control<number | null>(1), // Default 1, requerido solo si mensual
     fechaDesembolso: [fechaHoyIso(), Validators.required],
   });
 
@@ -135,19 +135,26 @@ export class FormularioCreditoComponent implements OnInit {
     const valores = this.formulario.getRawValue();
     const montoPrincipal = Number(valores.montoPrincipal);
     const tasaInteres = Number(valores.tasaInteres);
-    const numeroCuotas = Number(valores.numeroCuotas);
+    const periodicidad = valores.periodicidad;
 
     if (
       !valores.clienteId ||
       !Number.isFinite(montoPrincipal) ||
       montoPrincipal <= 0 ||
       !Number.isFinite(tasaInteres) ||
-      tasaInteres < 0 ||
-      !Number.isInteger(numeroCuotas) ||
-      numeroCuotas < 1
+      tasaInteres < 0
     ) {
       this.formulario.markAllAsTouched();
       return;
+    }
+
+    // Validar plazoMeses solo si es periodicidad mensual
+    if (periodicidad === 'mensual') {
+      const plazoMeses = Number(valores.plazoMeses);
+      if (!Number.isInteger(plazoMeses) || plazoMeses < 1) {
+        this.error.set('creditos.formulario.error_plazo_meses');
+        return;
+      }
     }
 
     let valorMora: number | undefined;
@@ -163,25 +170,31 @@ export class FormularioCreditoComponent implements OnInit {
     this.cargando.set(true);
     this.error.set(null);
 
-    this.creditosServicio
-      .crear({
-        clienteId: valores.clienteId,
-        montoPrincipal,
-        tasaInteres,
-        ...(valorMora !== undefined && { valorMora }),
-        periodicidad: valores.periodicidad,
-        numeroCuotas,
-        fechaDesembolso: valores.fechaDesembolso,
-      })
-      .subscribe({
-        next: (creado) => {
-          this.cargando.set(false);
-          void this.router.navigate(['/app/creditos', creado.credito.id]);
-        },
-        error: (error: unknown) => {
-          this.cargando.set(false);
-          this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.crear'));
-        },
-      });
+    const payload: any = {
+      clienteId: valores.clienteId,
+      montoPrincipal,
+      tasaInteres,
+      ...(valorMora !== undefined && { valorMora }),
+      periodicidad,
+      fechaDesembolso: valores.fechaDesembolso,
+    };
+
+    // Solo agregar plazoMeses si es mensual, sino es 1 mes por defecto
+    if (periodicidad === 'mensual') {
+      payload.plazoMeses = Number(valores.plazoMeses);
+    } else {
+      payload.plazoMeses = 1; // 1 mes fijo para diaria/semanal/quincenal
+    }
+
+    this.creditosServicio.crear(payload).subscribe({
+      next: (creado) => {
+        this.cargando.set(false);
+        void this.router.navigate(['/app/creditos', creado.credito.id]);
+      },
+      error: (error: unknown) => {
+        this.cargando.set(false);
+        this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.crear'));
+      },
+    });
   }
 }
