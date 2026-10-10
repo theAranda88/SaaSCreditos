@@ -2,10 +2,10 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import type { ClientePerfil, CreditoPerfil, EstadoCredito } from '@creditos/shared-types';
+import type { ClientePerfil, EstadoCredito } from '@creditos/shared-types';
 import { claveMensajeErrorHttp } from '../../nucleo/http/mensaje-error-http';
 import { ClientesServicio } from '../clientes/clientes.servicio';
-import { CreditosServicio } from './creditos.servicio';
+import { CreditosServicio, type CreditoEnriquecido } from './creditos.servicio';
 
 @Component({
   selector: 'app-listado-creditos',
@@ -21,15 +21,6 @@ import { CreditosServicio } from './creditos.servicio';
       </header>
 
       <form class="filtros" [formGroup]="filtros" (ngSubmit)="cargar()">
-        <label>
-          {{ 'comun.filtros.cliente' | translate }}
-          <select formControlName="clienteId">
-            <option value="">{{ 'comun.filtros.todos' | translate }}</option>
-            @for (cliente of clientes(); track cliente.id) {
-              <option [value]="cliente.id">{{ cliente.nombre_completo }}</option>
-            }
-          </select>
-        </label>
         <label>
           {{ 'comun.filtros.estado' | translate }}
           <select formControlName="estado">
@@ -57,10 +48,12 @@ import { CreditosServicio } from './creditos.servicio';
           <table>
             <thead>
               <tr>
-                <th>{{ 'comun.filtros.cliente' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_cliente' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_direccion' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_barrio' | translate }}</th>
                 <th>{{ 'creditos.listado.columna_principal' | translate }}</th>
-                <th>{{ 'creditos.listado.columna_cuotas' | translate }}</th>
-                <th>{{ 'creditos.listado.columna_desembolso' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_modalidad' | translate }}</th>
+                <th>{{ 'creditos.listado.columna_cobrador' | translate }}</th>
                 <th>{{ 'comun.filtros.estado' | translate }}</th>
                 <th></th>
               </tr>
@@ -68,10 +61,12 @@ import { CreditosServicio } from './creditos.servicio';
             <tbody>
               @for (credito of creditos(); track credito.id) {
                 <tr>
-                  <td>{{ nombreCliente(credito.cliente_id) }}</td>
+                  <td>{{ credito.cliente_nombre_completo }}</td>
+                  <td>{{ credito.cliente_direccion }}</td>
+                  <td>{{ credito.cliente_barrio }}</td>
                   <td>{{ credito.monto_principal }}</td>
-                  <td>{{ credito.numero_cuotas }} · {{ credito.periodicidad }}</td>
-                  <td>{{ credito.fecha_desembolso }}</td>
+                  <td>{{ credito.numero_cuotas }} · {{ ('creditos.modalidades.' + credito.periodicidad) | translate }}</td>
+                  <td>{{ credito.cobrador_nombre ?? ('creditos.listado.sin_asignar' | translate) }}</td>
                   <td>
                     <span class="estado">{{ ('comun.estados.' + credito.estado) | translate }}</span>
                   </td>
@@ -89,26 +84,17 @@ import { CreditosServicio } from './creditos.servicio';
 })
 export class ListadoCreditosComponent implements OnInit {
   private readonly creditosServicio = inject(CreditosServicio);
-  private readonly clientesServicio = inject(ClientesServicio);
   private readonly formBuilder = inject(FormBuilder);
 
-  readonly creditos = signal<CreditoPerfil[]>([]);
-  readonly clientes = signal<ClientePerfil[]>([]);
+  readonly creditos = signal<CreditoEnriquecido[]>([]);
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly filtros = this.formBuilder.nonNullable.group({
-    clienteId: [''],
     estado: [''],
   });
 
   ngOnInit(): void {
-    this.clientesServicio.listar().subscribe({
-      next: (clientes) => this.clientes.set(clientes),
-      error: (error: unknown) => {
-        this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.carga_clientes_filtro'));
-      },
-    });
     this.cargar();
   }
 
@@ -116,11 +102,10 @@ export class ListadoCreditosComponent implements OnInit {
     this.cargando.set(true);
     this.error.set(null);
 
-    const { clienteId, estado } = this.filtros.getRawValue();
+    const { estado } = this.filtros.getRawValue();
 
     this.creditosServicio
-      .listar({
-        ...(clienteId && { clienteId }),
+      .listarEnriquecido({
         ...(estado && { estado: estado as EstadoCredito }),
       })
       .subscribe({
@@ -133,9 +118,5 @@ export class ListadoCreditosComponent implements OnInit {
           this.error.set(claveMensajeErrorHttp(error, 'errores.creditos.carga_listado'));
         },
       });
-  }
-
-  nombreCliente(clienteId: string): string {
-    return this.clientes().find((cliente) => cliente.id === clienteId)?.nombre_completo ?? clienteId;
   }
 }

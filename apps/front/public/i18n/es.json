@@ -164,11 +164,21 @@
       "titulo": "Créditos",
       "subtitulo": "Alta de crédito y consulta del plan de cuotas. Las condiciones no se editan.",
       "nuevo": "Nuevo crédito",
+      "columna_cliente": "Cliente",
+      "columna_direccion": "Dirección",
+      "columna_barrio": "Barrio",
       "columna_principal": "Principal",
-      "columna_cuotas": "Cuotas",
-      "columna_desembolso": "Desembolso",
+      "columna_modalidad": "Modalidad",
+      "columna_cobrador": "Cobrador asignado",
+      "sin_asignar": "Sin asignar",
       "ver_plan": "Ver plan",
       "vacio": "No hay créditos para mostrar."
+    },
+    "modalidades": {
+      "diaria": "Diaria",
+      "semanal": "Semanal",
+      "quincenal": "Quincenal",
+      "mensual": "Mensual"
     },
     "formulario": {
       "titulo": "Nuevo crédito",

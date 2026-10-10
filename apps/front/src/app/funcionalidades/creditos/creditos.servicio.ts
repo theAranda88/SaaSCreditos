@@ -14,6 +14,18 @@ export type FiltrosCredito = {
   estado?: EstadoCredito;
 };
 
+export type CreditoEnriquecido = {
+  id: string;
+  cliente_nombre_completo: string;
+  cliente_direccion: string;
+  cliente_barrio: string;
+  monto_principal: string;
+  periodicidad: PeriodicidadCredito;
+  numero_cuotas: number;
+  estado: EstadoCredito;
+  cobrador_nombre: string | null;
+};
+
 export type CrearCreditoPayload = {
   clienteId: string;
   montoPrincipal: number;
@@ -40,6 +52,19 @@ export class CreditosServicio {
     }
 
     return this.http.get<CreditoPerfil[]>(this.urlBase, { params });
+  }
+
+  listarEnriquecido(filtros: FiltrosCredito = {}): Observable<CreditoEnriquecido[]> {
+    let params = new HttpParams();
+
+    if (filtros.clienteId) {
+      params = params.set('clienteId', filtros.clienteId);
+    }
+    if (filtros.estado) {
+      params = params.set('estado', filtros.estado);
+    }
+
+    return this.http.get<CreditoEnriquecido[]>(`${this.urlBase}/enriquecido`, { params });
   }
 
   obtenerPorId(id: string): Observable<CreditoPerfil> {

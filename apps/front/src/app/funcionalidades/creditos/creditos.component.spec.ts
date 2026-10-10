@@ -18,11 +18,7 @@ describe('ListadoCreditosComponent', () => {
         proveedoresTraduccionPrueba(),
         {
           provide: CreditosServicio,
-          useValue: { listar: () => of([]) },
-        },
-        {
-          provide: ClientesServicio,
-          useValue: { listar: () => of([]) },
+          useValue: { listarEnriquecido: () => of([]) },
         },
       ],
     });

@@ -60,6 +60,20 @@ export class CreditosControlador {
     return this.creditosServicio.crear(usuario, dto);
   }
 
+  @Get('enriquecido')
+  @ApiOperation({
+    summary: 'Lista créditos enriquecida (dirección, barrio, cobrador, modalidad)',
+    description:
+      'Roles: propietario, administrador. Retorna: cliente (nombre, dirección, barrio), monto, periodicidad, cuotas, estado, cobrador asignado. Filtra por negocio_id del token.',
+  })
+  @ApiOkResponse({ description: 'Listado enriquecido de créditos' })
+  async listarEnriquecido(
+    @UsuarioActual() usuario: PerfilUsuario,
+    @Query() consulta: ConsultarCreditosDto,
+  ): Promise<any[]> {
+    return this.creditosServicio.listarEnriquecido(usuario, consulta);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'Lista créditos del negocio autenticado',

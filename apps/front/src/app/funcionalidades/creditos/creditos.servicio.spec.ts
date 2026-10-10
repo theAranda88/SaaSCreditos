@@ -29,6 +29,14 @@ describe('CreditosServicio', () => {
     solicitud.flush([]);
   });
 
+  it('debe listar créditos enriquecidos en GET /api/creditos/enriquecido', () => {
+    servicio.listarEnriquecido().subscribe();
+
+    const solicitud = httpMock.expectOne('/api/creditos/enriquecido');
+    expect(solicitud.request.method).toBe('GET');
+    solicitud.flush([]);
+  });
+
   it('debe crear crédito en POST /api/creditos', () => {
     servicio
       .crear({
@@ -36,7 +44,7 @@ describe('CreditosServicio', () => {
         montoPrincipal: 100000,
         tasaInteres: 20,
         periodicidad: 'diaria',
-        numeroCuotas: 20,
+        plazoMeses: 1,
         fechaDesembolso: '2026-09-16',
       })
       .subscribe();
@@ -46,7 +54,7 @@ describe('CreditosServicio', () => {
     expect(solicitud.request.body).toMatchObject({
       clienteId: 'cliente-1',
       montoPrincipal: 100000,
-      numeroCuotas: 20,
+      plazoMeses: 1,
     });
     solicitud.flush({ credito: { id: 'credito-1' }, cuotas: [] });
   });

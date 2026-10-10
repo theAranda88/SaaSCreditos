@@ -43,6 +43,51 @@ export class CreditoRepositorio {
         ...(filtros.clienteId && { clienteId: filtros.clienteId }),
         ...(filtros.estado && { estado: filtros.estado }),
       },
+      include: {
+        cliente: true,
+        asignaciones: {
+          where: { estado: 'activa' },
+          include: { cobrador: true },
+          take: 1, // Solo la asignación activa
+        },
+      },
+      orderBy: { fechaCreacion: 'desc' },
+    });
+  }
+
+  async listarEnriquecido(negocioId: string, filtros: FiltrosCredito): Promise<Array<any>> {
+    // Query enriquecida para el listado con dirección, barrio, cobrador
+    return this.prisma.credito.findMany({
+      where: {
+        negocioId,
+        ...(filtros.clienteId && { clienteId: filtros.clienteId }),
+        ...(filtros.estado && { estado: filtros.estado }),
+      },
+      select: {
+        id: true,
+        cliente: {
+          select: {
+            nombreCompleto: true,
+            direccion: true,
+            barrio: true,
+          },
+        },
+        montoPrincipal: true,
+        periodicidad: true,
+        numeroCuotas: true,
+        estado: true,
+        asignaciones: {
+          where: { estado: 'activa' },
+          select: {
+            cobrador: {
+              select: {
+                nombre: true,
+              },
+            },
+          },
+          take: 1,
+        },
+      },
       orderBy: { fechaCreacion: 'desc' },
     });
   }

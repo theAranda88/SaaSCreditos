@@ -92,6 +92,7 @@ describe('CreditosServicio', () => {
       listar: vi.fn(),
       listarCuotas: vi.fn(),
       crearConPlan: vi.fn(),
+      listarEnriquecido: vi.fn(),
     } as unknown as CreditoRepositorio;
 
     clienteRepositorio = {
@@ -204,5 +205,70 @@ describe('CreditosServicio', () => {
     expect(resultado).toHaveLength(1);
     expect(resultado[0]?.negocio_id).toBe('negocio-a');
     expect(resultado[0]?.monto_principal).toBe('100000.00');
+  });
+
+  it('debe listar créditos enriquecidos con datos de cliente, asignación y cobrador', async () => {
+    const creditoEnriquecido = {
+      id: 'credito-1',
+      cliente: {
+        nombreCompleto: 'María Pérez',
+        direccion: 'Calle 10 #45-67',
+        barrio: 'La Candelaria',
+      },
+      montoPrincipal: new Prisma.Decimal('100000.00'),
+      periodicidad: 'mensual',
+      numeroCuotas: 2,
+      estado: 'activo',
+      asignaciones: [
+        {
+          cobrador: {
+            nombre: 'Juan Cobrador',
+          },
+        },
+      ],
+    };
+
+    vi.mocked(creditoRepositorio.listarEnriquecido).mockResolvedValue([creditoEnriquecido]);
+
+    const resultado = await creditosServicio.listarEnriquecido(usuarioPropietario, {
+      clienteId: 'cliente-1',
+      estado: 'activo',
+    });
+
+    expect(creditoRepositorio.listarEnriquecido).toHaveBeenCalledWith('negocio-a', {
+      clienteId: 'cliente-1',
+      estado: 'activo',
+    });
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0]?.cliente_nombre_completo).toBe('María Pérez');
+    expect(resultado[0]?.cliente_direccion).toBe('Calle 10 #45-67');
+    expect(resultado[0]?.cliente_barrio).toBe('La Candelaria');
+    expect(resultado[0]?.monto_principal).toBe('100000.00');
+    expect(resultado[0]?.periodicidad).toBe('mensual');
+    expect(resultado[0]?.numero_cuotas).toBe(2);
+    expect(resultado[0]?.estado).toBe('activo');
+    expect(resultado[0]?.cobrador_nombre).toBe('Juan Cobrador');
+  });
+
+  it('debe retornar null en cobrador_nombre si crédito no está asignado', async () => {
+    const creditoSinAsignacion = {
+      id: 'credito-2',
+      cliente: {
+        nombreCompleto: 'Carlos López',
+        direccion: 'Carrera 7 #89-10',
+        barrio: 'Centro',
+      },
+      montoPrincipal: new Prisma.Decimal('50000.00'),
+      periodicidad: 'semanal',
+      numeroCuotas: 4,
+      estado: 'activo',
+      asignaciones: [],
+    };
+
+    vi.mocked(creditoRepositorio.listarEnriquecido).mockResolvedValue([creditoSinAsignacion]);
+
+    const resultado = await creditosServicio.listarEnriquecido(usuarioPropietario, {});
+
+    expect(resultado[0]?.cobrador_nombre).toBeNull();
   });
 });

@@ -387,7 +387,7 @@ Rama sugerida: feature/creditos_v2_listado_asignacion
 | V2-A Inicio/UI          | ✅     | fix/Ajuste_front                           | 25/09        |       |
 | V2-B Clientes/moneda    | ✅     | feature/creditos_v2_clientes_barrio_moneda | 25/09        |       |
 | V2-C Plazo/cuotas       | ✅     | feature/creditos_v2_plazo_meses_cuotas     | 26/09        | Backend+frontend verde. Formulario, DTO, i18n, servicio actualizados |
-| V2-D Listado/asignación | ⬜      |                                            |              |       |
+| V2-D Listado/asignación | ✅     | feature/creditos_v2_listado_asignacion     | 02/10        | Backend: query enriquecida (dirección, barrio, cobrador, modalidad) + endpoint GET/enriquecido. Frontend: tabla con columnas nuevas, consumo enriquecido. Tests: 91 backend + 66 frontend ✅ |
 | V2-E Jornada cobrador   | ⬜      |                                            |              |       |
 | V2-F Comprobante        | ⬜      |                                            |              |       |
 | V2-G Cierres diarios    | ⬜      |                                            |              |       |

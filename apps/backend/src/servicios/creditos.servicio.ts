@@ -105,6 +105,26 @@ export class CreditosServicio {
     return creditos.map((credito) => this.mapearCredito(credito));
   }
 
+  async listarEnriquecido(usuario: PerfilUsuario, consulta: ConsultarCreditosDto): Promise<any[]> {
+    const negocioId = this.exigirNegocioAsignado(usuario);
+    const creditos = await this.creditoRepositorio.listarEnriquecido(negocioId, {
+      clienteId: consulta.clienteId,
+      estado: consulta.estado,
+    });
+
+    return creditos.map((credito) => ({
+      id: credito.id,
+      cliente_nombre_completo: credito.cliente.nombreCompleto,
+      cliente_direccion: credito.cliente.direccion,
+      cliente_barrio: credito.cliente.barrio,
+      monto_principal: formatearDinero(credito.montoPrincipal),
+      periodicidad: credito.periodicidad,
+      numero_cuotas: credito.numeroCuotas,
+      estado: credito.estado,
+      cobrador_nombre: credito.asignaciones[0]?.cobrador?.nombre ?? null,
+    }));
+  }
+
   async obtenerPorId(usuario: PerfilUsuario, id: string): Promise<CreditoPerfil> {
     const credito = await this.obtenerDelNegocio(usuario, id);
     return this.mapearCredito(credito);
