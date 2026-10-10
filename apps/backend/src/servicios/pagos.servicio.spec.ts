@@ -117,7 +117,9 @@ describe('PagosServicio', () => {
         credito: {
           id: 'credito-1',
           clienteId: 'cliente-1',
-          cliente: { id: 'cliente-1', nombreCompleto: 'Luis Gómez' },
+          periodicidad: 'mensual',
+          montoPrincipal: new Prisma.Decimal('100000.00'),
+          cliente: { id: 'cliente-1', nombreCompleto: 'Luis Gómez', direccion: 'Calle 10 #45', telefono: '3001234567' },
         },
       },
     ]);

@@ -94,6 +94,7 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
                       'cobros.jornada.cuota_linea'
                         | translate: { numero: cobro.numero_cuota, fecha: cobro.fecha_vencimiento }
                     }}
+                    · <strong>{{ ('creditos.modalidades.' + cobro.credito_periodicidad) | translate }}</strong>
                     @if (esVencimientoInhabil(cobro.fecha_vencimiento)) {
                       <span class="etiqueta inhabil">{{ etiquetaDia(cobro.fecha_vencimiento) }}</span>
                     }
@@ -131,6 +132,13 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
           <h3>{{ 'cobros.jornada.ficha_rapida' | translate }}</h3>
           <dl>
             <div><dt>{{ 'comun.filtros.cliente' | translate }}</dt><dd>{{ cobro.cliente_nombre_completo }}</dd></div>
+            @if (cobro.cliente_direccion) {
+              <div><dt>{{ 'cobros.jornada.campo_direccion' | translate }}</dt><dd>{{ cobro.cliente_direccion }}</dd></div>
+            }
+            @if (cobro.cliente_telefono) {
+              <div><dt>{{ 'comun.filtros.telefono' | translate }}</dt><dd>{{ cobro.cliente_telefono }}</dd></div>
+            }
+            <div><dt>{{ 'cobros.jornada.campo_monto_prestamo' | translate }}</dt><dd>{{ cobro.credito_monto_principal }}</dd></div>
             <div><dt>{{ 'cobros.jornada.campo_cuota' | translate }}</dt><dd>{{ cobro.numero_cuota }}</dd></div>
             <div>
               <dt>{{ 'cobros.jornada.campo_vencimiento' | translate }}</dt>

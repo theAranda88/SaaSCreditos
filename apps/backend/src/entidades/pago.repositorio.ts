@@ -31,9 +31,13 @@ export type CuotaCobroDelDia = Cuota & {
   credito: {
     id: string;
     clienteId: string;
+    periodicidad: string;
+    montoPrincipal: Prisma.Decimal;
     cliente: {
       id: string;
       nombreCompleto: string;
+      direccion: string | null;
+      telefono: string;
     };
   };
 };
@@ -74,19 +78,29 @@ export class PagoRepositorio {
         estado: { in: ['pendiente', 'parcial', 'mora'] },
         saldoPendiente: { gt: 0 },
       },
-      include: {
+      select: {
+        id: true,
+        negocioId: true,
+        creditoId: true,
+        numeroCuota: true,
+        fechaVencimiento: true,
+        montoEsperado: true,
+        saldoPendiente: true,
+        estado: true,
         credito: {
           select: {
             id: true,
             clienteId: true,
+            periodicidad: true,
+            montoPrincipal: true,
             cliente: {
-              select: { id: true, nombreCompleto: true },
+              select: { id: true, nombreCompleto: true, direccion: true, telefono: true },
             },
           },
         },
       },
       orderBy: [{ fechaVencimiento: 'asc' }, { numeroCuota: 'asc' }],
-    });
+    }) as unknown as Promise<CuotaCobroDelDia[]>;
   }
 
   async sumarPagosValidosDelDia(

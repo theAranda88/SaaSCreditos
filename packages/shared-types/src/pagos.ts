@@ -35,6 +35,10 @@ export interface CobroDelDia {
   estado: EstadoCuota;
   cliente_id: string;
   cliente_nombre_completo: string;
+  cliente_direccion: string | null;
+  cliente_telefono: string;
+  credito_periodicidad: string;
+  credito_monto_principal: string;
   atrasado: boolean;
   /** Próxima cuota del crédito cuando aún no vence hoy (anticipo permitido). */
   programado: boolean;

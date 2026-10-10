@@ -231,8 +231,16 @@ export class PagosServicio {
       saldoPendiente: Prisma.Decimal;
       estado: CobroDelDia['estado'];
       credito: {
+        id: string;
         clienteId: string;
-        cliente: { nombreCompleto: string };
+        periodicidad: string;
+        montoPrincipal: Prisma.Decimal;
+        cliente: {
+          id: string;
+          nombreCompleto: string;
+          direccion: string | null;
+          telefono: string;
+        };
       };
     }>,
     fechaConsulta: Date,
@@ -291,8 +299,16 @@ export class PagosServicio {
       saldoPendiente: Prisma.Decimal;
       estado: CobroDelDia['estado'];
       credito: {
+        id: string;
         clienteId: string;
-        cliente: { nombreCompleto: string };
+        periodicidad: string;
+        montoPrincipal: Prisma.Decimal;
+        cliente: {
+          id: string;
+          nombreCompleto: string;
+          direccion: string | null;
+          telefono: string;
+        };
       };
     },
     fechaConsultaIso: string,
@@ -312,6 +328,10 @@ export class PagosServicio {
       estado: cuota.estado,
       cliente_id: cuota.credito.clienteId,
       cliente_nombre_completo: cuota.credito.cliente.nombreCompleto,
+      cliente_direccion: cuota.credito.cliente.direccion,
+      cliente_telefono: cuota.credito.cliente.telefono,
+      credito_periodicidad: cuota.credito.periodicidad,
+      credito_monto_principal: formatearDinero(cuota.credito.montoPrincipal),
       atrasado,
       programado,
     };
