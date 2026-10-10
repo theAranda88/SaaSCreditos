@@ -157,7 +157,7 @@ describe('JornadaCobroComponent', () => {
     const fixture = TestBed.createComponent(JornadaCobroComponent);
     fixture.detectChanges();
     fixture.componentInstance.seleccionarCobro(cobroPendiente);
-    fixture.componentInstance.formulario.setValue({ monto: 6000, metodoPago: 'efectivo' });
+    fixture.componentInstance.formulario.patchValue({ monto: 6000, metodoPago: 'efectivo' });
     fixture.componentInstance.revisar();
 
     expect(cobrosServicio.registrarPago).not.toHaveBeenCalled();
@@ -194,10 +194,121 @@ describe('JornadaCobroComponent', () => {
     const fixture = TestBed.createComponent(JornadaCobroComponent);
     fixture.detectChanges();
     fixture.componentInstance.seleccionarCobro(cobroPendiente);
-    fixture.componentInstance.formulario.setValue({ monto: 0, metodoPago: 'efectivo' });
+    fixture.componentInstance.formulario.patchValue({ monto: 0, metodoPago: 'efectivo' });
     fixture.componentInstance.revisar();
     fixture.componentInstance.confirmar();
 
     expect(cobrosServicio.registrarPago).not.toHaveBeenCalled();
+  });
+
+  // RV2-015: Comprobante obligatorio en transferencia
+  it('debe requerir comprobante si el método es transferencia', () => {
+    const cobrosServicio = {
+      listarCobrosDelDia: vi.fn(() => of(respuestaDiaHabil)),
+      resumenDiario: vi.fn(() => of(null)),
+      listarHistorial: vi.fn(() => of([])),
+      registrarPago: vi.fn(),
+    };
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [JornadaCobroComponent],
+      providers: [
+        provideRouter([]),
+        proveedoresTraduccionPrueba(),
+        { provide: CobrosServicio, useValue: cobrosServicio },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(JornadaCobroComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.seleccionarCobro(cobroPendiente);
+    fixture.componentInstance.formulario.setValue({
+      monto: 6000,
+      metodoPago: 'transferencia',
+      comprobanteBase64: '',
+      nombreArchivoComprobante: '',
+    });
+    fixture.componentInstance.revisar();
+
+    expect(fixture.componentInstance.error()).toBe('cobros.jornada.error_comprobante_obligatorio');
+    expect(cobrosServicio.registrarPago).not.toHaveBeenCalled();
+  });
+
+  it('debe permitir transferencia si tiene comprobante base64', () => {
+    const cobrosServicio = {
+      listarCobrosDelDia: vi.fn(() => of(respuestaDiaHabil)),
+      resumenDiario: vi.fn(() => of(null)),
+      listarHistorial: vi.fn(() => of([])),
+      registrarPago: vi.fn(() => of({ id: 'pago-1', monto: '6000.00', estado: 'valido' })),
+    };
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [JornadaCobroComponent],
+      providers: [
+        provideRouter([]),
+        proveedoresTraduccionPrueba(),
+        { provide: CobrosServicio, useValue: cobrosServicio },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(JornadaCobroComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.seleccionarCobro(cobroPendiente);
+    const comprobante = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    fixture.componentInstance.formulario.setValue({
+      monto: 6000,
+      metodoPago: 'transferencia',
+      comprobanteBase64: comprobante,
+      nombreArchivoComprobante: 'comprobante.png',
+    });
+    fixture.componentInstance.revisar();
+    fixture.componentInstance.confirmar();
+
+    expect(cobrosServicio.registrarPago).toHaveBeenCalledWith({
+      cuotaId: 'cuota-1',
+      monto: 6000,
+      metodoPago: 'transferencia',
+      comprobanteBase64: comprobante,
+      nombreArchivoComprobante: 'comprobante.png',
+    });
+  });
+
+  it('debe rechazar archivo no imagen en comprobante', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [JornadaCobroComponent],
+      providers: [
+        provideRouter([]),
+        proveedoresTraduccionPrueba(),
+        {
+          provide: CobrosServicio,
+          useValue: {
+            listarCobrosDelDia: vi.fn(() => of(respuestaDiaHabil)),
+            resumenDiario: vi.fn(() => of(null)),
+            listarHistorial: vi.fn(() => of([])),
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(JornadaCobroComponent);
+    fixture.detectChanges();
+
+    const evento = {
+      target: {
+        files: [
+          {
+            type: 'application/pdf',
+            name: 'documento.pdf',
+          },
+        ],
+      },
+    } as never;
+
+    fixture.componentInstance.onArchivoSeleccionado(evento);
+
+    expect(fixture.componentInstance.error()).toBe('cobros.jornada.error_no_imagen');
   });
 });

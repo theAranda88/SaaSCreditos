@@ -288,6 +288,10 @@
       "exito_monto": "Monto:",
       "exito_estado": "Estado:",
       "volver_jornada": "Volver a la jornada",
+      "comprobante_transferencia": "Foto del comprobante de transferencia (obligatoria)",
+      "archivo_seleccionado": "Archivo seleccionado",
+      "error_comprobante_obligatorio": "El comprobante de transferencia es obligatorio.",
+      "error_no_imagen": "Solo se permiten archivos de imagen.",
       "error_monto_saldo": "El monto no puede superar el saldo pendiente."
     }
   },

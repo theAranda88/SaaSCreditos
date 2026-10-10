@@ -10,6 +10,7 @@ import type { Pago } from '@prisma/client';
 import type {
   CobroDelDia,
   CobrosDelDiaRespuesta,
+  MetodoPago,
   PagoPerfil,
   PerfilUsuario,
   ResumenDiarioPago,
@@ -81,6 +82,13 @@ export class PagosServicio {
       throw new UnprocessableEntityException(MENSAJE_DIA_NO_HABIL);
     }
 
+    // Validación: si método es transferencia, requerir comprobante
+    if (dto.metodoPago === 'transferencia' && !dto.comprobanteBase64) {
+      throw new UnprocessableEntityException(
+        'El comprobante es obligatorio para pagos por transferencia',
+      );
+    }
+
     const cuota = await this.creditoRepositorio.buscarCuotaPorIdYNegocio(dto.cuotaId, negocioId);
 
     if (!cuota) {
@@ -98,16 +106,30 @@ export class PagosServicio {
     }
 
     try {
-      const pago = await this.pagoRepositorio.registrarPago({
-        negocioId,
-        cuotaId: cuota.id,
-        creditoId: cuota.creditoId,
-        cobradorId: usuario.id,
-        monto,
-        fechaPago,
-        metodoPago: dto.metodoPago,
-        registradoPor: usuario.id,
-      });
+      // Si hay comprobante (V2-F), usar método con comprobante. Si no, usar el clásico
+      const pago = dto.comprobanteBase64
+        ? await this.pagoRepositorio.registrarPagoConComprobante({
+            negocioId,
+            cuotaId: cuota.id,
+            creditoId: cuota.creditoId,
+            cobradorId: usuario.id,
+            monto,
+            fechaPago,
+            metodoPago: dto.metodoPago,
+            registradoPor: usuario.id,
+            comprobanteBase64: dto.comprobanteBase64,
+            nombreArchivoComprobante: dto.nombreArchivoComprobante,
+          })
+        : await this.pagoRepositorio.registrarPago({
+            negocioId,
+            cuotaId: cuota.id,
+            creditoId: cuota.creditoId,
+            cobradorId: usuario.id,
+            monto,
+            fechaPago,
+            metodoPago: dto.metodoPago,
+            registradoPor: usuario.id,
+          });
 
       return this.mapearPago(pago);
     } catch (error) {
@@ -406,7 +428,9 @@ export class PagosServicio {
       cobrador_id: pago.cobradorId,
       monto: formatearDinero(pago.monto),
       fecha_pago: pago.fechaPago.toISOString(),
-      metodo_pago: pago.metodoPago,
+      metodo_pago: (pago.metodoPago === 'efectivo' || pago.metodoPago === 'transferencia' 
+        ? pago.metodoPago 
+        : 'efectivo') as any as MetodoPago, // RV2-015: compatibilidad con datos legacy
       estado: pago.estado,
       motivo_anulacion: pago.motivoAnulacion,
       anulado_por: pago.anuladoPor,

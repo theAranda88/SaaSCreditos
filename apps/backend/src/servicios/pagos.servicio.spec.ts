@@ -70,7 +70,9 @@ describe('PagosServicio', () => {
       listar: vi.fn(),
       listarCuotasCobroPorCreditos: vi.fn(),
       sumarPagosValidosDelDia: vi.fn(),
+      sumarPagosValidosDelNegocioDia: vi.fn(),
       registrarPago: vi.fn(),
+      registrarPagoConComprobante: vi.fn(),
       anularPago: vi.fn(),
     } as unknown as PagoRepositorio;
 
@@ -155,7 +157,9 @@ describe('PagosServicio', () => {
       estado: 'activa',
       asignadoPor: 'usuario-1',
     });
+    // Mock ambos métodos (con y sin comprobante)
     vi.mocked(pagoRepositorio.registrarPago).mockResolvedValue(pagoValido);
+    vi.mocked(pagoRepositorio.registrarPagoConComprobante).mockResolvedValue(pagoValido);
 
     const resultado = await pagosServicio.registrarPago(usuarioCobrador, {
       cuotaId: 'cuota-1',
@@ -166,7 +170,59 @@ describe('PagosServicio', () => {
 
     expect(resultado.estado).toBe('valido');
     expect(resultado.monto).toBe('6000.00');
+    // Sin comprobante, debe llamar registrarPago (no registrarPagoConComprobante)
     expect(pagoRepositorio.registrarPago).toHaveBeenCalledOnce();
+  });
+
+  it('debe rechazar pago por transferencia sin comprobante con 422', async () => {
+    vi.mocked(creditoRepositorio.buscarCuotaPorIdYNegocio).mockResolvedValue(cuotaPendiente);
+    vi.mocked(asignacionRepositorio.buscarActivaPorCredito).mockResolvedValue({
+      id: 'asignacion-1',
+      negocioId: 'negocio-a',
+      creditoId: 'credito-1',
+      cobradorId: 'cobrador-1',
+      fechaAsignacion: fechaFija,
+      fechaFin: null,
+      estado: 'activa',
+      asignadoPor: 'usuario-1',
+    });
+
+    await expect(
+      pagosServicio.registrarPago(usuarioCobrador, {
+        cuotaId: 'cuota-1',
+        monto: 6000,
+        metodoPago: 'transferencia',
+        fechaPago: '2026-09-21T12:00:00.000Z',
+        // Sin comprobanteBase64
+      }),
+    ).rejects.toBeInstanceOf(UnprocessableEntityException);
+  });
+
+  it('debe registrar pago por transferencia CON comprobante', async () => {
+    vi.mocked(creditoRepositorio.buscarCuotaPorIdYNegocio).mockResolvedValue(cuotaPendiente);
+    vi.mocked(asignacionRepositorio.buscarActivaPorCredito).mockResolvedValue({
+      id: 'asignacion-1',
+      negocioId: 'negocio-a',
+      creditoId: 'credito-1',
+      cobradorId: 'cobrador-1',
+      fechaAsignacion: fechaFija,
+      fechaFin: null,
+      estado: 'activa',
+      asignadoPor: 'usuario-1',
+    });
+    vi.mocked(pagoRepositorio.registrarPagoConComprobante).mockResolvedValue(pagoValido);
+
+    const resultado = await pagosServicio.registrarPago(usuarioCobrador, {
+      cuotaId: 'cuota-1',
+      monto: 6000,
+      metodoPago: 'transferencia',
+      fechaPago: '2026-09-21T12:00:00.000Z',
+      comprobanteBase64: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABA...',
+      nombreArchivoComprobante: 'comprobante.jpg',
+    });
+
+    expect(resultado.estado).toBe('valido');
+    expect(pagoRepositorio.registrarPagoConComprobante).toHaveBeenCalledOnce();
   });
 
   it('debe rechazar registro de pago en domingo', async () => {

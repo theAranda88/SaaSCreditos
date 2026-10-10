@@ -20,6 +20,11 @@ export type DatosRegistrarPago = {
   registradoPor: string;
 };
 
+export type DatosRegistrarPagoConComprobante = DatosRegistrarPago & {
+  comprobanteBase64?: string;
+  nombreArchivoComprobante?: string;
+};
+
 export type DatosAnularPago = {
   pagoId: string;
   negocioId: string;
@@ -205,6 +210,94 @@ export class PagoRepositorio {
 
       return pago;
     });
+  }
+
+  async registrarPagoConComprobante(datos: DatosRegistrarPagoConComprobante): Promise<Pago> {
+    return this.prisma.$transaction(async (tx) => {
+      const cuota = await tx.cuota.findFirst({
+        where: { id: datos.cuotaId, negocioId: datos.negocioId, creditoId: datos.creditoId },
+      });
+
+      if (!cuota) {
+        throw new Error('CUOTA_NO_ENCONTRADA');
+      }
+
+      if (datos.monto.gt(cuota.saldoPendiente)) {
+        throw new Error('MONTO_EXCEDE_SALDO');
+      }
+
+      const nuevoSaldo = cuota.saldoPendiente.minus(datos.monto);
+      const nuevoEstadoCuota = recalcularEstadoCuota(nuevoSaldo, cuota.montoEsperado);
+
+      const pago = await tx.pago.create({
+        data: {
+          negocioId: datos.negocioId,
+          cuotaId: datos.cuotaId,
+          creditoId: datos.creditoId,
+          cobradorId: datos.cobradorId,
+          monto: datos.monto,
+          fechaPago: datos.fechaPago,
+          metodoPago: datos.metodoPago,
+          estado: 'valido',
+        },
+      });
+
+      // Si hay comprobante, crear el registro
+      if (datos.comprobanteBase64 && datos.nombreArchivoComprobante) {
+        const mimeType = this.extraerMimeType(datos.comprobanteBase64);
+        await tx.comprobantesPago.create({
+          data: {
+            pagoId: pago.id,
+            tipoAlmacenamiento: 'base64_temporal',
+            contenido: datos.comprobanteBase64,
+            nombreOriginal: datos.nombreArchivoComprobante,
+            mimeType,
+          },
+        });
+      }
+
+      await tx.cuota.update({
+        where: { id: cuota.id },
+        data: {
+          saldoPendiente: nuevoSaldo,
+          estado: nuevoEstadoCuota,
+        },
+      });
+
+      const cuotasActualizadas = await tx.cuota.findMany({
+        where: { creditoId: datos.creditoId, negocioId: datos.negocioId },
+        select: { estado: true },
+      });
+
+      await tx.credito.update({
+        where: { id: datos.creditoId },
+        data: { estado: recalcularEstadoCredito(cuotasActualizadas) },
+      });
+
+      await tx.auditoria.create({
+        data: {
+          negocioId: datos.negocioId,
+          usuarioId: datos.registradoPor,
+          entidad: 'pagos',
+          entidadId: pago.id,
+          accion: 'crear',
+          detalle: {
+            cuota_id: datos.cuotaId,
+            credito_id: datos.creditoId,
+            monto: datos.monto.toFixed(2),
+            metodo_pago: datos.metodoPago,
+            con_comprobante: !!datos.comprobanteBase64,
+          },
+        },
+      });
+
+      return pago;
+    });
+  }
+
+  private extraerMimeType(base64: string): string {
+    const match = base64.match(/^data:([^;]+)/);
+    return match ? match[1] : 'application/octet-stream';
   }
 
   async anularPago(datos: DatosAnularPago): Promise<Pago> {

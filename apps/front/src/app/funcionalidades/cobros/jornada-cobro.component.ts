@@ -187,11 +187,29 @@ type PasoJornada = 'lista' | 'confirmar' | 'exito';
                 }
               </select>
             </label>
+
+            @if (formulario.get('metodoPago')?.value === 'transferencia') {
+              <label>
+                {{ 'cobros.jornada.comprobante_transferencia' | translate }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onArchivoSeleccionado($event)"
+                  data-testid="input-comprobante"
+                />
+                @if (formulario.get('nombreArchivoComprobante')?.value) {
+                  <p class="archivo-seleccionado">
+                    {{ 'cobros.jornada.archivo_seleccionado' | translate }}: {{ formulario.get('nombreArchivoComprobante')?.value }}
+                  </p>
+                }
+              </label>
+            }
+
             <div class="acciones">
               <button type="button" class="boton-secundario" (click)="cancelar()">{{
                 'cobros.jornada.volver' | translate
               }}</button>
-              <button type="submit" class="boton-primario" [disabled]="formulario.invalid || guardando()">
+              <button type="submit" class="boton-primario" [disabled]="formulario.invalid || guardando() || !validarComprobanteTransferencia()">
                 {{ 'cobros.jornada.revisar_cobro' | translate }}
               </button>
             </div>
@@ -263,7 +281,15 @@ export class JornadaCobroComponent implements OnInit {
   readonly formulario = this.formBuilder.nonNullable.group({
     monto: [0, [Validators.required, Validators.min(0.01)]],
     metodoPago: ['efectivo', Validators.required],
+    comprobanteBase64: [''],
+    nombreArchivoComprobante: [''],
   });
+
+  validarComprobanteTransferencia = (): boolean => {
+    const metodoPago = this.formulario.get('metodoPago')?.value;
+    const comprobanteBase64 = this.formulario.get('comprobanteBase64')?.value;
+    return metodoPago === 'transferencia' ? !!comprobanteBase64 : true;
+  };
 
   ngOnInit(): void {
     this.cargar();
@@ -321,16 +347,44 @@ export class JornadaCobroComponent implements OnInit {
     });
   }
 
+  onArchivoSeleccionado(evento: Event): void {
+    const archivo = (evento.target as HTMLInputElement).files?.[0];
+    if (!archivo) return;
+
+    // Validar que sea imagen
+    if (!archivo.type.startsWith('image/')) {
+      this.error.set('cobros.jornada.error_no_imagen');
+      return;
+    }
+
+    // Convertir a base64
+    const lector = new FileReader();
+    lector.onload = () => {
+      const base64 = lector.result as string;
+      this.formulario.patchValue({
+        comprobanteBase64: base64,
+        nombreArchivoComprobante: archivo.name,
+      });
+    };
+    lector.readAsDataURL(archivo);
+  }
+
   revisar(): void {
     if (this.formulario.invalid || !this.cobroSeleccionado()) {
       return;
     }
 
-    const { monto, metodoPago } = this.formulario.getRawValue();
+    const { monto, metodoPago, comprobanteBase64 } = this.formulario.getRawValue();
     const saldo = Number(this.cobroSeleccionado()?.saldo_pendiente ?? 0);
 
     if (monto > saldo) {
       this.error.set('cobros.jornada.error_monto_saldo');
+      return;
+    }
+
+    // RV2-015: Si es transferencia, comprobante es obligatorio
+    if (metodoPago === 'transferencia' && !comprobanteBase64) {
+      this.error.set('cobros.jornada.error_comprobante_obligatorio');
       return;
     }
 
@@ -349,11 +403,15 @@ export class JornadaCobroComponent implements OnInit {
     this.guardando.set(true);
     this.error.set(null);
 
+    const { comprobanteBase64, nombreArchivoComprobante } = this.formulario.getRawValue();
+
     this.cobrosServicio
       .registrarPago({
         cuotaId: cobro.cuota_id,
         monto: datos.monto,
         metodoPago: datos.metodoPago,
+        comprobanteBase64: comprobanteBase64 || undefined,
+        nombreArchivoComprobante: nombreArchivoComprobante || undefined,
       })
       .subscribe({
         next: (pago) => {

@@ -14,6 +14,8 @@ export type RegistrarPagoPayload = {
   monto: number;
   metodoPago: MetodoPago;
   fechaPago?: string;
+  comprobanteBase64?: string;
+  nombreArchivoComprobante?: string;
 };
 
 @Injectable({ providedIn: 'root' })

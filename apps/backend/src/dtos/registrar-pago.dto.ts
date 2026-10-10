@@ -21,4 +21,18 @@ export class RegistrarPagoDto {
   @IsOptional()
   @IsISO8601()
   fechaPago?: string;
+
+  @ApiPropertyOptional({
+    example: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...',
+    description: 'Base64-encoded comprobante con data-URL (requerido si metodoPago es "transferencia")',
+  })
+  @IsOptional()
+  comprobanteBase64?: string;
+
+  @ApiPropertyOptional({
+    example: 'comprobante_transf.jpg',
+    description: 'Nombre original del archivo (requerido si comprobanteBase64 está presente)',
+  })
+  @IsOptional()
+  nombreArchivoComprobante?: string;
 }

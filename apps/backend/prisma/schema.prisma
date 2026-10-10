@@ -287,6 +287,7 @@ model Pago {
   credito         Credito      @relation(fields: [creditoId], references: [id], onDelete: Restrict)
   cobrador        Usuario      @relation("PagosCobrador", fields: [cobradorId], references: [id], onDelete: Restrict)
   anulador        Usuario?     @relation("PagosAnuladoPor", fields: [anuladoPor], references: [id], onDelete: Restrict)
+  comprobante     ComprobantesPago?
 
   @@index([negocioId])
   @@index([creditoId])
@@ -297,6 +298,21 @@ model Pago {
   @@index([negocioId, fechaPago, estado])
   @@map("pagos")
 }
+
+model ComprobantesPago {
+  id                 String     @id @default(uuid()) @db.Uuid
+  pagoId             String     @unique @map("pago_id") @db.Uuid
+  tipoAlmacenamiento String     @map("tipo_almacenamiento") @db.VarChar(40) // "base64_temporal" | "archivo_volumen"
+  contenido          String     @map("contenido") @db.Text // base64 o ruta a archivo
+  nombreOriginal     String     @map("nombre_original") @db.VarChar(240)
+  mimeType           String     @map("mime_type") @db.VarChar(60)
+  fechaCreacion      DateTime   @default(now()) @map("fecha_creacion") @db.Timestamptz(6)
+  pago               Pago       @relation(fields: [pagoId], references: [id], onDelete: Cascade)
+
+  @@index([pagoId])
+  @@map("comprobantes_pago")
+}
+
 
 model Auditoria {
   id        String   @id @default(uuid()) @db.Uuid

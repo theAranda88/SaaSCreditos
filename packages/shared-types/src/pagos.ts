@@ -1,7 +1,7 @@
 import type { EstadoCuota } from './creditos';
 
-/** Medio de recaudo del pago. */
-export type MetodoPago = 'efectivo' | 'transferencia' | 'nequi' | 'daviplata' | 'otro';
+/** Medio de recaudo del pago (RV2-014). */
+export type MetodoPago = 'efectivo' | 'transferencia';
 
 /** Estado del registro de pago. */
 export type EstadoPago = 'valido' | 'anulado';

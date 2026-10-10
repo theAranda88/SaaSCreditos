@@ -3,9 +3,6 @@ import type { MetodoPago } from '@creditos/shared-types';
 export const METODOS_PAGO: readonly MetodoPago[] = [
   'efectivo',
   'transferencia',
-  'nequi',
-  'daviplata',
-  'otro',
 ];
 
 export const ESTADOS_CUOTA_COBRABLES = ['pendiente', 'parcial', 'mora'] as const;
